@@ -1,0 +1,19 @@
+{
+  "name": "welbeing-ecommerce",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "src/frontend",
+    "src/backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=@welbeing/backend\" \"npm run dev --workspace=@welbeing/frontend\"",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "install:all": "npm install && npm install --workspaces"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
