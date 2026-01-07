@@ -1,0 +1,199 @@
+openapi: 3.0.0
+info:
+  title: Health & Wellbeing Store API
+  version: 1.1.0
+  description: API for product browsing, simulated checkout, and admin management.
+
+paths:
+  /products:
+    get:
+      summary: List products
+      parameters:
+        - name: category_id
+          in: query
+          schema:
+            type: integer
+        - name: tag_id
+          in: query
+          description: Filter by wellbeing tag or health goal
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /products/{id}:
+    get:
+      summary: Get product details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /categories:
+    get:
+      summary: List all categories
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+  /tags:
+    get:
+      summary: List all wellbeing tags (including goals)
+      responses:
+        '200':
+          description: List of tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WellbeingTag'
+
+  /auth/register:
+    post:
+      summary: Register a new user
+      description: Creates a User and a UserIdentity (provider=EMAIL).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User created
+
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: JWT Token returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+
+  /orders:
+    post:
+      summary: Create an order (Checkout)
+      description: Supports both guest (no auth header) and registered users.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - items
+                - shipping_address
+                - payment_placeholder
+                - disclaimer_accepted
+              properties:
+                guest_email:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      product_id:
+                        type: integer
+                      quantity:
+                        type: integer
+                shipping_address:
+                  type: string
+                payment_placeholder:
+                  type: string
+                disclaimer_accepted:
+                  type: boolean
+                  enum: [true]
+      responses:
+        '201':
+          description: Order confirmed
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+        safety_disclaimers:
+          type: string
+        stock_status:
+          type: string
+          enum: [IN_STOCK, OUT_OF_STOCK]
+        images:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+              alt_text:
+                type: string
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    WellbeingTag:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [GOAL, FEATURE, NEED]
