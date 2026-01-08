@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000'; // Helper to config later
+const API_BASE_URL = 'http://localhost:3000/api'; // Helper to config later
 
 export interface Product {
   id: number;

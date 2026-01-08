@@ -13,8 +13,8 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
-app.use('/products', productsRouter);
-app.use('/', metadataRouter); // /categories, /tags
+app.use('/api/products', productsRouter);
+app.use('/api', metadataRouter); // /api/categories, /api/tags
 
 app.get('/', (req, res) => {
   res.json({ message: 'Health and Wellbeing Store API' });
