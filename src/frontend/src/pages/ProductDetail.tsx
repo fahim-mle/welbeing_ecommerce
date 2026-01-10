@@ -1,4 +1,4 @@
-import { AlertCircle, ArrowLeft, Check } from 'lucide-react';
+import { AlertCircle, AlertTriangle, ArrowLeft, Check, ChevronUp, ChevronDown, FlaskConical, BookOpen, Sparkles } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { fetchProductById, type Product } from '../api/catalog';
@@ -10,6 +10,7 @@ export const ProductDetail: React.FC = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -87,42 +88,129 @@ export const ProductDetail: React.FC = () => {
                      <p className="text-4xl font-light text-gray-900">${product.price}</p>
                 </div>
 
-                {/* Status & Actions */}
-                <div className="border-t border-b border-gray-100 py-6 mb-8">
-                    <div className="flex items-center justify-between mb-6">
-                         {product.stockStatus === 'IN_STOCK' ? (
-                             <span className="flex items-center text-green-700 text-sm font-medium bg-green-50 px-3 py-1 rounded-full">
-                                 <Check className="h-4 w-4 mr-1.5" /> In Stock & Ready to Ship
-                             </span>
-                        ) : (
-                             <span className="flex items-center text-red-700 text-sm font-medium bg-red-50 px-3 py-1 rounded-full">
-                                 <AlertCircle className="h-4 w-4 mr-1.5" /> Out of Stock
-                             </span>
-                        )}
-                    </div>
-
-                    <button
-                       type="button"
-                       disabled={product.stockStatus !== 'IN_STOCK'}
-                       onClick={() => addItem(product)}
-                       className="btn-primary w-full py-4 text-lg font-bold shadow-lg shadow-indigo-200 hover:-translate-y-0.5 active:translate-y-0"
-                       aria-label={`Add ${product.name} to cart`}
-                   >
-                       Add to Cart
-                    </button>
+                 {/* Status & Actions */}
+                 <div className="border-t border-b border-gray-100 py-6 mb-8">
+                     <div className="flex items-center justify-between mb-6">
+                          {product.stockQuantity > 0 ? (
+                              <span className="flex items-center text-green-700 text-sm font-medium bg-green-50 px-3 py-1 rounded-full">
+                                  <Check className="h-4 w-4 mr-1.5" /> In Stock ({product.stockQuantity} available)
+                              </span>
+                         ) : (
+                              <span className="flex items-center text-red-700 text-sm font-medium bg-red-50 px-3 py-1 rounded-full">
+                                  <AlertCircle className="h-4 w-4 mr-1.5" /> Out of Stock
+                              </span>
+                         )}
+                     </div>
+ 
+                     <button
+                        type="button"
+                        disabled={product.stockQuantity <= 0}
+                        onClick={() => addItem(product)}
+                        className="btn-primary w-full py-4 text-lg font-bold shadow-lg shadow-indigo-200 hover:-translate-y-0.5 active:translate-y-0"
+                        aria-label={`Add ${product.name} to cart`}
+                    >
+                        Add to Cart
+                     </button>
 
                    <p className="text-center text-xs text-gray-500 mt-3">
                        Free shipping on orders over $50 • 30-day return policy
                    </p>
                 </div>
 
-                <div className="prose prose-indigo text-gray-600">
-                    <h3 className="text-lg font-bold text-gray-900 mb-3">About this product</h3>
-                    <p className="leading-relaxed">{product.description}</p>
-                </div>
+                 <div className="prose prose-indigo text-gray-600">
+                     <h3 className="text-lg font-bold text-gray-900 mb-3">About this product</h3>
+                     <p className="leading-relaxed">{product.description}</p>
+                 </div>
 
-                <div className="mt-10">
-                    <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Ideally Suited For</h3>
+                 {(product.safetyDisclaimers || product.ingredients || product.usageInstructions || product.benefits) && (
+                   <div className="mt-8 border-t border-b border-gray-100 py-6 space-y-4">
+                     
+                     {product.safetyDisclaimers && (
+                       <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
+                         <div className="flex items-start">
+                           <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5 mr-3 flex-shrink-0" />
+                           <div>
+                             <h4 className="text-sm font-bold text-amber-900 uppercase mb-1">
+                               Safety Disclaimer
+                             </h4>
+                             <p className="text-sm text-amber-800 leading-relaxed">
+                               {product.safetyDisclaimers}
+                             </p>
+                           </div>
+                         </div>
+                       </div>
+                     )}
+
+                     {product.ingredients && (
+                       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border rounded-lg overflow-hidden">
+                         <button
+                           onClick={() => setExpandedSection('ingredients')}
+                           className="w-full px-5 py-4 flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 hover:bg-blue-100 transition-colors"
+                         >
+                           <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center">
+                             <FlaskConical className="w-5 h-5 text-blue-500 mr-2" />
+                             Ingredients
+                             {expandedSection === 'ingredients' ? <ChevronUp className="w-5 h-5 text-gray-500" /> : <ChevronDown className="w-5 h-5 text-gray-500" />}
+                           </h4>
+                         </button>
+                         {expandedSection === 'ingredients' && (
+                           <div className="px-5 pb-4">
+                             <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                               {product.ingredients}
+                             </p>
+                           </div>
+                         )}
+                       </div>
+                     )}
+
+                     {product.usageInstructions && (
+                       <div className="bg-gradient-to-r from-green-50 to-emerald-50 border rounded-lg overflow-hidden">
+                         <button
+                           onClick={() => setExpandedSection('usageInstructions')}
+                           className="w-full px-5 py-4 flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50 hover:bg-green-100 transition-colors"
+                         >
+                           <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center">
+                             <BookOpen className="w-5 h-5 text-green-500 mr-2" />
+                             How to Use
+                             {expandedSection === 'usageInstructions' ? <ChevronUp className="w-5 h-5 text-gray-500" /> : <ChevronDown className="w-5 h-5 text-gray-500" />}
+                           </h4>
+                         </button>
+                         {expandedSection === 'usageInstructions' && (
+                           <div className="px-5 pb-4">
+                             <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                               {product.usageInstructions}
+                             </p>
+                           </div>
+                         )}
+                       </div>
+                     )}
+
+                     {product.benefits && (
+                       <div className="bg-gradient-to-r from-purple-50 to-pink-50 border rounded-lg overflow-hidden">
+                         <button
+                           onClick={() => setExpandedSection('benefits')}
+                           className="w-full px-5 py-4 flex items-center justify-between bg-gradient-to-r from-purple-50 to-pink-50 hover:bg-purple-100 transition-colors"
+                         >
+                           <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center">
+                             <Sparkles className="w-5 h-5 text-purple-500 mr-2" />
+                             Benefits
+                             {expandedSection === 'benefits' ? <ChevronUp className="w-5 h-5 text-gray-500" /> : <ChevronDown className="w-5 h-5 text-gray-500" />}
+                           </h4>
+                         </button>
+                         {expandedSection === 'benefits' && (
+                           <div className="px-5 pb-4">
+                             <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                               {product.benefits}
+                             </p>
+                           </div>
+                         )}
+                       </div>
+                     )}
+                   </div>
+                 )}
+
+                 <div className="mt-10">
+                     <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Ideally Suited For</h3>
                     <div className="flex flex-wrap gap-2">
                         {product.tags.map(tag => (
                             <span key={tag.id} className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-800 border border-transparent">
