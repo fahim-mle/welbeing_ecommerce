@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { fetchMyOrders, type OrderResponse } from '../api/orders';
 import { Link } from 'react-router-dom';
 

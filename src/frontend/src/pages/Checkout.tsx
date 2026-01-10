@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createOrder } from '../api/orders';
 import { CartSummary } from '../components/CartSummary';
 import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 export const Checkout: React.FC = () => {
   const navigate = useNavigate();
