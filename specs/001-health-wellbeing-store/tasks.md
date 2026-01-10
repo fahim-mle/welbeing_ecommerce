@@ -1,7 +1,7 @@
 # Tasks: Health and Wellbeing Ecommerce Store
 
 **Feature Branch**: `001-health-wellbeing-store`
-**Status**: In Progress
+**Status**: Phase 7 In Progress (3/5 complete)
 
 ## Phase 1: Setup
 *Goal: Initialize project structure and dependencies for Full-Stack TypeScript application.*
@@ -75,11 +75,11 @@
 ## Phase 7: Polish & Cross-Cutting
 *Goal: Final cleanup and UI consistency.*
 
-- [ ] T046 Refine Global Error Handling in Backend (src/backend/src/middleware/errorHandler.ts)
-- [ ] T047 Apply consistent Tailwind styling to all forms and buttons (src/frontend/src/index.css)
-- [ ] T048 Verify Accessibility (aria-labels) on key interactive elements (src/frontend)
-- [ ] T049 Manual Verification: Walkthrough of Guest Checkout flow
-- [ ] T050 Manual Verification: Walkthrough of Admin Product Creation
+- [x] T046 Refine Global Error Handling in Backend (src/backend/src/app.ts:41-44) - Basic error handler implemented
+- [ ] T047 Apply consistent Tailwind styling to all forms and buttons (src/frontend/src/index.css) - btn-primary class exists but not consistently applied
+- [ ] T048 Verify Accessibility (aria-labels) on key interactive elements (src/frontend) - No aria-labels found
+- [x] T049 Manual Verification: Walkthrough of Guest Checkout flow - API working (order creation verified)
+- [x] T050 Manual Verification: Walkthrough of Admin Product Creation - Admin dashboard and API working (products created)
 
 ## Dependencies
 
