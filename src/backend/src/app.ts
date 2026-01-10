@@ -8,6 +8,7 @@ import metadataRouter from './api/metadata';
 import ordersRouter from './api/orders';
 import productsRouter from './api/products';
 import adminProductsRouter from './api/admin/products';
+import adminOrdersRouter from './api/admin/orders';
 import authRouter from './api/auth';
 
 const app = express();
@@ -21,6 +22,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/admin/products', adminProductsRouter);
+app.use('/api/admin/orders', adminOrdersRouter);
 app.use('/api', metadataRouter); // /api/categories, /api/tags
 
 app.get('/', (req, res) => {
