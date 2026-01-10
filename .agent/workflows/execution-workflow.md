@@ -1,6 +1,7 @@
 # Workflow: Execute Feature 001 – Health Wellbeing Ecommerce
 
 ## Purpose
+
 Execute the feature implementation defined in:
 specs/001-health-wellbeing-store/tasks.md
 
@@ -31,6 +32,7 @@ Violation of constraints invalidates execution.
 Execution proceeds **phase by phase**, never skipping ahead.
 
 For each phase:
+
 1. Create or switch to the phase branch (per Git Rules)
 2. Execute tasks in listed order
 3. Commit work incrementally per Git Rules
@@ -44,6 +46,7 @@ Parallel execution is allowed ONLY for tasks marked `[P]`.
 ## Phase Execution Steps
 
 ### Step 1: Load Context (Read-Only)
+
 - Read `spec.md` (context only)
 - Read `plan.md` (context only)
 - Read `tasks.md` (source of truth)
@@ -55,7 +58,9 @@ No files may be modified in this step.
 ---
 
 ### Step 2: Phase Initialization
+
 For the current phase:
+
 - Create phase branch if it does not exist
 - Switch to phase branch
 - Confirm clean working tree
@@ -63,6 +68,7 @@ For the current phase:
 ---
 
 ### Step 3: Task Execution Loop
+
 For each task in the phase:
 
 1. Decide execution location:
@@ -89,7 +95,9 @@ For each task in the phase:
 ---
 
 ### Step 4: Phase Completion Check
+
 Before ending a phase:
+
 - All tasks in phase completed
 - Tests pass
 - No uncommitted changes
@@ -101,7 +109,9 @@ Merge phase branch into:
 ---
 
 ### Step 5: Reporting
+
 After each phase:
+
 - Report:
   - Completed tasks
   - Commits created
@@ -109,6 +119,7 @@ After each phase:
   - Any blockers or deviations
 
 If a blocker exists:
+
 - STOP execution
 - Do not proceed to next phase
 
@@ -117,6 +128,7 @@ If a blocker exists:
 ## Error Handling Policy
 
 If an error occurs:
+
 - Do NOT refactor unrelated code
 - Do NOT “improve” architecture
 - Do NOT bypass failing tests
@@ -127,6 +139,7 @@ If an error occurs:
 ## Completion Criteria
 
 The workflow is complete when:
+
 - All 7 phases are executed
 - Feature branch is up to date
 - No temporary task branches remain
@@ -137,6 +150,7 @@ The workflow is complete when:
 ## Authority Hierarchy
 
 If instructions conflict, follow this order:
+
 1. spec.md
 2. plan.md
 3. tasks.md
