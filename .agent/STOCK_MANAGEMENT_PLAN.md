@@ -93,26 +93,28 @@ This plan implements comprehensive stock management improvements including:
 
 ---
 
-## Phase 3: Frontend UI Updates
+## Phase 3: Frontend UI Updates [COMPLETED]
+- [x] Update ProductForm - remove stockStatus dropdown
+- [x] Update ProductCard - update stock display to quantity
+- [x] Update ProductDetail - show stock quantity, disable button at 0
+- [x] Add safety disclaimer section (always visible)
+- [x] Create `WellbeingCollapsible` component
+- [x] Add collapsible ingredients section
+- [x] Add collapsible usage instructions section
+- [x] Add collapsible benefits section
+- [x] Add required icon imports
 
-### 3.1 Update ProductForm Component
-- [ ] Remove `stockStatus` from initial state
-- [ ] Remove stockStatus from useEffect mapping
-- [ ] Remove stockStatus select dropdown JSX
+**Commits:**
+- `fe(product): update stock display to use quantity`
+- `fe(admin): remove stockStatus from product form`
+- `fe(product): add safety disclaimer and collapsible wellbeing sections, update stock to quantity-based`
+- `fe(product): update stock display to use quantity`
+- `fe(admin): remove stockStatus from product form`
+- `fe(product): add safety disclaimer and collapsible wellbeing sections, update stock to quantity-based`
 
-### 3.2 Update ProductCard Component
-- [ ] Replace `stockStatus !== 'IN_STOCK'` with `stockQuantity <= 0`
-- [ ] Update out of stock badge logic
+**Phase 1 COMPLETE - Ready for Merge**
 
-### 3.3 Update ProductDetail Component
-- [ ] Update stock display: show actual quantity
-- [ ] Update button disable: `stockQuantity <= 0`
-- [ ] Add safety disclaimer section (always visible)
-- [ ] Create `WellbeingCollapsible` component
-- [ ] Add collapsible ingredients section
-- [ ] Add collapsible usage instructions section
-- [ ] Add collapsible benefits section
-- [ ] Add required icon imports
+All backend and frontend changes for stock management have been implemented and committed.
 
 **Commits:**
 - `fe(admin): remove stockStatus from product form`
