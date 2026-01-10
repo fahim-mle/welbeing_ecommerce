@@ -157,6 +157,57 @@ async function main() {
       }
   }
 
+  // Test Users
+  const testUsers = [
+    { email: 'user1@welbeing.com', password: 'user123', role: 'USER' },
+    { email: 'user2@welbeing.com', password: 'user123', role: 'USER' },
+    { email: 'user3@welbeing.com', password: 'user123', role: 'USER' }
+  ];
+
+  for (const testUser of testUsers) {
+    const passwordHash = await bcrypt.hash(testUser.password, 10);
+    const existingUser = await prisma.user.findUnique({ where: { email: testUser.email } });
+
+    if (!existingUser) {
+      await prisma.user.create({
+        data: {
+          email: testUser.email,
+          role: testUser.role,
+          identities: {
+            create: {
+              provider: 'EMAIL',
+              providerId: testUser.email,
+              passwordHash
+            }
+          }
+        }
+      });
+      console.log(`Test user created: ${testUser.email}`);
+    } else {
+        // Ensure identity exists
+        const identity = await prisma.userIdentity.findUnique({
+            where: {
+                provider_providerId: {
+                    provider: 'EMAIL',
+                    providerId: testUser.email
+                }
+            }
+        });
+        
+        if (!identity) {
+            await prisma.userIdentity.create({
+                data: {
+                    userId: existingUser.id,
+                    provider: 'EMAIL',
+                    providerId: testUser.email,
+                    passwordHash
+                }
+            });
+            console.log(`Identity created for existing user: ${testUser.email}`);
+        }
+    }
+  }
+
   console.log('Seeding completed.');
 }
 
