@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createProduct, updateProduct } from '../../api/admin';
 import { fetchCategories, fetchTags, type Category, type Product, type WellbeingTag } from '../../api/catalog';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 interface ProductFormProps {
   initialData?: Product | null;

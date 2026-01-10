@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ProductForm } from '../../components/admin/ProductForm';
 import { ProductList } from '../../components/admin/ProductList';
 import type { Product } from '../../api/catalog';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products');
