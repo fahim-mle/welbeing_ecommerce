@@ -1,28 +1,28 @@
 # Tasks: Health and Wellbeing Ecommerce Store
 
 **Feature Branch**: `001-health-wellbeing-store`
-**Status**: Pending
+**Status**: In Progress
 
 ## Phase 1: Setup
 *Goal: Initialize project structure and dependencies for Full-Stack TypeScript application.*
 
-- [ ] T001 Initialize React Frontend with Vite and TypeScript (src/frontend)
-- [ ] T002 Initialize Express Backend with TypeScript (src/backend)
-- [ ] T003 Configure Tailwind CSS for Frontend (src/frontend/tailwind.config.js)
-- [ ] T004 Install and Configure Vitest for Frontend testing (src/frontend/vitest.config.ts)
-- [ ] T005 Install and Configure Supertest/Jest for Backend testing (src/backend/jest.config.js)
-- [ ] T006 [P] Configure shared types workspace or reference strategy (src/backend/src/types/shared.ts)
-- [ ] T007 [P] Create concurrent dev runner script (package.json)
+- [x] T001 Initialize React Frontend with Vite and TypeScript (src/frontend)
+- [x] T002 Initialize Express Backend with TypeScript (src/backend)
+- [x] T003 Configure Tailwind CSS for Frontend (src/frontend/tailwind.config.js)
+- [x] T004 Install and Configure Vitest for Frontend testing (src/frontend/vitest.config.ts)
+- [x] T005 Install and Configure Supertest/Jest for Backend testing (src/backend/jest.config.js)
+- [x] T006 [P] Configure shared types workspace or reference strategy (src/backend/src/types/shared.ts)
+- [x] T007 [P] Create concurrent dev runner script (package.json)
 
 ## Phase 2: Foundation
 *Goal: Database setup and basic server infrastructure.*
 
 - [x] T008 Initialize Prisma with SQLite (src/backend/prisma/schema.prisma)
-- [ ] T009 Define initial Prisma schema including User, UserIdentity, Product, ProductImage models (src/backend/prisma/schema.prisma)
+- [x] T009 Define initial Prisma schema including User, UserIdentity, Product, ProductImage models (src/backend/prisma/schema.prisma)
 - [x] T010 [P] Create database seed script for initial Categories and Tags (src/backend/prisma/seed.ts)
 - [x] T011 Run initial migration to create SQLite database (src/backend/prisma/migrations)
-- [ ] T012 Set up basic Express app structure with error handling middleware (src/backend/src/app.ts)
-- [ ] T013 Create centralized Prisma client instance (src/backend/src/lib/prisma.ts)
+- [x] T012 Set up basic Express app structure with error handling middleware (src/backend/src/app.ts)
+- [x] T013 Create centralized Prisma client instance (src/backend/src/lib/prisma.ts)
 
 ## Phase 3: User Story 1 - Browse and Discover Products
 *Goal: Users can view products, filter by tags/goals, and see details.*
