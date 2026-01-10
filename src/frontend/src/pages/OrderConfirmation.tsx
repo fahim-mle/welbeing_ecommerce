@@ -12,11 +12,11 @@ export const OrderConfirmation: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-900 mb-4">No order found</h1>
         <p className="text-gray-600 mb-6">Your confirmation details are unavailable.</p>
         <Link
-          to="/"
-          className="inline-flex items-center px-4 py-2 rounded-full bg-indigo-600 text-white font-semibold hover:bg-indigo-700"
-        >
-          Back to store
-        </Link>
+           to="/"
+           className="btn-primary rounded-full"
+         >
+           Back to store
+         </Link>
       </div>
     );
   }

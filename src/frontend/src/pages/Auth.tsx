@@ -24,29 +24,33 @@ export const Login = () => {
       {error && <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Email</label>
+          <label className="form-label" htmlFor="email">Email</label>
           <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="form-input"
             required
+            autoComplete="email"
           />
         </div>
         <div className="mb-6">
-          <label className="block text-gray-700 mb-2">Password</label>
+          <label className="form-label" htmlFor="password">Password</label>
           <input
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="form-input"
             required
+            autoComplete="current-password"
           />
         </div>
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:bg-blue-300"
+          className="btn-primary w-full"
         >
           {isLoading ? 'Logging in...' : 'Login'}
         </button>
@@ -80,29 +84,33 @@ export const Register = () => {
       {error && <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Email</label>
+          <label className="form-label" htmlFor="register-email">Email</label>
           <input
+            id="register-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="form-input"
             required
+            autoComplete="email"
           />
         </div>
         <div className="mb-6">
-          <label className="block text-gray-700 mb-2">Password</label>
+          <label className="form-label" htmlFor="register-password">Password</label>
           <input
+            id="register-password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="form-input"
             required
+            autoComplete="new-password"
           />
         </div>
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700 disabled:bg-green-300"
+          className="btn-primary w-full"
         >
           {isLoading ? 'Registering...' : 'Register'}
         </button>

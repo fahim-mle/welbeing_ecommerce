@@ -70,13 +70,14 @@ export const AdminDashboard: React.FC = () => {
                        <>
                            <div className="flex justify-between items-center mb-8">
                                <h2 className="text-2xl font-bold text-gray-900">Product Management</h2>
-                               <button 
-                                 onClick={() => setIsCreating(true)}
-                                 className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
-                               >
-                                   <Plus className="h-4 w-4" />
-                                   Add Product
-                               </button>
+                                <button
+                                  onClick={() => setIsCreating(true)}
+                                  className="btn-primary"
+                                  aria-label="Add new product"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                    Add Product
+                                </button>
                            </div>
                            <ProductList onEdit={(product) => setEditingProduct(product)} />
                        </>

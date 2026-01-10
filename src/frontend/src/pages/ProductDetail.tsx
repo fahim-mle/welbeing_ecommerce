@@ -48,22 +48,24 @@ export const ProductDetail: React.FC = () => {
           <div className="lg:grid lg:grid-cols-2 lg:gap-x-16 lg:items-start">
              {/* Image Gallery - Sticky */}
              <div className="flex flex-col-reverse sticky top-24">
-                {/* Thumbnails */}
-                {images.length > 1 && (
-                    <div className="mt-6 w-full max-w-2xl mx-auto sm:block lg:max-w-none">
-                        <div className="grid grid-cols-5 gap-4">
-                            {images.map((img, idx) => (
-                                <button
-                                    key={img.id || idx}
-                                    className={`relative h-20 bg-gray-50 rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${activeImageIndex === idx ? 'ring-2 ring-indigo-500 ring-offset-2' : 'hover:opacity-80'}`}
-                                    onClick={() => setActiveImageIndex(idx)}
-                                >
-                                    <img src={img.url} alt="" className="w-full h-full object-center object-cover" />
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                 {/* Thumbnails */}
+                 {images.length > 1 && (
+                     <div className="mt-6 w-full max-w-2xl mx-auto sm:block lg:max-w-none">
+                         <div className="grid grid-cols-5 gap-4">
+                             {images.map((img, idx) => (
+                                 <button
+                                     key={img.id || idx}
+                                     className={`relative h-20 bg-gray-50 rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${activeImageIndex === idx ? 'ring-2 ring-indigo-500 ring-offset-2' : 'hover:opacity-80'}`}
+                                     onClick={() => setActiveImageIndex(idx)}
+                                     aria-label={`View product image ${idx + 1} of ${images.length}`}
+                                     aria-pressed={activeImageIndex === idx}
+                                 >
+                                     <img src={img.url} alt="" className="w-full h-full object-center object-cover" />
+                                 </button>
+                             ))}
+                         </div>
+                     </div>
+                 )}
 
                 {/* Main Image */}
                 <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden bg-gray-50 shadow-sm border border-gray-100">
@@ -103,7 +105,8 @@ export const ProductDetail: React.FC = () => {
                        type="button"
                        disabled={product.stockStatus !== 'IN_STOCK'}
                        onClick={() => addItem(product)}
-                       className="w-full bg-indigo-600 border border-transparent rounded-xl py-4 px-8 flex items-center justify-center text-lg font-bold text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 disabled:bg-gray-300 disabled:cursor-not-allowed shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                       className="btn-primary w-full py-4 text-lg font-bold shadow-lg shadow-indigo-200 hover:-translate-y-0.5 active:translate-y-0"
+                       aria-label={`Add ${product.name} to cart`}
                    >
                        Add to Cart
                     </button>
