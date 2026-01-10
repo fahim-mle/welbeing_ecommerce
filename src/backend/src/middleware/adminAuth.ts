@@ -1,14 +1,26 @@
 import { Request, Response, NextFunction } from 'express';
-
-const ADMIN_API_SECRET = process.env.ADMIN_API_SECRET || 'super-secret-admin-key';
+import { auth } from '../lib/auth';
 
 export const adminAuth = (req: Request, res: Response, next: NextFunction) => {
-  const apiKey = req.headers['x-admin-secret'];
+  const authHeader = req.headers.authorization;
 
-  // Check if the provided secret matches the env variable
-  if (!apiKey || apiKey !== ADMIN_API_SECRET) {
-    return res.status(403).json({ message: 'Forbidden: Invalid Admin Credentials' });
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Unauthorized: Missing token' });
   }
 
-  next();
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = auth.verifyToken(token) as any;
+    
+    if (decoded.role !== 'ADMIN') {
+        return res.status(403).json({ message: 'Forbidden: Admin access only' });
+    }
+
+    // Attach user to request if needed, though usually handled by general auth middleware
+    (req as any).user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+  }
 };

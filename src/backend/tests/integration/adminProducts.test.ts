@@ -1,14 +1,24 @@
 import request from 'supertest';
 import app from '../../src/app';
 import { prisma } from '../../src/lib/prisma';
-
-const ADMIN_SECRET = 'super-secret-admin-key'; // Matches default in middleware/adminAuth.ts
+import { auth } from '../../src/lib/auth';
 
 describe('Admin Product API', () => {
   let categoryId: number;
   let tagId: number;
+  let adminToken: string;
 
   beforeAll(async () => {
+    // Cleanup first
+    await prisma.userIdentity.deleteMany({ where: { user: { email: 'admin_test_products@test.com' } } });
+    await prisma.user.deleteMany({ where: { email: 'admin_test_products@test.com' } });
+
+    // Create Admin User
+    const admin = await prisma.user.create({
+        data: { email: 'admin_test_products@test.com', role: 'ADMIN' }
+    });
+    adminToken = auth.generateToken({ userId: admin.id, email: admin.email, role: admin.role });
+
     // Ensure we have a category and tag
     const category = await prisma.category.findFirst();
     if (category) {
@@ -62,7 +72,7 @@ describe('Admin Product API', () => {
     it('should create a product with valid admin secret', async () => {
       const res = await request(app)
         .post('/api/admin/products')
-        .set('x-admin-secret', ADMIN_SECRET)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           name: 'Admin Created Product',
           description: 'Created via Admin API',
@@ -90,7 +100,7 @@ describe('Admin Product API', () => {
           categoryId: categoryId
         });
 
-      expect(res.status).toBe(403);
+      expect(res.status).toBe(401);
     });
   });
 
@@ -114,7 +124,7 @@ describe('Admin Product API', () => {
     it('should update a product', async () => {
         const res = await request(app)
             .put(`/api/admin/products/${productId}`)
-            .set('x-admin-secret', ADMIN_SECRET)
+            .set('Authorization', `Bearer ${adminToken}`)
             .send({
                 name: 'Updated Product Name',
                 price: 75
@@ -146,7 +156,7 @@ describe('Admin Product API', () => {
     it('should delete a product', async () => {
         const res = await request(app)
             .delete(`/api/admin/products/${productId}`)
-            .set('x-admin-secret', ADMIN_SECRET);
+            .set('Authorization', `Bearer ${adminToken}`);
         
         expect(res.status).toBe(204);
 

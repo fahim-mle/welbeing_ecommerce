@@ -2,6 +2,7 @@ import { Edit, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { fetchAdminProducts, deleteProduct, updateProduct } from '../../api/admin';
 import type { Product } from '../../api/catalog';
+import { useAuth } from '../../context/AuthContext';
 
 interface ProductListProps {
   onEdit: (product: Product) => void;
@@ -11,12 +12,14 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { token } = useAuth();
 
   const loadProducts = async () => {
+    if (!token) return;
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchAdminProducts();
+      const data = await fetchAdminProducts(token);
       setProducts(data);
     } catch (err: any) {
       setError(err.message || 'Failed to load products');
@@ -27,12 +30,13 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [token]);
 
   const handleDelete = async (id: number) => {
+    if (!token) return;
     if (!confirm('Are you sure you want to delete this product?')) return;
     try {
-      await deleteProduct(id);
+      await deleteProduct(token, id);
       setProducts(products.filter(p => p.id !== id));
     } catch (err) {
       alert('Failed to delete product');
@@ -40,9 +44,10 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
   };
 
   const toggleStock = async (product: Product) => {
+      if (!token) return;
       const newStatus = product.stockStatus === 'IN_STOCK' ? 'OUT_OF_STOCK' : 'IN_STOCK';
       try {
-          const updated = await updateProduct(product.id, { stockStatus: newStatus });
+          const updated = await updateProduct(token, product.id, { stockStatus: newStatus });
           setProducts(products.map(p => p.id === product.id ? updated : p));
       } catch (err) {
           alert('Failed to update stock status');

@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -96,15 +97,65 @@ async function main() {
 
   // Admin User
   const adminEmail = 'admin@welbeing.com';
-  const adminUser = await prisma.user.upsert({
-    where: { email: adminEmail },
-    update: {},
-    create: {
-      email: adminEmail,
-      role: 'ADMIN',
-    },
-  });
-  console.log('Admin user seeded:', adminUser.email);
+  const adminPassword = 'admin123';
+  const passwordHash = await bcrypt.hash(adminPassword, 10);
+
+  const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
+
+  if (!existingAdmin) {
+      const user = await prisma.user.create({
+          data: {
+              email: adminEmail,
+              role: 'ADMIN',
+              identities: {
+                  create: {
+                      provider: 'EMAIL',
+                      providerId: adminEmail,
+                      passwordHash
+                  }
+              }
+          }
+      });
+      console.log('Admin user created:', user.email);
+  } else {
+      // Ensure identity exists
+      const identity = await prisma.userIdentity.findUnique({
+          where: {
+              provider_providerId: {
+                  provider: 'EMAIL',
+                  providerId: adminEmail
+              }
+          }
+      });
+      
+      if (!identity) {
+          await prisma.userIdentity.create({
+              data: {
+                  userId: existingAdmin.id,
+                  provider: 'EMAIL',
+                  providerId: adminEmail,
+                  passwordHash
+              }
+          });
+          console.log('Admin identity created');
+      } else {
+          // Update password just in case
+          await prisma.userIdentity.update({
+              where: { id: identity.id },
+              data: { passwordHash }
+          });
+          console.log('Admin password updated');
+      }
+      
+      // Ensure role is ADMIN
+      if (existingAdmin.role !== 'ADMIN') {
+          await prisma.user.update({
+              where: { id: existingAdmin.id },
+              data: { role: 'ADMIN' }
+          });
+          console.log('User promoted to ADMIN');
+      }
+  }
 
   console.log('Seeding completed.');
 }
