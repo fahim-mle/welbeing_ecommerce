@@ -1,4 +1,4 @@
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Eye, EyeOff } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { fetchAdminProducts, deleteProduct, updateProduct } from '../../api/admin';
 import type { Product } from '../../api/catalog';
@@ -45,12 +45,29 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
 
   const toggleStock = async (product: Product) => {
       if (!token) return;
+      // Toggle logic: If > 0, make 0. If 0, make 10 (default restock). 
+      // Or just keep status toggle logic but sync quantity?
+      // Requirement says: "admin should see and update the product quantity."
+      // So this simple toggle button might be insufficient. 
+      // But for quick toggle:
       const newStatus = product.stockStatus === 'IN_STOCK' ? 'OUT_OF_STOCK' : 'IN_STOCK';
+      const newQty = newStatus === 'IN_STOCK' ? (product.stockQuantity > 0 ? product.stockQuantity : 10) : 0;
+      
       try {
-          const updated = await updateProduct(token, product.id, { stockStatus: newStatus });
+          const updated = await updateProduct(token, product.id, { stockStatus: newStatus, stockQuantity: newQty });
           setProducts(products.map(p => p.id === product.id ? updated : p));
       } catch (err) {
           alert('Failed to update stock status');
+      }
+  };
+
+  const toggleVisibility = async (product: Product) => {
+      if (!token) return;
+      try {
+          const updated = await updateProduct(token, product.id, { isVisible: !product.isVisible });
+          setProducts(products.map(p => p.id === product.id ? updated : p));
+      } catch (err) {
+          alert('Failed to update visibility');
       }
   };
 
@@ -77,6 +94,12 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
                   </div>
               </div>
               <div className="flex items-center gap-4">
+                  <button onClick={() => toggleVisibility(product)} className="text-gray-400 hover:text-gray-600" title="Toggle Visibility">
+                      {product.isVisible ? <Eye className="h-5 w-5 text-green-600" /> : <EyeOff className="h-5 w-5 text-gray-400" />}
+                  </button>
+                  <div className="text-sm text-gray-500 font-medium w-16 text-center">
+                      Qty: {product.stockQuantity}
+                  </div>
                   <button 
                     onClick={() => toggleStock(product)}
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer ${product.stockStatus === 'IN_STOCK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}

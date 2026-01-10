@@ -10,6 +10,8 @@ export interface Product {
   // So it is string. But in frontend we might want number.
   // I'll type it string for safety, but maybe convert.
   stockStatus: 'IN_STOCK' | 'OUT_OF_STOCK';
+  stockQuantity: number;
+  isVisible: boolean;
   categoryId: number;
   category?: Category;
   images: ProductImage[];
