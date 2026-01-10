@@ -126,22 +126,15 @@ export const createOrder = async ({
 
     for (const item of normalizedItems) {
       const product = productMap.get(item.productId)!;
-      const result = await tx.product.updateMany({
+      await tx.product.update({
         where: {
           id: item.productId,
-          updatedAt: product.updatedAt,
           stockQuantity: { gte: item.quantity },
         },
         data: {
           stockQuantity: { decrement: item.quantity },
         },
       });
-
-      if (result.count === 0) {
-        throw new OrderValidationError(
-          `Product "${product.name}" was modified by another transaction. Please try again.`
-        );
-      }
     }
 
     return order;
