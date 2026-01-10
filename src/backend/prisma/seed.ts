@@ -54,6 +54,7 @@ async function main() {
         name: 'Knee Support Pro',
         description: 'Advanced knee support for active lifestyles.',
         price: 29.99,
+        stockQuantity: 50,
         categoryId: supports.id,
         images: ['https://placehold.co/600x400?text=Knee+Support+1', 'https://placehold.co/600x400?text=Knee+Support+2'],
         tags: jointPain ? [jointPain.id] : []
@@ -62,10 +63,19 @@ async function main() {
         name: 'Ankle Stabilizer',
         description: 'Lightweight ankle stabilizer.',
         price: 19.99,
+        stockQuantity: 75,
         categoryId: supports.id,
         images: ['https://placehold.co/600x400?text=Ankle+Stabilizer'],
         tags: []
-      }
+      },{
+        name: 'Back Support Belt',
+        description: 'Advanced back support for active lifestyles.',
+        price: 129.99,
+        stockQuantity: 20,
+        categoryId: supports.id,
+        images: ['https://placehold.co/600x400?text=Back+Support+1', 'https://placehold.co/600x400?text=Back+Support+2'],
+        tags: jointPain ? [jointPain.id] : []
+      },
     ];
 
      for (const p of products) {
@@ -124,7 +134,7 @@ async function main() {
               }
           }
       });
-      
+
       if (!identity) {
           await prisma.userIdentity.create({
               data: {
@@ -143,7 +153,7 @@ async function main() {
           });
           console.log('Admin password updated');
       }
-      
+
       // Ensure role is ADMIN
       if (existingAdmin.role !== 'ADMIN') {
           await prisma.user.update({
@@ -190,7 +200,7 @@ async function main() {
                 }
             }
         });
-        
+
         if (!identity) {
             await prisma.userIdentity.create({
                 data: {
