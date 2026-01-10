@@ -1,12 +1,14 @@
-import { Filter, Search, ShoppingBag, X } from 'lucide-react'; // Icons
+import { Filter, Search, ShoppingBag, X, User as UserIcon } from 'lucide-react'; // Icons
 import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { fetchCategories, fetchProducts, fetchTags, type Category, type Product, type WellbeingTag } from '../api/catalog';
 import { ProductCard } from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../hooks/useAuth';
 
 export const Home: React.FC = () => {
   const { totalItems } = useCart();
+  const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<WellbeingTag[]>([]);
@@ -91,6 +93,15 @@ export const Home: React.FC = () => {
               >
                   <Filter className="h-5 w-5" />
               </button>
+               {user ? (
+                   <Link to={user.role === 'ADMIN' ? '/admin' : '/profile'} className="p-2 text-gray-600 hover:bg-gray-100 rounded-full">
+                       <UserIcon className="h-5 w-5" />
+                   </Link>
+               ) : (
+                   <Link to="/login" className="text-sm font-medium text-gray-700 hover:text-indigo-600 hidden md:block">
+                       Login
+                   </Link>
+               )}
                <Link to="/checkout" className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full">
                  <ShoppingBag className="h-5 w-5" />
                  {totalItems > 0 && (
