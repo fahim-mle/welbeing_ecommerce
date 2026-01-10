@@ -17,27 +17,27 @@
 ## Phase 2: Foundation
 *Goal: Database setup and basic server infrastructure.*
 
-- [ ] T008 Initialize Prisma with SQLite (src/backend/prisma/schema.prisma)
+- [x] T008 Initialize Prisma with SQLite (src/backend/prisma/schema.prisma)
 - [ ] T009 Define initial Prisma schema including User, UserIdentity, Product, ProductImage models (src/backend/prisma/schema.prisma)
-- [ ] T010 [P] Create database seed script for initial Categories and Tags (src/backend/prisma/seed.ts)
-- [ ] T011 Run initial migration to create SQLite database (src/backend/prisma/migrations)
+- [x] T010 [P] Create database seed script for initial Categories and Tags (src/backend/prisma/seed.ts)
+- [x] T011 Run initial migration to create SQLite database (src/backend/prisma/migrations)
 - [ ] T012 Set up basic Express app structure with error handling middleware (src/backend/src/app.ts)
 - [ ] T013 Create centralized Prisma client instance (src/backend/src/lib/prisma.ts)
 
 ## Phase 3: User Story 1 - Browse and Discover Products
 *Goal: Users can view products, filter by tags/goals, and see details.*
 
-- [ ] T014 [US1] Create Product, Category, and Tag database services with image support (src/backend/src/services/catalogService.ts)
-- [ ] T015 [US1] Implement GET /products endpoint with filtering logic (src/backend/src/api/products.ts)
-- [ ] T016 [US1] Implement GET /products/:id endpoint including image list (src/backend/src/api/products.ts)
-- [ ] T017 [US1] Implement GET /categories and /tags endpoints (src/backend/src/api/metadata.ts)
-- [ ] T018 [P] [US1] Update seed script with 5-10 sample products and multiple image URLs (src/backend/prisma/seed.ts)
-- [ ] T019 [US1] Create API client for catalog fetching (src/frontend/src/api/catalog.ts)
-- [ ] T020 [P] [US1] Create ProductCard component with primary image (src/frontend/src/components/ProductCard.tsx)
-- [ ] T021 [US1] Implement HomePage with Category/Tag filters (src/frontend/src/pages/Home.tsx)
-- [ ] T022 [US1] Implement ProductDetailPage with Image Carousel (src/frontend/src/pages/ProductDetail.tsx)
-- [ ] T023 [P] [US1] Add Unit Tests for ProductCard component (src/frontend/src/components/__tests__/ProductCard.test.tsx)
-- [ ] T024 [P] [US1] Add Integration Test for Product Listing API (src/backend/tests/integration/products.test.ts)
+- [x] T014 [US1] Create Product, Category, and Tag database services with image support (src/backend/src/services/catalogService.ts)
+- [x] T015 [US1] Implement GET /products endpoint with filtering logic (src/backend/src/api/products.ts)
+- [x] T016 [US1] Implement GET /products/:id endpoint including image list (src/backend/src/api/products.ts)
+- [x] T017 [US1] Implement GET /categories and /tags endpoints (src/backend/src/api/metadata.ts)
+- [x] T018 [P] [US1] Update seed script with 5-10 sample products and multiple image URLs (src/backend/prisma/seed.ts)
+- [x] T019 [US1] Create API client for catalog fetching (src/frontend/src/api/catalog.ts)
+- [x] T020 [P] [US1] Create ProductCard component with primary image (src/frontend/src/components/ProductCard.tsx)
+- [x] T021 [US1] Implement HomePage with Category/Tag filters (src/frontend/src/pages/Home.tsx)
+- [x] T022 [US1] Implement ProductDetailPage with Image Carousel (src/frontend/src/pages/ProductDetail.tsx)
+- [x] T023 [P] [US1] Add Unit Tests for ProductCard component (src/frontend/src/components/__tests__/ProductCard.test.tsx)
+- [x] T024 [P] [US1] Add Integration Test for Product Listing API (src/backend/tests/integration/products.test.ts)
 
 ## Phase 4: User Story 2 - Guest Checkout Flow
 *Goal: Guest users can add items to cart and "purchase" them with simulated payment.*

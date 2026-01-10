@@ -1,7 +1,11 @@
 import cors from 'cors';
+import 'dotenv/config';
 import express, { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
+
+import metadataRouter from './api/metadata';
+import productsRouter from './api/products';
 
 const app = express();
 
@@ -9,6 +13,9 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+
+app.use('/api/products', productsRouter);
+app.use('/api', metadataRouter); // /api/categories, /api/tags
 
 app.get('/', (req, res) => {
   res.json({ message: 'Health and Wellbeing Store API' });

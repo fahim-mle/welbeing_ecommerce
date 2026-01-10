@@ -3,31 +3,95 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // Seed Categories
-  const categories = ['Supports', 'Braces', 'Supplements', 'Equipment', 'Therapy'];
+  console.log('Seeding database...');
 
-  for (const name of categories) {
+  // Categories
+  const categories = [
+    { name: 'Supports', description: 'Supports for joints and muscles' },
+    { name: 'Braces', description: 'Medical grade braces' },
+    { name: 'Supplements', description: 'Vitamins and minerals' },
+    { name: 'Equipment', description: 'Home exercise equipment' },
+    { name: 'Therapy', description: 'Therapeutic devices' }
+  ];
+
+  for (const cat of categories) {
     await prisma.category.upsert({
-      where: { name },
+      where: { name: cat.name },
       update: {},
-      create: { name, description: `Category for ${name}` },
+      create: cat,
     });
   }
 
-  // Seed Tags
-  const goals = ['Joint Pain', 'Sleep Support', 'Mobility', 'Recovery'];
-  const needs = ['Vegan', 'Gluten-Free', 'Adjustable', 'Latex-Free'];
+  // Tags
+  const tags = [
+    { name: 'Joint Pain', type: 'GOAL' },
+    { name: 'Sleep Support', type: 'GOAL' },
+    { name: 'Mobility', type: 'GOAL' },
+    { name: 'Recovery', type: 'GOAL' },
+    { name: 'Vegan', type: 'NEED' },
+    { name: 'Gluten-Free', type: 'NEED' },
+    { name: 'Adjustable', type: 'NEED' },
+    { name: 'Latex-Free', type: 'NEED' }
+  ];
 
-  for (const name of goals) {
-    await prisma.wellbeingTag.create({
-      data: { name, type: 'GOAL' },
+  for (const tag of tags) {
+    const existing = await prisma.wellbeingTag.findFirst({
+      where: { name: tag.name }
     });
+    if (!existing) {
+      await prisma.wellbeingTag.create({ data: tag });
+    }
   }
 
-  for (const name of needs) {
-    await prisma.wellbeingTag.create({
-      data: { name, type: 'NEED' },
-    });
+  // Products
+  const supports = await prisma.category.findUnique({ where: { name: 'Supports' } });
+  const jointPain = await prisma.wellbeingTag.findFirst({ where: { name: 'Joint Pain' } });
+
+  if (supports) {
+    const products = [
+      {
+        name: 'Knee Support Pro',
+        description: 'Advanced knee support for active lifestyles.',
+        price: 29.99,
+        stockStatus: 'IN_STOCK',
+        categoryId: supports.id,
+        images: ['https://placehold.co/600x400?text=Knee+Support+1', 'https://placehold.co/600x400?text=Knee+Support+2'],
+        tags: jointPain ? [jointPain.id] : []
+      },
+      {
+        name: 'Ankle Stabilizer',
+        description: 'Lightweight ankle stabilizer.',
+        price: 19.99,
+        stockStatus: 'IN_STOCK',
+        categoryId: supports.id,
+        images: ['https://placehold.co/600x400?text=Ankle+Stabilizer'],
+        tags: []
+      }
+    ];
+
+    for (const p of products) {
+        const existing = await prisma.product.findFirst({ where: { name: p.name } });
+        if (!existing) {
+             await prisma.product.create({
+                data: {
+                    name: p.name,
+                    description: p.description,
+                    price: p.price,
+                    stockStatus: p.stockStatus,
+                    categoryId: p.categoryId,
+                    tags: {
+                        connect: p.tags.map(id => ({ id }))
+                    },
+                    images: {
+                        create: p.images.map((url, index) => ({
+                            url,
+                            displayOrder: index
+                        }))
+                    }
+                }
+             });
+        }
+    }
   }
 
   console.log('Seeding completed.');
