@@ -5,10 +5,13 @@ export const getProducts = async (filters: {
   categoryId?: number;
   tagId?: number;
   search?: string;
+  includeOutOfStock?: boolean;
 }) => {
-  const where: Prisma.ProductWhereInput = {
-    stockStatus: 'IN_STOCK', // Default to showing in-stock items, or make this configurable
-  };
+  const where: Prisma.ProductWhereInput = {};
+
+  if (!filters.includeOutOfStock) {
+    where.stockStatus = 'IN_STOCK';
+  }
 
   if (filters.categoryId) {
     where.categoryId = filters.categoryId;

@@ -7,6 +7,17 @@ const router = Router();
 // Apply admin auth middleware to all routes in this router
 router.use(adminAuth);
 
+// GET /api/admin/products - List all products
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    const products = await catalogService.getProducts({ includeOutOfStock: true });
+    res.json(products);
+  } catch (error: any) {
+    console.error('Error fetching admin products:', error);
+    res.status(500).json({ message: 'Error fetching products', error: error.message });
+  }
+});
+
 // POST /api/admin/products - Create Product
 router.post('/', async (req: Request, res: Response) => {
   try {
