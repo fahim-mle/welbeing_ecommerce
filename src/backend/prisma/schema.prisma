@@ -51,9 +51,10 @@ model Product {
   name              String
   description       String
   price             Decimal
-  stockStatus       String  @default("IN_STOCK") @map("stock_status") // ENUM: IN_STOCK, OUT_OF_STOCK
   stockQuantity     Int     @default(0) @map("stock_quantity")
   isVisible         Boolean @default(true) @map("is_visible")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
   ingredients       String?
   usageInstructions String? @map("usage_instructions")
   benefits          String?
@@ -66,6 +67,10 @@ model Product {
   orderItems   OrderItem[]
 
   @@map("products")
+  @@index([categoryId])
+  @@index([stockQuantity])
+  @@index([isVisible])
+  @@index([updatedAt])
 }
 
 model ProductImage {
