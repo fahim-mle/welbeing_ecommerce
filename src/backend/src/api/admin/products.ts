@@ -1,6 +1,6 @@
-import { Router, Request, Response } from 'express';
-import * as catalogService from '../../services/catalogService';
+import { Request, Response, Router } from 'express';
 import { adminAuth } from '../../middleware/adminAuth';
+import * as catalogService from '../../services/catalogService';
 
 const router = Router();
 
@@ -29,6 +29,8 @@ router.post('/', async (req: Request, res: Response) => {
       imageUrls = [],
       tagIds = [],
       stockStatus,
+      stockQuantity,
+      isVisible,
       ingredients,
       usageInstructions,
       benefits,

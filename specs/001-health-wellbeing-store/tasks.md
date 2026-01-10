@@ -6,23 +6,23 @@
 ## Phase 1: Setup
 *Goal: Initialize project structure and dependencies for Full-Stack TypeScript application.*
 
-- [ ] T001 Initialize React Frontend with Vite and TypeScript (src/frontend)
-- [ ] T002 Initialize Express Backend with TypeScript (src/backend)
-- [ ] T003 Configure Tailwind CSS for Frontend (src/frontend/tailwind.config.js)
-- [ ] T004 Install and Configure Vitest for Frontend testing (src/frontend/vitest.config.ts)
-- [ ] T005 Install and Configure Supertest/Jest for Backend testing (src/backend/jest.config.js)
-- [ ] T006 [P] Configure shared types workspace or reference strategy (src/backend/src/types/shared.ts)
-- [ ] T007 [P] Create concurrent dev runner script (package.json)
+- [x] T001 Initialize React Frontend with Vite and TypeScript (src/frontend)
+- [x] T002 Initialize Express Backend with TypeScript (src/backend)
+- [x] T003 Configure Tailwind CSS for Frontend (src/frontend/tailwind.config.js)
+- [x] T004 Install and Configure Vitest for Frontend testing (src/frontend/vitest.config.ts)
+- [x] T005 Install and Configure Supertest/Jest for Backend testing (src/backend/jest.config.js)
+- [x] T006 [P] Configure shared types workspace or reference strategy (src/backend/src/types/shared.ts)
+- [x] T007 [P] Create concurrent dev runner script (package.json)
 
 ## Phase 2: Foundation
 *Goal: Database setup and basic server infrastructure.*
 
 - [x] T008 Initialize Prisma with SQLite (src/backend/prisma/schema.prisma)
-- [ ] T009 Define initial Prisma schema including User, UserIdentity, Product, ProductImage models (src/backend/prisma/schema.prisma)
+- [x] T009 Define initial Prisma schema including User, UserIdentity, Product, ProductImage models (src/backend/prisma/schema.prisma)
 - [x] T010 [P] Create database seed script for initial Categories and Tags (src/backend/prisma/seed.ts)
 - [x] T011 Run initial migration to create SQLite database (src/backend/prisma/migrations)
-- [ ] T012 Set up basic Express app structure with error handling middleware (src/backend/src/app.ts)
-- [ ] T013 Create centralized Prisma client instance (src/backend/src/lib/prisma.ts)
+- [x] T012 Set up basic Express app structure with error handling middleware (src/backend/src/app.ts)
+- [x] T013 Create centralized Prisma client instance (src/backend/src/lib/prisma.ts)
 
 ## Phase 3: User Story 1 - Browse and Discover Products
 *Goal: Users can view products, filter by tags/goals, and see details.*
@@ -54,23 +54,23 @@
 ## Phase 5: User Story 3 - Admin Product Management
 *Goal: Admins can manage catalog via backend API (UI is P2 but required per spec logic).*
 
-- [ ] T033 [US3] Create Admin Auth Middleware (basic token/secret check) (src/backend/src/middleware/adminAuth.ts)
-- [ ] T034 [US3] Implement POST/PUT/DELETE /products endpoints with image URL handling (src/backend/src/api/admin/products.ts)
-- [ ] T035 [US3] Create Admin Dashboard layout (src/frontend/src/pages/admin/Dashboard.tsx)
-- [ ] T036 [US3] Create Product Management Form with multi-image URL input (src/frontend/src/components/admin/ProductForm.tsx)
-- [ ] T037 [US3] Implement Product List view with Stock toggle (src/frontend/src/components/admin/ProductList.tsx)
-- [ ] T038 [P] [US3] Seed initial Admin user in DB (src/backend/prisma/seed.ts)
+- [x] T033 [US3] Create Admin Auth Middleware (basic token/secret check) (src/backend/src/middleware/adminAuth.ts)
+- [x] T034 [US3] Implement POST/PUT/DELETE /products endpoints with image URL handling (src/backend/src/api/admin/products.ts)
+- [x] T035 [US3] Create Admin Dashboard layout (src/frontend/src/pages/admin/Dashboard.tsx)
+- [x] T036 [US3] Create Product Management Form with multi-image URL input (src/frontend/src/components/admin/ProductForm.tsx)
+- [x] T037 [US3] Implement Product List view with Stock toggle (src/frontend/src/components/admin/ProductList.tsx)
+- [x] T038 [P] [US3] Seed initial Admin user in DB (src/backend/prisma/seed.ts)
 
 ## Phase 6: User Story 4 - User Account & Authentication
 *Goal: Users can register/login via multi-provider identity system.*
 
-- [ ] T039 [US4] Implement UserService handling UserIdentity linking (src/backend/src/services/userService.ts)
-- [ ] T040 [US4] Implement JWT generation and verification utils (src/backend/src/lib/auth.ts)
-- [ ] T041 [US4] Implement POST /auth/register and /auth/login endpoints using Identity model (src/backend/src/api/auth.ts)
-- [ ] T042 [US4] Create AuthProvider context for frontend state (src/frontend/src/context/AuthContext.tsx)
-- [ ] T043 [US4] Create Login and Register pages (src/frontend/src/pages/Auth.tsx)
-- [ ] T044 [P] [US4] Create User Profile page showing Order History (src/frontend/src/pages/Profile.tsx)
-- [ ] T045 [P] [US4] Update Checkout flow to pre-fill info if logged in (src/frontend/src/pages/Checkout.tsx)
+- [x] T039 [US4] Implement UserService handling UserIdentity linking (src/backend/src/services/userService.ts)
+- [x] T040 [US4] Implement JWT generation and verification utils (src/backend/src/lib/auth.ts)
+- [x] T041 [US4] Implement POST /auth/register and /auth/login endpoints using Identity model (src/backend/src/api/auth.ts)
+- [x] T042 [US4] Create AuthProvider context for frontend state (src/frontend/src/context/AuthContext.tsx)
+- [x] T043 [US4] Create Login and Register pages (src/frontend/src/pages/Auth.tsx)
+- [x] T044 [P] [US4] Create User Profile page showing Order History (src/frontend/src/pages/Profile.tsx)
+- [x] T045 [P] [US4] Update Checkout flow to pre-fill info if logged in (src/frontend/src/pages/Checkout.tsx)
 
 ## Phase 7: Polish & Cross-Cutting
 *Goal: Final cleanup and UI consistency.*

@@ -1,0 +1,864 @@
+openapi: 3.0.3
+info:
+  title: Health & Wellbeing E-Commerce API
+  description: |
+    Comprehensive API documentation for the Health and Wellbeing E-Commerce platform.
+    
+    ## Features
+    * Product catalog with filtering and search
+    * Category and tag management
+    * Guest and authenticated checkout
+    * User authentication and authorization
+    * Admin product and order management
+    
+    ## Authentication
+    Most endpoints are public. Admin endpoints require JWT token with ADMIN role.
+    
+    To authenticate, use the `/api/auth/login` endpoint and include the returned token
+    in the Authorization header: `Bearer <token>`
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@welbeing.com
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://api.welbeing.com
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User registration and login
+  - name: Products
+    description: Product catalog operations
+  - name: Categories
+    description: Product category management
+  - name: Tags
+    description: Wellbeing tag management
+  - name: Orders
+    description: Order management for users
+  - name: Admin Products
+    description: Admin-only product management
+  - name: Admin Orders
+    description: Admin-only order management
+
+paths:
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Create a new user account with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      description: Authenticate user with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/products:
+    get:
+      tags:
+        - Products
+      summary: List products
+      description: Retrieve a list of products with optional filtering
+      parameters:
+        - name: category
+          in: query
+          description: Filter by category ID
+          schema:
+            type: integer
+        - name: tag
+          in: query
+          description: Filter by tag ID
+          schema:
+            type: integer
+        - name: search
+          in: query
+          description: Search in product name and description
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsResponse'
+
+  /api/products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get product details
+      description: Retrieve detailed information about a specific product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/categories:
+    get:
+      tags:
+        - Categories
+      summary: List categories
+      description: Retrieve all product categories
+      responses:
+        '200':
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoriesResponse'
+
+  /api/tags:
+    get:
+      tags:
+        - Tags
+      summary: List wellbeing tags
+      description: Retrieve all wellbeing tags
+      responses:
+        '200':
+          description: Tags retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagsResponse'
+
+  /api/orders:
+    get:
+      tags:
+        - Orders
+      summary: Get user orders
+      description: Retrieve orders for the authenticated user
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Orders
+      summary: Create order
+      description: Create a new order (guest or authenticated)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Invalid order data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/admin/products:
+    get:
+      tags:
+        - Admin Products
+      summary: List all products (Admin)
+      description: Retrieve all products including out of stock and hidden ones
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - Admin access only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Admin Products
+      summary: Create product (Admin)
+      description: Create a new product with multiple images and tags
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Invalid product data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - Admin access only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/admin/products/{id}:
+    put:
+      tags:
+        - Admin Products
+      summary: Update product (Admin)
+      description: Update an existing product
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductRequest'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Invalid product data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - Admin access only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Admin Products
+      summary: Delete product (Admin)
+      description: Delete a product (cannot delete products with existing orders)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Product deleted successfully
+        '400':
+          description: Cannot delete product with orders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - Admin access only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/admin/orders:
+    get:
+      tags:
+        - Admin Orders
+      summary: List all orders (Admin)
+      description: Retrieve all orders in the system
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - Admin access only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/admin/orders/{id}/status:
+    patch:
+      tags:
+        - Admin Orders
+      summary: Update order status (Admin)
+      description: Update the status of an order
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Order ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [PENDING, PAID, SHIPPED, DELIVERED, CANCELLED]
+      responses:
+        '200':
+          description: Order status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Invalid status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - Admin access only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from /api/auth/login
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        role:
+          type: string
+          enum: [USER, ADMIN]
+          example: USER
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token for authentication
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        user:
+          $ref: '#/components/schemas/User'
+
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          minLength: 6
+          example: securepassword123
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: securepassword123
+
+    ProductImage:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        url:
+          type: string
+          format: uri
+          example: https://example.com/images/product1.jpg
+        displayOrder:
+          type: integer
+          example: 0
+
+    WellbeingTag:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Joint Pain
+        type:
+          type: string
+          enum: [GOAL, FEATURE, NEED]
+          example: GOAL
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Supplements
+        description:
+          type: string
+          nullable: true
+          example: Vitamins and minerals
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Knee Support Pro
+        description:
+          type: string
+          example: Advanced knee support for active lifestyles
+        price:
+          type: number
+          format: decimal
+          example: 29.99
+        stockStatus:
+          type: string
+          enum: [IN_STOCK, OUT_OF_STOCK]
+          example: IN_STOCK
+        stockQuantity:
+          type: integer
+          example: 10
+        isVisible:
+          type: boolean
+          example: true
+        ingredients:
+          type: string
+          nullable: true
+        usageInstructions:
+          type: string
+          nullable: true
+        benefits:
+          type: string
+          nullable: true
+        safetyDisclaimers:
+          type: string
+          nullable: true
+        categoryId:
+          type: integer
+          example: 1
+        category:
+          $ref: '#/components/schemas/Category'
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductImage'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/WellbeingTag'
+
+    ProductResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Product'
+
+    ProductsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+
+    CategoriesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+
+    TagsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/WellbeingTag'
+
+    CreateProductRequest:
+      type: object
+      required:
+        - name
+        - description
+        - price
+        - categoryId
+      properties:
+        name:
+          type: string
+          example: Knee Support Pro
+        description:
+          type: string
+          example: Advanced knee support for active lifestyles
+        price:
+          type: number
+          format: decimal
+          example: 29.99
+        categoryId:
+          type: integer
+          example: 1
+        stockStatus:
+          type: string
+          enum: [IN_STOCK, OUT_OF_STOCK]
+          default: IN_STOCK
+        stockQuantity:
+          type: integer
+          default: 0
+        isVisible:
+          type: boolean
+          default: true
+        ingredients:
+          type: string
+          nullable: true
+        usageInstructions:
+          type: string
+          nullable: true
+        benefits:
+          type: string
+          nullable: true
+        safetyDisclaimers:
+          type: string
+          nullable: true
+        imageUrls:
+          type: array
+          items:
+            type: string
+          description: Array of image URLs (one per line in admin form)
+          example:
+            - https://example.com/image1.jpg
+            - https://example.com/image2.jpg
+        tagIds:
+          type: array
+          items:
+            type: integer
+          description: Array of tag IDs to associate
+          example:
+            - 1
+            - 2
+
+    UpdateProductRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateProductRequest'
+      type: object
+      description: All fields are optional for partial updates
+
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        quantity:
+          type: integer
+          example: 2
+        priceAtPurchase:
+          type: number
+          format: decimal
+          example: 59.98
+        product:
+          $ref: '#/components/schemas/Product'
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        userId:
+          type: integer
+          nullable: true
+          example: 1
+        guestEmail:
+          type: string
+          nullable: true
+          example: guest@example.com
+        status:
+          type: string
+          enum: [PENDING, PAID, SHIPPED, DELIVERED, CANCELLED]
+          example: PAID
+        totalPrice:
+          type: number
+          format: decimal
+          example: 59.98
+        shippingAddress:
+          type: string
+          example: 123 Main St, City, State 12345
+        createdAt:
+          type: string
+          format: date-time
+          example: '2024-01-15T10:30:00Z'
+        user:
+          $ref: '#/components/schemas/User'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+
+    OrderResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Order'
+
+    OrdersResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+
+    CreateOrderRequest:
+      type: object
+      required:
+        - items
+        - shipping_address
+        - payment_placeholder
+        - disclaimer_accepted
+      properties:
+        guest_email:
+          type: string
+          format: email
+          description: Required for guest orders
+          example: guest@example.com
+        items:
+          type: array
+          description: Array of product items in the order
+          items:
+            type: object
+            required:
+              - product_id
+              - quantity
+            properties:
+              product_id:
+                type: integer
+                example: 1
+              quantity:
+                type: integer
+                example: 2
+        shipping_address:
+          type: string
+          example: 123 Main St, City, State 12345
+        payment_placeholder:
+          type: string
+          description: Simulated payment information
+          example: Card ending in 4242
+        disclaimer_accepted:
+          type: boolean
+          description: Must acknowledge health disclaimer
+          example: true
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message describing what went wrong
+          example: Invalid credentials
+        error:
+          type: string
+          description: Detailed error information (optional)
