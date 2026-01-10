@@ -111,10 +111,7 @@ export const Home: React.FC = () => {
                {user ? (
                    <div className="relative" ref={profileRef}>
                        <button 
-                           onClick={() => {
-                               console.log('Toggling profile dropdown', !isProfileOpen);
-                               setIsProfileOpen(!isProfileOpen);
-                           }}
+                           onClick={() => setIsProfileOpen(!isProfileOpen)}
                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-full focus:outline-none"
                        >
                            <UserIcon className="h-5 w-5" />
