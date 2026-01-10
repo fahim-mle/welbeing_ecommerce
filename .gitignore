@@ -3,3 +3,10 @@ dist
 .env
 *.db
 *.log
+
+# Agent and spec files
+.agent
+.gemini
+.specify
+specs
+
