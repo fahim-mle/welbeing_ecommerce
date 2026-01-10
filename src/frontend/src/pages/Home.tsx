@@ -88,34 +88,39 @@ export const Home: React.FC = () => {
              <h1 className="text-xl font-bold text-gray-900 tracking-tight">Welbeing</h1>
           </div>
 
-           <div className="flex-1 max-w-md mx-8 relative hidden md:block">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-4 w-4 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search for comfort & recovery..."
-                  className="block w-full pl-10 pr-4 py-2 bg-gray-100 border-none rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-gray-500"
-                  value={searchQuery}
-                  onChange={(e) => updateFilter('search', e.target.value || undefined)}
-                />
-           </div>
+            <div className="flex-1 max-w-md mx-8 relative hidden md:block">
+                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                   <Search className="h-4 w-4 text-gray-400" aria-hidden="true" />
+                 </div>
+                 <input
+                   type="text"
+                   placeholder="Search for comfort & recovery..."
+                   className="block w-full pl-10 pr-4 py-2 bg-gray-100 border-none rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-gray-500"
+                   value={searchQuery}
+                   onChange={(e) => updateFilter('search', e.target.value || undefined)}
+                   aria-label="Search products"
+                   id="search-input"
+                 />
+            </div>
 
            <div className="flex items-center gap-4">
-              <button
-                className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full"
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              >
-                  <Filter className="h-5 w-5" />
-              </button>
+               <button
+                 className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full"
+                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                 aria-label="Open filter sidebar"
+               >
+                   <Filter className="h-5 w-5" aria-hidden="true" />
+               </button>
                {user ? (
                    <div className="relative" ref={profileRef}>
-                       <button 
-                           onClick={() => setIsProfileOpen(!isProfileOpen)}
-                           className="p-2 text-gray-600 hover:bg-gray-100 rounded-full focus:outline-none"
-                       >
-                           <UserIcon className="h-5 w-5" />
-                       </button>
+                        <button
+                            onClick={() => setIsProfileOpen(!isProfileOpen)}
+                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-full focus:outline-none"
+                            aria-label="User menu"
+                            aria-expanded={isProfileOpen}
+                        >
+                            <UserIcon className="h-5 w-5" aria-hidden="true" />
+                        </button>
                        
                        {/* Dropdown Menu */}
                        {isProfileOpen && (
@@ -156,14 +161,14 @@ export const Home: React.FC = () => {
                        Login
                    </Link>
                )}
-               <Link to="/checkout" className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full">
-                 <ShoppingBag className="h-5 w-5" />
-                 {totalItems > 0 && (
-                   <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs font-semibold rounded-full px-1.5">
-                     {totalItems}
-                   </span>
-                 )}
-               </Link>
+                <Link to="/checkout" className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full" aria-label={`Shopping cart with ${totalItems} items`}>
+                  <ShoppingBag className="h-5 w-5" aria-hidden="true" />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs font-semibold rounded-full px-1.5" aria-hidden="true">
+                      {totalItems}
+                    </span>
+                  )}
+                </Link>
 
            </div>
         </div>
@@ -256,12 +261,13 @@ export const Home: React.FC = () => {
                      </div>
                      <h3 className="text-lg font-medium text-gray-900">No products found</h3>
                      <p className="mt-1 text-gray-500">Try adjusting your search or filters.</p>
-                     <button
-                        onClick={() => setSearchParams(new URLSearchParams())}
-                        className="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
-                    >
-                        Clear all filters
-                     </button>
+                      <button
+                         onClick={() => setSearchParams(new URLSearchParams())}
+                         className="btn-ghost mt-6 text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
+                         aria-label="Clear all filters"
+                     >
+                         Clear all filters
+                      </button>
                  </div>
              ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-10">
