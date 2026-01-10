@@ -9,7 +9,6 @@ export interface Product {
   // "price":"29.99"
   // So it is string. But in frontend we might want number.
   // I'll type it string for safety, but maybe convert.
-  stockStatus: 'IN_STOCK' | 'OUT_OF_STOCK';
   stockQuantity: number;
   isVisible: boolean;
   categoryId: number;
@@ -20,6 +19,8 @@ export interface Product {
   usageInstructions?: string;
   benefits?: string;
   safetyDisclaimers?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ProductImage {
