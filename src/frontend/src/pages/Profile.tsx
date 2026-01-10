@@ -27,11 +27,11 @@ export const Profile = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Profile</h1>
         {user.role === 'ADMIN' ? (
-            <Link to="/admin" className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+            <Link to="/admin" className="btn-primary">
                 Back to Dashboard
             </Link>
         ) : (
-            <Link to="/" className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+            <Link to="/" className="btn-ghost">
                 Back to Shop
             </Link>
         )}

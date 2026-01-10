@@ -62,7 +62,7 @@ export const Checkout: React.FC = () => {
         <p className="text-gray-600 mb-6">Add a few wellbeing essentials before checking out.</p>
         <Link
           to="/"
-          className="inline-flex items-center px-4 py-2 rounded-full bg-indigo-600 text-white font-semibold hover:bg-indigo-700"
+          className="btn-primary rounded-full"
         >
           Back to store
         </Link>
@@ -89,43 +89,50 @@ export const Checkout: React.FC = () => {
           </div>
 
           <div className="space-y-4">
-            <label className="block">
-              <span className="text-sm font-medium text-gray-700">Email</span>
+            <label>
+              <span className="form-label">Email</span>
               <input
+                id="checkout-email"
                 type="email"
                 required
                 value={guestEmail}
                 onChange={(event) => setGuestEmail(event.target.value)}
                 disabled={!!user}
-                className={`mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${user ? 'bg-gray-100 text-gray-500' : ''}`}
+                className={`form-input ${user ? 'bg-gray-100 text-gray-500' : ''}`}
                 placeholder="you@example.com"
+                autoComplete="email"
+                aria-label="Email address for guest checkout"
               />
             </label>
 
-            <label className="block">
-              <span className="text-sm font-medium text-gray-700">Shipping address</span>
+            <label>
+              <span className="form-label">Shipping address</span>
               <textarea
+                id="checkout-address"
                 required
                 value={shippingAddress}
                 onChange={(event) => setShippingAddress(event.target.value)}
-                className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="form-input"
                 rows={4}
                 placeholder="Street, City, State, ZIP"
+                aria-label="Shipping address"
               />
             </label>
           </div>
 
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Payment Placeholder</h3>
-            <label className="block">
-              <span className="text-sm font-medium text-gray-700">Simulated payment</span>
+            <label>
+              <span className="form-label">Simulated payment</span>
               <input
+                id="checkout-payment"
                 type="text"
                 required
                 value={paymentPlaceholder}
                 onChange={(event) => setPaymentPlaceholder(event.target.value)}
-                className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="form-input"
                 placeholder="Card ending in 4242"
+                aria-label="Payment information placeholder"
               />
             </label>
           </div>
@@ -152,7 +159,8 @@ export const Checkout: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 disabled:bg-indigo-300"
+            className="btn-primary w-full py-3 text-base font-semibold"
+            aria-label="Place order"
           >
             {isSubmitting ? 'Processing...' : `Place Order • $${subtotal.toFixed(2)}`}
           </button>
