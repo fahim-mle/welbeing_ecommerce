@@ -59,7 +59,8 @@ describe('Admin Products API (Secured)', () => {
         });
       
       expect(res.status).toBe(201);
-      expect(res.body.data.name).toBe('Admin Product');
+      // API returns the product object directly, not wrapped in { data: ... }
+      expect(res.body.name).toBe('Admin Product');
     });
 
     it('should reject when normal user', async () => {

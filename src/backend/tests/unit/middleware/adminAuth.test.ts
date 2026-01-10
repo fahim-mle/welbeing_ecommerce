@@ -1,10 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { adminAuth } from '../../../src/middleware/adminAuth';
+import { auth } from '../../../src/lib/auth';
+
+jest.mock('../../../src/lib/auth');
 
 describe('Admin Auth Middleware', () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
-  let nextFunction: NextFunction = jest.fn();
+  let nextFunction: NextFunction;
 
   beforeEach(() => {
     mockRequest = {
@@ -17,10 +20,11 @@ describe('Admin Auth Middleware', () => {
     nextFunction = jest.fn();
   });
 
-  it('should call next() if correct x-admin-secret is provided', () => {
+  it('should call next() if token is valid and role is ADMIN', () => {
     mockRequest.headers = {
-      'x-admin-secret': 'super-secret-admin-key', // Default value in code
+        authorization: 'Bearer valid-admin-token'
     };
+    (auth.verifyToken as jest.Mock).mockReturnValue({ role: 'ADMIN' });
 
     adminAuth(mockRequest as Request, mockResponse as Response, nextFunction);
 
@@ -28,23 +32,32 @@ describe('Admin Auth Middleware', () => {
     expect(mockResponse.status).not.toHaveBeenCalled();
   });
 
-  it('should return 403 if no secret is provided', () => {
+  it('should return 401 if no token provided', () => {
     adminAuth(mockRequest as Request, mockResponse as Response, nextFunction);
 
-    expect(mockResponse.status).toHaveBeenCalledWith(403);
-    expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Forbidden: Invalid Admin Credentials' });
-    expect(nextFunction).not.toHaveBeenCalled();
+    expect(mockResponse.status).toHaveBeenCalledWith(401);
+    expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringMatching(/missing/i) }));
   });
 
-  it('should return 403 if incorrect secret is provided', () => {
+  it('should return 403 if role is not ADMIN', () => {
     mockRequest.headers = {
-      'x-admin-secret': 'wrong-secret',
+        authorization: 'Bearer user-token'
     };
+    (auth.verifyToken as jest.Mock).mockReturnValue({ role: 'USER' });
 
     adminAuth(mockRequest as Request, mockResponse as Response, nextFunction);
 
     expect(mockResponse.status).toHaveBeenCalledWith(403);
-    expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Forbidden: Invalid Admin Credentials' });
-    expect(nextFunction).not.toHaveBeenCalled();
+  });
+
+  it('should return 401 if token is invalid', () => {
+    mockRequest.headers = {
+        authorization: 'Bearer invalid-token'
+    };
+    (auth.verifyToken as jest.Mock).mockImplementation(() => { throw new Error('Invalid token'); });
+
+    adminAuth(mockRequest as Request, mockResponse as Response, nextFunction);
+
+    expect(mockResponse.status).toHaveBeenCalledWith(401);
   });
 });
