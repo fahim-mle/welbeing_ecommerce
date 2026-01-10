@@ -10,6 +10,8 @@ const mockProduct: Product = {
   description: 'Test Description',
   price: 29.99,
   stockStatus: 'IN_STOCK',
+  stockQuantity: 10,
+  isVisible: true,
   categoryId: 1,
   category: { id: 1, name: 'Test Category' },
   images: [{ id: 1, url: 'http://test.com/image.jpg', displayOrder: 0 }],
