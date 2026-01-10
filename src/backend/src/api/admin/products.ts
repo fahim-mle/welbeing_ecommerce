@@ -28,7 +28,6 @@ router.post('/', async (req: Request, res: Response) => {
       categoryId,
       imageUrls = [],
       tagIds = [],
-      stockStatus,
       stockQuantity,
       isVisible,
       ingredients,
@@ -41,6 +40,14 @@ router.post('/', async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
+    if (price !== undefined && Number(price) <= 0) {
+      return res.status(400).json({ message: 'Price must be greater than 0' });
+    }
+
+    if (stockQuantity !== undefined && Number(stockQuantity) < 0) {
+      return res.status(400).json({ message: 'Stock quantity cannot be negative' });
+    }
+
     const product = await catalogService.createProduct({
       name,
       description,
@@ -48,7 +55,6 @@ router.post('/', async (req: Request, res: Response) => {
       categoryId: Number(categoryId),
       imageUrls,
       tagIds: tagIds.map((id: any) => Number(id)),
-      stockStatus,
       stockQuantity: stockQuantity ? Number(stockQuantity) : 0,
       isVisible: isVisible !== undefined ? Boolean(isVisible) : true,
       ingredients,
@@ -96,7 +102,6 @@ router.put('/:id', async (req: Request, res: Response) => {
       categoryId: categoryId !== undefined ? Number(categoryId) : undefined,
       imageUrls,
       tagIds: tagIds ? tagIds.map((id: any) => Number(id)) : undefined,
-      stockStatus,
       stockQuantity: stockQuantity !== undefined ? Number(stockQuantity) : undefined,
       isVisible: isVisible !== undefined ? Boolean(isVisible) : undefined,
       ingredients,

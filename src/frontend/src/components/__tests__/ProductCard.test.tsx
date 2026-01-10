@@ -9,13 +9,14 @@ const mockProduct: Product = {
   name: 'Test Product',
   description: 'Test Description',
   price: 29.99,
-  stockStatus: 'IN_STOCK',
   stockQuantity: 10,
   isVisible: true,
   categoryId: 1,
   category: { id: 1, name: 'Test Category' },
   images: [{ id: 1, url: 'http://test.com/image.jpg', displayOrder: 0 }],
-  tags: [{ id: 1, name: 'Goal', type: 'GOAL' }]
+  tags: [{ id: 1, name: 'Goal', type: 'GOAL' }],
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: '2024-01-01T00:00:00Z'
 };
 
 describe('ProductCard', () => {

@@ -1,6 +1,6 @@
-import { Edit, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Edit, Eye, EyeOff, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { fetchAdminProducts, deleteProduct, updateProduct } from '../../api/admin';
+import { deleteProduct, fetchAdminProducts, updateProduct } from '../../api/admin';
 import type { Product } from '../../api/catalog';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -45,14 +45,14 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
 
   const toggleStock = async (product: Product) => {
       if (!token) return;
-      // Toggle logic: If > 0, make 0. If 0, make 10 (default restock). 
+      // Toggle logic: If > 0, make 0. If 0, make 10 (default restock).
       // Or just keep status toggle logic but sync quantity?
       // Requirement says: "admin should see and update the product quantity."
-      // So this simple toggle button might be insufficient. 
+      // So this simple toggle button might be insufficient.
       // But for quick toggle:
       const newStatus = product.stockStatus === 'IN_STOCK' ? 'OUT_OF_STOCK' : 'IN_STOCK';
       const newQty = newStatus === 'IN_STOCK' ? (product.stockQuantity > 0 ? product.stockQuantity : 10) : 0;
-      
+
       try {
           const updated = await updateProduct(token, product.id, { stockStatus: newStatus, stockQuantity: newQty });
           setProducts(products.map(p => p.id === product.id ? updated : p));
@@ -100,11 +100,11 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
                   <div className="text-sm text-gray-500 font-medium w-16 text-center">
                       Qty: {product.stockQuantity}
                   </div>
-                  <button 
+                  <button
                     onClick={() => toggleStock(product)}
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer ${product.stockStatus === 'IN_STOCK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer ${product.stockQuantity > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
                   >
-                      {product.stockStatus === 'IN_STOCK' ? 'In Stock' : 'Out of Stock'}
+                      {product.stockQuantity > 0 ? 'In Stock' : 'Out of Stock'}
                   </button>
                   <button onClick={() => onEdit(product)} className="text-gray-400 hover:text-gray-600">
                       <Edit className="h-5 w-5" />

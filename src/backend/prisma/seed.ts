@@ -54,7 +54,6 @@ async function main() {
         name: 'Knee Support Pro',
         description: 'Advanced knee support for active lifestyles.',
         price: 29.99,
-        stockStatus: 'IN_STOCK',
         categoryId: supports.id,
         images: ['https://placehold.co/600x400?text=Knee+Support+1', 'https://placehold.co/600x400?text=Knee+Support+2'],
         tags: jointPain ? [jointPain.id] : []
@@ -63,34 +62,32 @@ async function main() {
         name: 'Ankle Stabilizer',
         description: 'Lightweight ankle stabilizer.',
         price: 19.99,
-        stockStatus: 'IN_STOCK',
         categoryId: supports.id,
         images: ['https://placehold.co/600x400?text=Ankle+Stabilizer'],
         tags: []
       }
     ];
 
-    for (const p of products) {
+     for (const p of products) {
         const existing = await prisma.product.findFirst({ where: { name: p.name } });
         if (!existing) {
-             await prisma.product.create({
-                data: {
-                    name: p.name,
-                    description: p.description,
-                    price: p.price,
-                    stockStatus: p.stockStatus,
-                    categoryId: p.categoryId,
-                    tags: {
-                        connect: p.tags.map(id => ({ id }))
-                    },
-                    images: {
-                        create: p.images.map((url, index) => ({
-                            url,
-                            displayOrder: index
-                        }))
-                    }
-                }
-             });
+              await prisma.product.create({
+                 data: {
+                     name: p.name,
+                     description: p.description,
+                     price: p.price,
+                     categoryId: p.categoryId,
+                     tags: {
+                         connect: p.tags.map(id => ({ id }))
+                     },
+                     images: {
+                         create: p.images.map((url, index) => ({
+                             url,
+                             displayOrder: index
+                         }))
+                     }
+                 }
+              });
         }
     }
   }
