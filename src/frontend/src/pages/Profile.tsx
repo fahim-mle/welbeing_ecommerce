@@ -4,7 +4,7 @@ import { fetchMyOrders, type OrderResponse } from '../api/orders';
 import { Link } from 'react-router-dom';
 
 export const Profile = () => {
-  const { user, token, logout } = useAuth();
+  const { user, token } = useAuth();
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,12 +27,6 @@ export const Profile = () => {
     <div className="max-w-4xl mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Profile</h1>
-        <button 
-            onClick={logout}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
-            Logout
-        </button>
       </div>
 
       <div className="bg-white p-6 rounded shadow mb-6">

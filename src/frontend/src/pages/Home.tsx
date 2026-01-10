@@ -1,5 +1,5 @@
-import { Filter, Search, ShoppingBag, X, User as UserIcon } from 'lucide-react'; // Icons
-import React, { useEffect, useState } from 'react';
+import { Filter, LogOut, LayoutDashboard, Search, ShoppingBag, X, User as UserIcon, Settings } from 'lucide-react'; // Icons
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { fetchCategories, fetchProducts, fetchTags, type Category, type Product, type WellbeingTag } from '../api/catalog';
 import { ProductCard } from '../components/ProductCard';
@@ -8,13 +8,28 @@ import { useAuth } from '../hooks/useAuth';
 
 export const Home: React.FC = () => {
   const { totalItems } = useCart();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<WellbeingTag[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile sidebar
+  const [isProfileOpen, setIsProfileOpen] = useState(false); // Profile dropdown
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Filters from URL
   const selectedCategory = searchParams.get('category') ? Number(searchParams.get('category')) : undefined;
@@ -94,9 +109,48 @@ export const Home: React.FC = () => {
                   <Filter className="h-5 w-5" />
               </button>
                {user ? (
-                   <Link to={user.role === 'ADMIN' ? '/admin' : '/profile'} className="p-2 text-gray-600 hover:bg-gray-100 rounded-full">
-                       <UserIcon className="h-5 w-5" />
-                   </Link>
+                   <div className="relative" ref={profileRef}>
+                       <button 
+                           onClick={() => setIsProfileOpen(!isProfileOpen)}
+                           className="p-2 text-gray-600 hover:bg-gray-100 rounded-full focus:outline-none"
+                       >
+                           <UserIcon className="h-5 w-5" />
+                       </button>
+                       
+                       {/* Dropdown Menu */}
+                       {isProfileOpen && (
+                           <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50">
+                               <Link 
+                                   to="/profile" 
+                                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                                   onClick={() => setIsProfileOpen(false)}
+                               >
+                                   <Settings className="h-4 w-4" />
+                                   Profile
+                               </Link>
+                               {user.role === 'ADMIN' && (
+                                   <Link 
+                                       to="/admin" 
+                                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                                       onClick={() => setIsProfileOpen(false)}
+                                   >
+                                       <LayoutDashboard className="h-4 w-4" />
+                                       Dashboard
+                                   </Link>
+                               )}
+                               <button
+                                   onClick={() => {
+                                       logout();
+                                       setIsProfileOpen(false);
+                                   }}
+                                   className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                               >
+                                   <LogOut className="h-4 w-4" />
+                                   Logout
+                               </button>
+                           </div>
+                       )}
+                   </div>
                ) : (
                    <Link to="/login" className="text-sm font-medium text-gray-700 hover:text-indigo-600 hidden md:block">
                        Login
