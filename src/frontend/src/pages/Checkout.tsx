@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createOrder } from '../api/orders';
 import { CartSummary } from '../components/CartSummary';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 export const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const { items, subtotal, clearCart } = useCart();
-  const [guestEmail, setGuestEmail] = useState('');
+  const { user, token } = useAuth();
+  const [guestEmail, setGuestEmail] = useState(user?.email || '');
   const [shippingAddress, setShippingAddress] = useState('');
   const [paymentPlaceholder, setPaymentPlaceholder] = useState('');
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (user?.email) {
+      setGuestEmail(user.email);
+    }
+  }, [user]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -35,7 +43,7 @@ export const Checkout: React.FC = () => {
         shipping_address: shippingAddress,
         payment_placeholder: paymentPlaceholder,
         disclaimer_accepted: disclaimerAccepted,
-      });
+      }, token || undefined);
 
       clearCart();
       navigate('/order-confirmation', { state: { order } });
@@ -69,7 +77,7 @@ export const Checkout: React.FC = () => {
           <Link to="/" className="text-sm font-medium text-gray-500 hover:text-indigo-600">
             Continue shopping
           </Link>
-          <h1 className="text-lg font-semibold text-gray-900">Guest Checkout</h1>
+          <h1 className="text-lg font-semibold text-gray-900">{user ? 'Checkout' : 'Guest Checkout'}</h1>
         </div>
       </header>
 
@@ -77,7 +85,7 @@ export const Checkout: React.FC = () => {
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 space-y-6">
           <div>
             <h2 className="text-xl font-semibold text-gray-900 mb-2">Shipping & Contact</h2>
-            <p className="text-sm text-gray-500">Checkout as a guest — no account required.</p>
+            <p className="text-sm text-gray-500">{user ? `Logged in as ${user.email}` : 'Checkout as a guest — no account required.'}</p>
           </div>
 
           <div className="space-y-4">
@@ -88,7 +96,8 @@ export const Checkout: React.FC = () => {
                 required
                 value={guestEmail}
                 onChange={(event) => setGuestEmail(event.target.value)}
-                className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                disabled={!!user}
+                className={`mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${user ? 'bg-gray-100 text-gray-500' : ''}`}
                 placeholder="you@example.com"
               />
             </label>
