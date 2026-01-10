@@ -1,22 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { Link } from 'react-router-dom';
 import { fetchMyOrders, type OrderResponse } from '../api/orders';
-import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 export const Profile = () => {
   const { user, token } = useAuth();
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-
   useEffect(() => {
-    // Redirect admin to dashboard immediately
-    if (user?.role === 'ADMIN') {
-        navigate('/admin');
-        return;
-    }
-
     if (token) {
       setLoading(true);
       fetchMyOrders(token)
@@ -24,21 +16,25 @@ export const Profile = () => {
         .catch((err) => setError(err.message))
         .finally(() => setLoading(false));
     }
-  }, [token, user, navigate]);
+  }, [token]);
 
   if (!user) {
     return <div className="p-4">Please log in to view your profile.</div>;
-  }
-
-  // Double check to prevent flash of content before redirect
-  if (user.role === 'ADMIN') {
-      return null;
   }
 
   return (
     <div className="max-w-4xl mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Profile</h1>
+        {user.role === 'ADMIN' ? (
+            <Link to="/admin" className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                Back to Dashboard
+            </Link>
+        ) : (
+            <Link to="/" className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+                Back to Shop
+            </Link>
+        )}
       </div>
 
       <div className="bg-white p-6 rounded shadow mb-6">
@@ -52,9 +48,16 @@ export const Profile = () => {
         {loading && <p>Loading orders...</p>}
         {error && <p className="text-red-500">{error}</p>}
         {!loading && !error && orders.length === 0 && (
-          <p>No orders found. <Link to="/" className="text-blue-600">Start shopping!</Link></p>
+          <p>
+            No orders found. {' '}
+            {user.role === 'ADMIN' ? (
+                <Link to="/admin" className="text-blue-600">Go to Dashboard</Link>
+            ) : (
+                <Link to="/" className="text-blue-600">Start shopping!</Link>
+            )}
+          </p>
         )}
-        
+
         <div className="space-y-4">
           {orders.map((order) => (
             <div key={order.id} className="border p-4 rounded hover:bg-gray-50">
