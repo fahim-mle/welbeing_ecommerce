@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ProductForm } from '../../components/admin/ProductForm';
 import { ProductList } from '../../components/admin/ProductList';
+import { OrderList } from '../../components/admin/OrderList';
 import type { Product } from '../../api/catalog';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -50,7 +51,7 @@ export const AdminDashboard: React.FC = () => {
             }`}
           >
             <LayoutDashboard className="h-5 w-5" />
-            Orders (Pending)
+            Orders
           </button>
           <div className="pt-4 mt-4 border-t border-gray-100">
              <Link to="/" className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">
@@ -105,9 +106,7 @@ export const AdminDashboard: React.FC = () => {
            {activeTab === 'orders' && (
                <div>
                    <h2 className="text-2xl font-bold text-gray-900 mb-8">Order Management</h2>
-                   <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center text-gray-500">
-                       Order List (Future Scope)
-                   </div>
+                   <OrderList />
                </div>
            )}
         </div>
