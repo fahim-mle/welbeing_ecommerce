@@ -1,15 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { fetchMyOrders, type OrderResponse } from '../api/orders';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const Profile = () => {
   const { user, token } = useAuth();
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Redirect admin to dashboard immediately
+    if (user?.role === 'ADMIN') {
+        navigate('/admin');
+        return;
+    }
+
     if (token) {
       setLoading(true);
       fetchMyOrders(token)
@@ -17,10 +24,15 @@ export const Profile = () => {
         .catch((err) => setError(err.message))
         .finally(() => setLoading(false));
     }
-  }, [token]);
+  }, [token, user, navigate]);
 
   if (!user) {
     return <div className="p-4">Please log in to view your profile.</div>;
+  }
+
+  // Double check to prevent flash of content before redirect
+  if (user.role === 'ADMIN') {
+      return null;
   }
 
   return (
