@@ -1,45 +1,43 @@
 import type { Product } from './catalog';
+import { API_BASE_URL } from '../config';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-const ADMIN_SECRET = import.meta.env.VITE_ADMIN_SECRET || 'super-secret-admin-key';
-
-const headers = {
+const getHeaders = (token: string) => ({
     'Content-Type': 'application/json',
-    'x-admin-secret': ADMIN_SECRET
-};
+    'Authorization': `Bearer ${token}`
+});
 
-export const fetchAdminProducts = async (): Promise<Product[]> => {
-    const response = await fetch(`${API_URL}/admin/products`, {
-        headers
+export const fetchAdminProducts = async (token: string): Promise<Product[]> => {
+    const response = await fetch(`${API_BASE_URL}/admin/products`, {
+        headers: getHeaders(token)
     });
     if (!response.ok) throw new Error('Failed to fetch admin products');
     return response.json();
 };
 
-export const createProduct = async (productData: any): Promise<Product> => {
-    const response = await fetch(`${API_URL}/admin/products`, {
+export const createProduct = async (token: string, productData: any): Promise<Product> => {
+    const response = await fetch(`${API_BASE_URL}/admin/products`, {
         method: 'POST',
-        headers,
+        headers: getHeaders(token),
         body: JSON.stringify(productData)
     });
     if (!response.ok) throw new Error('Failed to create product');
     return response.json();
 };
 
-export const updateProduct = async (id: number, productData: any): Promise<Product> => {
-    const response = await fetch(`${API_URL}/admin/products/${id}`, {
+export const updateProduct = async (token: string, id: number, productData: any): Promise<Product> => {
+    const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
         method: 'PUT',
-        headers,
+        headers: getHeaders(token),
         body: JSON.stringify(productData)
     });
     if (!response.ok) throw new Error('Failed to update product');
     return response.json();
 };
 
-export const deleteProduct = async (id: number): Promise<void> => {
-    const response = await fetch(`${API_URL}/admin/products/${id}`, {
+export const deleteProduct = async (token: string, id: number): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
         method: 'DELETE',
-        headers
+        headers: getHeaders(token)
     });
     if (!response.ok) throw new Error('Failed to delete product');
 };

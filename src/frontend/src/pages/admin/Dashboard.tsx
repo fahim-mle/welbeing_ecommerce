@@ -1,14 +1,26 @@
 import { LayoutDashboard, Package, Plus } from 'lucide-react';
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ProductForm } from '../../components/admin/ProductForm';
 import { ProductList } from '../../components/admin/ProductList';
 import type { Product } from '../../api/catalog';
+import { useAuth } from '../../context/AuthContext';
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products');
   const [isCreating, setIsCreating] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && (!user || user.role !== 'ADMIN')) {
+      navigate('/');
+    }
+  }, [user, isLoading, navigate]);
+
+  if (isLoading) return <div className="p-8">Loading...</div>;
+  if (!user || user.role !== 'ADMIN') return null;
 
   return (
     <div className="min-h-screen bg-gray-50 flex">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createProduct, updateProduct } from '../../api/admin';
 import { fetchCategories, fetchTags, type Category, type Product, type WellbeingTag } from '../../api/catalog';
+import { useAuth } from '../../context/AuthContext';
 
 interface ProductFormProps {
   initialData?: Product | null;
@@ -9,6 +10,7 @@ interface ProductFormProps {
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel }) => {
+  const { token } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -54,6 +56,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!token) return;
     setLoading(true);
 
     const payload = {
@@ -66,9 +69,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
 
     try {
         if (initialData) {
-            await updateProduct(initialData.id, payload);
+            await updateProduct(token, initialData.id, payload);
         } else {
-            await createProduct(payload);
+            await createProduct(token, payload);
         }
         onSave();
     } catch (err) {
