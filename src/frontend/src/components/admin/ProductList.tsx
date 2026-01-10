@@ -2,7 +2,7 @@ import { Edit, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { fetchAdminProducts, deleteProduct, updateProduct } from '../../api/admin';
 import type { Product } from '../../api/catalog';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 interface ProductListProps {
   onEdit: (product: Product) => void;
