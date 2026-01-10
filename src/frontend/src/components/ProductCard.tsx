@@ -18,7 +18,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             alt={product.name}
             className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
           />
-          {product.stockStatus !== 'IN_STOCK' && (
+          {product.stockQuantity <= 0 && (
             <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
               Out of Stock
             </div>
