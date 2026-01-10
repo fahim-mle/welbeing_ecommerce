@@ -1,9 +1,39 @@
 import { Router } from 'express';
-import { createGuestOrder, OrderValidationError } from '../services/orderService';
+import { createOrder, findOrdersByUserId, OrderValidationError } from '../services/orderService';
+import { authenticate, AuthRequest } from '../middleware/auth';
+import { auth } from '../lib/auth';
 
 const router = Router();
 
+// GET /api/orders (My Orders)
+router.get('/', authenticate, async (req, res) => {
+    const userId = (req as AuthRequest).user?.userId;
+    if (!userId) {
+        // Should be caught by middleware, but for safety
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    try {
+        const orders = await findOrdersByUserId(userId);
+        res.json({ data: orders });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to fetch orders' });
+    }
+});
+
 router.post('/', async (req, res, next) => {
+  let userId: number | undefined;
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+          const decoded = auth.verifyToken(authHeader.split(' ')[1]) as any;
+          userId = decoded.userId;
+      } catch (e) {
+          // Token invalid, proceed as guest
+      }
+  }
+
   try {
     const {
       guest_email: guestEmail,
@@ -28,18 +58,19 @@ router.post('/', async (req, res, next) => {
       return;
     }
 
-    const normalizedItems = items.map((item) => ({
+    const normalizedItems = items.map((item: any) => ({
       productId: Number(item.product_id),
       quantity: Number(item.quantity),
     }));
 
-    if (normalizedItems.some((item) => Number.isNaN(item.productId))) {
+    if (normalizedItems.some((item: any) => Number.isNaN(item.productId))) {
       res.status(400).json({ success: false, error: 'Each item must include a product_id' });
       return;
     }
 
-    const order = await createGuestOrder({
-      guestEmail: String(guestEmail || ''),
+    const order = await createOrder({
+      userId,
+      guestEmail: userId ? undefined : String(guestEmail || ''),
       shippingAddress: String(shippingAddress || ''),
       items: normalizedItems,
     });

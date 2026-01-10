@@ -36,13 +36,21 @@ const normalizeItems = (items: OrderItemInput[]) => {
   }));
 };
 
-export const createGuestOrder = async ({
+export interface CreateOrderInput {
+  userId?: number;
+  guestEmail?: string;
+  shippingAddress: string;
+  items: OrderItemInput[];
+}
+
+export const createOrder = async ({
+  userId,
   guestEmail,
   shippingAddress,
   items,
-}: CreateGuestOrderInput) => {
-  if (!guestEmail) {
-    throw new OrderValidationError('Guest email is required');
+}: CreateOrderInput) => {
+  if (!userId && !guestEmail) {
+    throw new OrderValidationError('User ID or guest email is required');
   }
 
   if (!shippingAddress) {
@@ -86,6 +94,7 @@ export const createGuestOrder = async ({
 
   return prisma.order.create({
     data: {
+      userId,
       guestEmail,
       shippingAddress,
       status: 'PAID',
@@ -105,5 +114,19 @@ export const createGuestOrder = async ({
         },
       },
     },
+  });
+};
+
+export const findOrdersByUserId = async (userId: number) => {
+  return prisma.order.findMany({
+    where: { userId },
+    include: {
+      items: {
+        include: {
+          product: true,
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
   });
 };

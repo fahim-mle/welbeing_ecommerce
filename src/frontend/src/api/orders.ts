@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000/api';
+import { API_BASE_URL } from '../config';
 
 export interface OrderItemPayload {
   product_id: number;
@@ -6,7 +6,7 @@ export interface OrderItemPayload {
 }
 
 export interface OrderPayload {
-  guest_email: string;
+  guest_email?: string;
   items: OrderItemPayload[];
   shipping_address: string;
   payment_placeholder: string;
@@ -35,12 +35,17 @@ export interface OrderResponse {
   items: OrderItemResponse[];
 }
 
-export const createOrder = async (payload: OrderPayload): Promise<OrderResponse> => {
+export const createOrder = async (payload: OrderPayload, token?: string): Promise<OrderResponse> => {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const response = await fetch(`${API_BASE_URL}/orders`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers,
     body: JSON.stringify(payload),
   });
 
@@ -51,4 +56,19 @@ export const createOrder = async (payload: OrderPayload): Promise<OrderResponse>
 
   const result = await response.json();
   return result.data;
+};
+
+export const fetchMyOrders = async (token: string): Promise<OrderResponse[]> => {
+    const response = await fetch(`${API_BASE_URL}/orders`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    
+    if (!response.ok) {
+        throw new Error('Failed to fetch orders');
+    }
+    
+    const result = await response.json();
+    return result.data;
 };

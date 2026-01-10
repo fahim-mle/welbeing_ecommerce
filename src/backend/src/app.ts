@@ -8,6 +8,7 @@ import metadataRouter from './api/metadata';
 import ordersRouter from './api/orders';
 import productsRouter from './api/products';
 import adminProductsRouter from './api/admin/products';
+import authRouter from './api/auth';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
+app.use('/api/auth', authRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/admin/products', adminProductsRouter);
