@@ -42,14 +42,14 @@
 ## Phase 4: User Story 2 - Guest Checkout Flow
 *Goal: Guest users can add items to cart and "purchase" them with simulated payment.*
 
-- [ ] T025 [US2] Create Order and OrderItem database services (src/backend/src/services/orderService.ts)
-- [ ] T026 [US2] Implement POST /orders endpoint for guest checkout (src/backend/src/api/orders.ts)
-- [ ] T027 [US2] Create simple Cart context/provider (src/frontend/src/context/CartContext.tsx)
-- [ ] T028 [P] [US2] Create Cart summary component (src/frontend/src/components/CartSummary.tsx)
-- [ ] T029 [US2] Implement CheckoutPage with Guest Email, Address, and Payment Placeholder inputs (src/frontend/src/pages/Checkout.tsx)
-- [ ] T030 [US2] Add Global Health Disclaimer checkbox to CheckoutPage (src/frontend/src/pages/Checkout.tsx)
-- [ ] T031 [US2] Create Order Confirmation page (src/frontend/src/pages/OrderConfirmation.tsx)
-- [ ] T032 [P] [US2] Add Integration Test for Guest Order creation (src/backend/tests/integration/orders.test.ts)
+- [x] T025 [US2] Create Order and OrderItem database services (src/backend/src/services/orderService.ts)
+- [x] T026 [US2] Implement POST /orders endpoint for guest checkout (src/backend/src/api/orders.ts)
+- [x] T027 [US2] Create simple Cart context/provider (src/frontend/src/context/CartContext.tsx)
+- [x] T028 [P] [US2] Create Cart summary component (src/frontend/src/components/CartSummary.tsx)
+- [x] T029 [US2] Implement CheckoutPage with Guest Email, Address, and Payment Placeholder inputs (src/frontend/src/pages/Checkout.tsx)
+- [x] T030 [US2] Add Global Health Disclaimer checkbox to CheckoutPage (src/frontend/src/pages/Checkout.tsx)
+- [x] T031 [US2] Create Order Confirmation page (src/frontend/src/pages/OrderConfirmation.tsx)
+- [x] T032 [P] [US2] Add Integration Test for Guest Order creation (src/backend/tests/integration/orders.test.ts)
 
 ## Phase 5: User Story 3 - Admin Product Management
 *Goal: Admins can manage catalog via backend API (UI is P2 but required per spec logic).*

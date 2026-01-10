@@ -1,10 +1,12 @@
-import { Filter, Search, X } from 'lucide-react'; // Icons
+import { Filter, Search, ShoppingBag, X } from 'lucide-react'; // Icons
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { fetchCategories, fetchProducts, fetchTags, type Category, type Product, type WellbeingTag } from '../api/catalog';
 import { ProductCard } from '../components/ProductCard';
+import { useCart } from '../context/CartContext';
 
 export const Home: React.FC = () => {
+  const { totalItems } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<WellbeingTag[]>([]);
@@ -89,8 +91,15 @@ export const Home: React.FC = () => {
               >
                   <Filter className="h-5 w-5" />
               </button>
-              {/* Placeholder for Cart/Account */}
-              <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+               <Link to="/checkout" className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full">
+                 <ShoppingBag className="h-5 w-5" />
+                 {totalItems > 0 && (
+                   <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs font-semibold rounded-full px-1.5">
+                     {totalItems}
+                   </span>
+                 )}
+               </Link>
+
            </div>
         </div>
       </header>

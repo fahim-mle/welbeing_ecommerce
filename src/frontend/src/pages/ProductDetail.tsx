@@ -2,9 +2,11 @@ import { AlertCircle, ArrowLeft, Check } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { fetchProductById, type Product } from '../api/catalog';
+import { useCart } from '../context/CartContext';
 
 export const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { addItem } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -100,10 +102,12 @@ export const ProductDetail: React.FC = () => {
                     <button
                        type="button"
                        disabled={product.stockStatus !== 'IN_STOCK'}
+                       onClick={() => addItem(product)}
                        className="w-full bg-indigo-600 border border-transparent rounded-xl py-4 px-8 flex items-center justify-center text-lg font-bold text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 disabled:bg-gray-300 disabled:cursor-not-allowed shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                    >
                        Add to Cart
-                   </button>
+                    </button>
+
                    <p className="text-center text-xs text-gray-500 mt-3">
                        Free shipping on orders over $50 • 30-day return policy
                    </p>
