@@ -11,6 +11,7 @@ export const getProducts = async (filters: {
 
   if (!filters.includeOutOfStock) {
     where.stockStatus = 'IN_STOCK';
+    where.isVisible = true; // Only show visible products by default
   }
 
   if (filters.categoryId) {
@@ -75,6 +76,8 @@ export const createProduct = async (data: {
   description: string;
   price: number;
   stockStatus?: string;
+  stockQuantity?: number;
+  isVisible?: boolean;
   ingredients?: string;
   usageInstructions?: string;
   benefits?: string;
@@ -89,6 +92,8 @@ export const createProduct = async (data: {
       description: data.description,
       price: data.price,
       stockStatus: data.stockStatus || 'IN_STOCK',
+      stockQuantity: data.stockQuantity || 0,
+      isVisible: data.isVisible !== undefined ? data.isVisible : true,
       ingredients: data.ingredients,
       usageInstructions: data.usageInstructions,
       benefits: data.benefits,
@@ -119,6 +124,8 @@ export const updateProduct = async (
     description?: string;
     price?: number;
     stockStatus?: string;
+    stockQuantity?: number;
+    isVisible?: boolean;
     ingredients?: string;
     usageInstructions?: string;
     benefits?: string;
@@ -133,6 +140,8 @@ export const updateProduct = async (
     description: data.description,
     price: data.price,
     stockStatus: data.stockStatus,
+    stockQuantity: data.stockQuantity,
+    isVisible: data.isVisible,
     ingredients: data.ingredients,
     usageInstructions: data.usageInstructions,
     benefits: data.benefits,
