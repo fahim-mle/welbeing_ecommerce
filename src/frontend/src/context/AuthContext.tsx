@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { authApi, type User, type AuthResponse } from '../api/auth';
+import { getErrorMessage } from '../utils/error';
 
 interface AuthContextType {
   user: User | null;
@@ -21,7 +22,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (storedUser) {
       try {
         return JSON.parse(storedUser);
-      } catch (e) {
+      } catch {
         return null;
       }
     }
@@ -52,8 +53,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const data = await authApi.login(email, password);
       setAuthData(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message = getErrorMessage(err);
+      setError(message);
       throw err;
     } finally {
       setIsLoading(false);
@@ -66,8 +68,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const data = await authApi.register(email, password);
       setAuthData(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message = getErrorMessage(err);
+      setError(message);
       throw err;
     } finally {
       setIsLoading(false);
