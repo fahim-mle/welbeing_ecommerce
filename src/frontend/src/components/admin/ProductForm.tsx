@@ -17,6 +17,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
     price: '',
     categoryId: '',
     stockStatus: 'IN_STOCK',
+    stockQuantity: 0,
+    isVisible: true,
     imageUrls: '', // Newline separated
     tagIds: [] as number[],
     ingredients: '',
@@ -44,6 +46,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
         price: String(initialData.price),
         categoryId: String(initialData.categoryId),
         stockStatus: initialData.stockStatus,
+        stockQuantity: initialData.stockQuantity || 0,
+        isVisible: initialData.isVisible !== undefined ? initialData.isVisible : true,
         imageUrls: initialData.images?.map(i => i.url).join('\n') || '',
         tagIds: initialData.tags?.map(t => t.id) || [],
         ingredients: initialData.ingredients || '',
@@ -63,6 +67,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
         ...formData,
         price: parseFloat(formData.price),
         categoryId: parseInt(formData.categoryId),
+        stockQuantity: parseInt(String(formData.stockQuantity)),
         imageUrls: formData.imageUrls.split('\n').map(u => u.trim()).filter(u => u),
         tagIds: formData.tagIds
     };
@@ -119,13 +124,29 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Stock Status</label>
-                    <select required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
-                        value={formData.stockStatus} onChange={e => setFormData({...formData, stockStatus: e.target.value})}
-                    >
-                        <option value="IN_STOCK">In Stock</option>
-                        <option value="OUT_OF_STOCK">Out of Stock</option>
-                    </select>
+                    <div className="flex gap-4">
+                        <div className="flex-1">
+                            <label className="block text-sm font-medium text-gray-700">Stock Status</label>
+                            <select required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                                value={formData.stockStatus} onChange={e => setFormData({...formData, stockStatus: e.target.value})}
+                            >
+                                <option value="IN_STOCK">In Stock</option>
+                                <option value="OUT_OF_STOCK">Out of Stock</option>
+                            </select>
+                        </div>
+                        <div className="flex-1">
+                            <label className="block text-sm font-medium text-gray-700">Quantity</label>
+                            <input type="number" min="0" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                                value={formData.stockQuantity} onChange={e => setFormData({...formData, stockQuantity: parseInt(e.target.value)})}
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2 mt-4">
+                    <input type="checkbox" id="isVisible" className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        checked={formData.isVisible} onChange={e => setFormData({...formData, isVisible: e.target.checked})}
+                    />
+                    <label htmlFor="isVisible" className="text-sm font-medium text-gray-700">Visible in Shop</label>
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Description</label>
