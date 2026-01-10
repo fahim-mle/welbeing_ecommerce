@@ -1,5 +1,6 @@
 import type { Product } from './catalog';
 import { API_BASE_URL } from '../config';
+import type { OrderResponse } from './orders';
 
 const getHeaders = (token: string) => ({
     'Content-Type': 'application/json',
@@ -11,7 +12,28 @@ export const fetchAdminProducts = async (token: string): Promise<Product[]> => {
         headers: getHeaders(token)
     });
     if (!response.ok) throw new Error('Failed to fetch admin products');
-    return response.json();
+    const result = await response.json();
+    return result.data || result; // Handle both wrapper formats if existing
+};
+
+export const fetchAdminOrders = async (token: string): Promise<OrderResponse[]> => {
+    const response = await fetch(`${API_BASE_URL}/admin/orders`, {
+        headers: getHeaders(token)
+    });
+    if (!response.ok) throw new Error('Failed to fetch admin orders');
+    const result = await response.json();
+    return result.data;
+};
+
+export const updateOrderStatus = async (token: string, id: number, status: string): Promise<OrderResponse> => {
+    const response = await fetch(`${API_BASE_URL}/admin/orders/${id}/status`, {
+        method: 'PATCH',
+        headers: getHeaders(token),
+        body: JSON.stringify({ status })
+    });
+    if (!response.ok) throw new Error('Failed to update order status');
+    const result = await response.json();
+    return result.data;
 };
 
 export const createProduct = async (token: string, productData: any): Promise<Product> => {
