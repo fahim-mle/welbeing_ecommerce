@@ -16,7 +16,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
     description: '',
     price: '',
     categoryId: '',
-    stockStatus: 'IN_STOCK',
     stockQuantity: 0,
     isVisible: true,
     imageUrls: '', // Newline separated
@@ -45,7 +44,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
         description: initialData.description,
         price: String(initialData.price),
         categoryId: String(initialData.categoryId),
-        stockStatus: initialData.stockStatus,
         stockQuantity: initialData.stockQuantity || 0,
         isVisible: initialData.isVisible !== undefined ? initialData.isVisible : true,
         imageUrls: initialData.images?.map(i => i.url).join('\n') || '',
@@ -128,7 +126,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
                         <div className="flex-1">
                             <label className="block text-sm font-medium text-gray-700">Stock Status</label>
                             <select required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
-                                value={formData.stockStatus} onChange={e => setFormData({...formData, stockStatus: e.target.value})}
                             >
                                 <option value="IN_STOCK">In Stock</option>
                                 <option value="OUT_OF_STOCK">Out of Stock</option>
@@ -138,65 +135,3 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
                             <label className="block text-sm font-medium text-gray-700">Quantity</label>
                             <input type="number" min="0" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                                 value={formData.stockQuantity} onChange={e => setFormData({...formData, stockQuantity: parseInt(e.target.value)})}
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2 mt-4">
-                    <input type="checkbox" id="isVisible" className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        checked={formData.isVisible} onChange={e => setFormData({...formData, isVisible: e.target.checked})}
-                    />
-                    <label htmlFor="isVisible" className="text-sm font-medium text-gray-700">Visible in Shop</label>
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea rows={3} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
-                        value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}
-                    />
-                </div>
-           </div>
-           
-           {/* Right Col */}
-           <div className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Image URLs (one per line)</label>
-                    <textarea rows={4} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2 font-mono text-xs"
-                        placeholder="https://example.com/image1.jpg"
-                        value={formData.imageUrls} onChange={e => setFormData({...formData, imageUrls: e.target.value})}
-                    />
-                </div>
-                
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Wellbeing Goals (Tags)</label>
-                    <div className="flex flex-wrap gap-2">
-                        {tags.map(t => (
-                            <button key={t.id} type="button"
-                                onClick={() => toggleTag(t.id)}
-                                className={`px-3 py-1 rounded-full text-xs font-medium border ${formData.tagIds.includes(t.id) ? 'bg-indigo-100 text-indigo-800 border-indigo-200' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
-                            >
-                                {t.name}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Benefits</label>
-                     <textarea rows={2} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
-                        value={formData.benefits} onChange={e => setFormData({...formData, benefits: e.target.value})}
-                    />
-                </div>
-           </div>
-       </div>
-
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-            <button type="button" onClick={onCancel} className="btn-secondary">
-                Cancel
-            </button>
-            <button type="submit" disabled={loading} className="btn-primary">
-                {loading ? 'Saving...' : 'Save Product'}
-            </button>
-        </div>
-    </form>
-  );
-};
