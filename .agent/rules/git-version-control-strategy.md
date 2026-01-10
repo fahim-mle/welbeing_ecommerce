@@ -59,7 +59,7 @@ Examples:
 - All tasks in a phase execute against the phase branch by default
 - Phase branches are merged back into 001-health-wellbeing-store
   after all tasks in that phase are complete and verified
-- Phase branches may be deleted after successful merge
+- Do not delete the branch after merge with 001-health-wellbeing-store
 
 ---
 
