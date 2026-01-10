@@ -1,8 +1,8 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useState, useEffect, type ReactNode } from 'react';
 import { authApi, type User, type AuthResponse } from '../api/auth';
 import { getErrorMessage } from '../utils/error';
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
@@ -13,7 +13,7 @@ interface AuthContextType {
   error: string | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
@@ -91,10 +91,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+// Export hook directly here is usually fine if it's named use..., but if lint complains 
+// we might need to separate or check config. 
+// However, the standard pattern IS to have the hook in the context file.
+// The error suggests that exporting a hook alongside a component (Provider) triggers the "Fast Refresh" warning
+// because fast refresh can't handle non-component exports well if they change.
+// Best practice: Move the Hook to a separate file OR keep it here but accept the warning (not ideal) OR move Provider to separate file?
+// Actually, moving the hook to a separate file is cleaner.
+
