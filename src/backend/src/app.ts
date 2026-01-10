@@ -10,6 +10,7 @@ import productsRouter from './api/products';
 import adminProductsRouter from './api/admin/products';
 import adminOrdersRouter from './api/admin/orders';
 import authRouter from './api/auth';
+import { setupSwagger } from './swagger';
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+
+setupSwagger(app);
 
 app.use('/api/auth', authRouter);
 app.use('/api/products', productsRouter);
