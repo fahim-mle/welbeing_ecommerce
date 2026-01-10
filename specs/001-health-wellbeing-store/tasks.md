@@ -17,10 +17,10 @@
 ## Phase 2: Foundation
 *Goal: Database setup and basic server infrastructure.*
 
-- [ ] T008 Initialize Prisma with SQLite (src/backend/prisma/schema.prisma)
+- [x] T008 Initialize Prisma with SQLite (src/backend/prisma/schema.prisma)
 - [ ] T009 Define initial Prisma schema including User, UserIdentity, Product, ProductImage models (src/backend/prisma/schema.prisma)
-- [ ] T010 [P] Create database seed script for initial Categories and Tags (src/backend/prisma/seed.ts)
-- [ ] T011 Run initial migration to create SQLite database (src/backend/prisma/migrations)
+- [x] T010 [P] Create database seed script for initial Categories and Tags (src/backend/prisma/seed.ts)
+- [x] T011 Run initial migration to create SQLite database (src/backend/prisma/migrations)
 - [ ] T012 Set up basic Express app structure with error handling middleware (src/backend/src/app.ts)
 - [ ] T013 Create centralized Prisma client instance (src/backend/src/lib/prisma.ts)
 
