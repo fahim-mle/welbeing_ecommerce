@@ -14,6 +14,10 @@ export interface Product {
   category?: Category;
   images: ProductImage[];
   tags: WellbeingTag[];
+  ingredients?: string;
+  usageInstructions?: string;
+  benefits?: string;
+  safetyDisclaimers?: string;
 }
 
 export interface ProductImage {
