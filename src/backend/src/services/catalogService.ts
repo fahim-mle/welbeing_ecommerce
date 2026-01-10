@@ -10,7 +10,7 @@ export const getProducts = async (filters: {
   const where: Prisma.ProductWhereInput = {};
 
   if (!filters.includeOutOfStock) {
-    where.stockStatus = 'IN_STOCK';
+    where.stockQuantity = { gt: 0 };
     where.isVisible = true; // Only show visible products by default
   }
 
@@ -91,7 +91,6 @@ export const createProduct = async (data: {
       name: data.name,
       description: data.description,
       price: data.price,
-      stockStatus: data.stockStatus || 'IN_STOCK',
       stockQuantity: data.stockQuantity || 0,
       isVisible: data.isVisible !== undefined ? data.isVisible : true,
       ingredients: data.ingredients,
@@ -139,7 +138,6 @@ export const updateProduct = async (
     name: data.name,
     description: data.description,
     price: data.price,
-    stockStatus: data.stockStatus,
     stockQuantity: data.stockQuantity,
     isVisible: data.isVisible,
     ingredients: data.ingredients,
