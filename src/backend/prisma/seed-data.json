@@ -1,0 +1,263 @@
+{
+  "users": [
+    {
+      "email": "admin@welbeing.com",
+      "firstName": "Admin",
+      "lastName": "User",
+      "phone": "+15550000001",
+      "role": "ADMIN",
+      "isActive": true,
+      "lastLoginAt": "2026-01-10T09:00:00.000Z",
+      "identity": {
+        "provider": "EMAIL",
+        "providerId": "admin@welbeing.com",
+        "password": "admin123",
+        "isVerified": true,
+        "verifiedAt": "2026-01-10T09:00:00.000Z"
+      }
+    },
+    {
+      "email": "user@welbeing.com",
+      "firstName": "Jordan",
+      "lastName": "Lee",
+      "phone": "+15550000002",
+      "role": "USER",
+      "isActive": true,
+      "identity": {
+        "provider": "EMAIL",
+        "providerId": "user@welbeing.com",
+        "password": "user123",
+        "isVerified": false
+      }
+    }
+  ],
+  "categories": [
+    {
+      "name": "Supports",
+      "description": "Supports for joints and muscles"
+    },
+    {
+      "name": "Supplements",
+      "description": "Vitamins and minerals"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Joint Pain",
+      "type": "GOAL"
+    },
+    {
+      "name": "Mobility",
+      "type": "GOAL"
+    },
+    {
+      "name": "Gluten-Free",
+      "type": "NEED"
+    }
+  ],
+  "products": [
+    {
+      "sku": "SUP-KNEE-001",
+      "name": "Knee Support Pro",
+      "description": "Advanced knee support for active lifestyles.",
+      "price": 29.99,
+      "originalPrice": 39.99,
+      "stockQuantity": 5,
+      "reorderLevel": 10,
+      "category": "Supports",
+      "tags": ["Joint Pain", "Mobility"],
+      "images": [
+        "https://placehold.co/600x400?text=Knee+Support+1",
+        "https://placehold.co/600x400?text=Knee+Support+2"
+      ],
+      "variants": [
+        {
+          "sku": "SUP-KNEE-001-BLK-M",
+          "price": 29.99,
+          "stockQuantity": 3,
+          "optionValues": {
+            "size": "M",
+            "color": "Black"
+          },
+          "isActive": true
+        },
+        {
+          "sku": "SUP-KNEE-001-BLK-L",
+          "price": 29.99,
+          "stockQuantity": 0,
+          "optionValues": {
+            "size": "L",
+            "color": "Black"
+          },
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "sku": "SUP-ANK-001",
+      "name": "Ankle Stabilizer",
+      "description": "Lightweight ankle stabilizer.",
+      "price": 19.99,
+      "originalPrice": 24.99,
+      "stockQuantity": 0,
+      "reorderLevel": 5,
+      "category": "Supports",
+      "tags": ["Mobility"],
+      "images": [
+        "https://placehold.co/600x400?text=Ankle+Stabilizer"
+      ],
+      "variants": []
+    },
+    {
+      "sku": "SUPP-MAG-001",
+      "name": "Magnesium Calm",
+      "description": "Daily magnesium supplement for calm and recovery.",
+      "price": 15.5,
+      "originalPrice": 18,
+      "stockQuantity": 25,
+      "reorderLevel": 8,
+      "category": "Supplements",
+      "tags": ["Gluten-Free"],
+      "images": [
+        "https://placehold.co/600x400?text=Magnesium+Calm"
+      ],
+      "variants": []
+    }
+  ],
+  "addresses": [
+    {
+      "key": "user-home",
+      "userEmail": "user@welbeing.com",
+      "label": "Home",
+      "fullName": "Jordan Lee",
+      "phone": "+15550000002",
+      "streetLine1": "123 Wellness Ave",
+      "streetLine2": "Apt 4B",
+      "city": "Austin",
+      "state": "TX",
+      "postalCode": "73301",
+      "country": "US",
+      "isDefault": true
+    },
+    {
+      "key": "guest-shipping",
+      "label": "Guest Checkout",
+      "fullName": "Guest Buyer",
+      "phone": "+15550000999",
+      "streetLine1": "700 Market Street",
+      "streetLine2": null,
+      "city": "San Francisco",
+      "state": "CA",
+      "postalCode": "94103",
+      "country": "US",
+      "isDefault": false
+    }
+  ],
+  "inventoryLogs": [
+    {
+      "productSku": "SUP-ANK-001",
+      "changeType": "RESTOCK",
+      "quantityDelta": 20,
+      "referenceId": "seed-restock-ankle"
+    },
+    {
+      "variantSku": "SUP-KNEE-001-BLK-M",
+      "changeType": "ORDER",
+      "quantityDelta": -2,
+      "referenceId": "seed-order-1"
+    },
+    {
+      "variantSku": "SUP-KNEE-001-BLK-L",
+      "changeType": "ADJUSTMENT",
+      "quantityDelta": -1,
+      "referenceId": "seed-adjust-l"
+    }
+  ],
+  "orders": [
+    {
+      "key": "guest-order",
+      "guestEmail": "guest@example.com",
+      "addressKey": "guest-shipping",
+      "status": "SHIPPED",
+      "paymentStatus": "PAID",
+      "paymentMethod": "STRIPE",
+      "currency": "USD",
+      "shippingFee": 5,
+      "taxAmount": 2.5,
+      "totalPrice": 38.5,
+      "shippedAt": "2026-01-09T12:00:00.000Z",
+      "items": [
+        {
+          "productSku": "SUPP-MAG-001",
+          "quantity": 2,
+          "priceAtPurchase": 15.5
+        }
+      ],
+      "payment": {
+        "provider": "STRIPE",
+        "transactionId": "pi_guest_001",
+        "amount": 38.5,
+        "currency": "USD",
+        "status": "SUCCESS"
+      },
+      "statusHistory": [
+        {
+          "fromStatus": "PENDING",
+          "toStatus": "PAID",
+          "changedBy": "SYSTEM"
+        },
+        {
+          "fromStatus": "PAID",
+          "toStatus": "SHIPPED",
+          "changedBy": "ADMIN"
+        }
+      ]
+    },
+    {
+      "key": "user-order",
+      "userEmail": "user@welbeing.com",
+      "addressKey": "user-home",
+      "status": "DELIVERED",
+      "paymentStatus": "PAID",
+      "paymentMethod": "PAYPAL",
+      "currency": "USD",
+      "shippingFee": 0,
+      "taxAmount": 3.2,
+      "totalPrice": 33.19,
+      "shippedAt": "2026-01-05T10:00:00.000Z",
+      "deliveredAt": "2026-01-07T14:00:00.000Z",
+      "items": [
+        {
+          "productSku": "SUP-KNEE-001",
+          "variantSku": "SUP-KNEE-001-BLK-M",
+          "quantity": 1,
+          "priceAtPurchase": 29.99
+        }
+      ],
+      "payment": {
+        "provider": "PAYPAL",
+        "transactionId": "pp_user_001",
+        "amount": 33.19,
+        "currency": "USD",
+        "status": "SUCCESS"
+      },
+      "statusHistory": [
+        {
+          "fromStatus": "PENDING",
+          "toStatus": "PAID",
+          "changedBy": "SYSTEM"
+        },
+        {
+          "fromStatus": "PAID",
+          "toStatus": "SHIPPED",
+          "changedBy": "SYSTEM"
+        },
+        {
+          "fromStatus": "SHIPPED",
+          "toStatus": "DELIVERED",
+          "changedBy": "SYSTEM"
+        }
+      ]
+    }
+  ]
+}
