@@ -495,10 +495,28 @@ components:
           type: string
           format: email
           example: user@example.com
+        firstName:
+          type: string
+          example: Jordan
+        lastName:
+          type: string
+          example: Lee
+        phone:
+          type: string
+          nullable: true
+          example: "+15550000002"
         role:
           type: string
           enum: [USER, ADMIN]
           example: USER
+        isActive:
+          type: boolean
+          example: true
+        lastLoginAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2026-01-10T09:00:00Z'
 
     AuthResponse:
       type: object
@@ -554,6 +572,37 @@ components:
         displayOrder:
           type: integer
           example: 0
+        altText:
+          type: string
+          nullable: true
+          example: Knee support image
+
+    ProductVariant:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        sku:
+          type: string
+          example: SUP-KNEE-001-BLK-M
+        price:
+          type: number
+          format: decimal
+          example: 29.99
+        stockQuantity:
+          type: integer
+          example: 3
+        optionValues:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            size: M
+            color: Black
+        isActive:
+          type: boolean
+          example: true
 
     WellbeingTag:
       type: object
@@ -589,6 +638,10 @@ components:
         id:
           type: integer
           example: 1
+        sku:
+          type: string
+          nullable: true
+          example: SUP-KNEE-001
         name:
           type: string
           example: Knee Support Pro
@@ -599,13 +652,17 @@ components:
           type: number
           format: decimal
           example: 29.99
-        stockStatus:
-          type: string
-          enum: [IN_STOCK, OUT_OF_STOCK]
-          example: IN_STOCK
+        originalPrice:
+          type: number
+          format: decimal
+          nullable: true
+          example: 39.99
         stockQuantity:
           type: integer
           example: 10
+        reorderLevel:
+          type: integer
+          example: 5
         isVisible:
           type: boolean
           example: true
@@ -634,6 +691,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WellbeingTag'
+        variants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductVariant'
 
     ProductResponse:
       type: object
@@ -685,6 +746,10 @@ components:
         - price
         - categoryId
       properties:
+        sku:
+          type: string
+          nullable: true
+          example: SUP-KNEE-001
         name:
           type: string
           example: Knee Support Pro
@@ -695,13 +760,17 @@ components:
           type: number
           format: decimal
           example: 29.99
+        originalPrice:
+          type: number
+          format: decimal
+          nullable: true
+          example: 39.99
+        reorderLevel:
+          type: integer
+          default: 0
         categoryId:
           type: integer
           example: 1
-        stockStatus:
-          type: string
-          enum: [IN_STOCK, OUT_OF_STOCK]
-          default: IN_STOCK
         stockQuantity:
           type: integer
           default: 0
@@ -756,8 +825,96 @@ components:
           type: number
           format: decimal
           example: 59.98
+        productVariant:
+          $ref: '#/components/schemas/ProductVariant'
         product:
           $ref: '#/components/schemas/Product'
+
+    Address:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 3
+        label:
+          type: string
+          example: Home
+        fullName:
+          type: string
+          example: Jordan Lee
+        phone:
+          type: string
+          example: "+15550000002"
+        streetLine1:
+          type: string
+          example: 123 Wellness Ave
+        streetLine2:
+          type: string
+          nullable: true
+          example: Apt 4B
+        city:
+          type: string
+          example: Austin
+        state:
+          type: string
+          example: TX
+        postalCode:
+          type: string
+          example: 73301
+        country:
+          type: string
+          example: US
+        isDefault:
+          type: boolean
+          example: true
+
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        provider:
+          type: string
+          enum: [STRIPE, PAYPAL, COD, MOCK]
+          example: STRIPE
+        transactionId:
+          type: string
+          example: pi_123
+        amount:
+          type: number
+          format: decimal
+          example: 59.98
+        currency:
+          type: string
+          example: USD
+        status:
+          type: string
+          enum: [INITIATED, SUCCESS, FAILED, REFUNDED]
+          example: SUCCESS
+
+    OrderStatusHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        fromStatus:
+          type: string
+          enum: [PENDING, PAID, SHIPPED, DELIVERED, CANCELLED]
+          example: PENDING
+        toStatus:
+          type: string
+          enum: [PENDING, PAID, SHIPPED, DELIVERED, CANCELLED]
+          example: PAID
+        changedBy:
+          type: string
+          enum: [SYSTEM, USER, ADMIN]
+          example: SYSTEM
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-01-05T10:00:00Z'
 
     Order:
       type: object
@@ -769,6 +926,10 @@ components:
           type: integer
           nullable: true
           example: 1
+        addressId:
+          type: integer
+          nullable: true
+          example: 3
         guestEmail:
           type: string
           nullable: true
@@ -777,19 +938,54 @@ components:
           type: string
           enum: [PENDING, PAID, SHIPPED, DELIVERED, CANCELLED]
           example: PAID
+        paymentStatus:
+          type: string
+          enum: [PENDING, PAID, FAILED, REFUNDED]
+          example: PAID
+        paymentMethod:
+          type: string
+          nullable: true
+          enum: [STRIPE, PAYPAL, COD, MOCK]
+          example: STRIPE
+        currency:
+          type: string
+          example: USD
         totalPrice:
           type: number
           format: decimal
           example: 59.98
-        shippingAddress:
-          type: string
-          example: 123 Main St, City, State 12345
+        shippingFee:
+          type: number
+          format: decimal
+          example: 5
+        taxAmount:
+          type: number
+          format: decimal
+          example: 2.5
         createdAt:
           type: string
           format: date-time
           example: '2024-01-15T10:30:00Z'
+        shippedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2024-01-16T10:30:00Z'
+        deliveredAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2024-01-18T10:30:00Z'
         user:
           $ref: '#/components/schemas/User'
+        address:
+          $ref: '#/components/schemas/Address'
+        payment:
+          $ref: '#/components/schemas/Payment'
+        statusHistory:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderStatusHistory'
         items:
           type: array
           items:
@@ -814,9 +1010,9 @@ components:
 
     CreateOrderRequest:
       type: object
+      description: Provide either address_id or shipping_address
       required:
         - items
-        - shipping_address
         - payment_placeholder
         - disclaimer_accepted
       properties:
@@ -825,6 +1021,45 @@ components:
           format: email
           description: Required for guest orders
           example: guest@example.com
+        address_id:
+          type: integer
+          description: Use an existing address ID
+          example: 3
+        shipping_address:
+          type: object
+          description: Provide a structured address when no address_id is supplied
+          properties:
+            label:
+              type: string
+              example: Shipping
+            full_name:
+              type: string
+              example: Jordan Lee
+            phone:
+              type: string
+              example: "+15550000002"
+            street_line_1:
+              type: string
+              example: 123 Wellness Ave
+            street_line_2:
+              type: string
+              nullable: true
+              example: Apt 4B
+            city:
+              type: string
+              example: Austin
+            state:
+              type: string
+              example: TX
+            postal_code:
+              type: string
+              example: 73301
+            country:
+              type: string
+              example: US
+            is_default:
+              type: boolean
+              example: false
         items:
           type: array
           description: Array of product items in the order
@@ -837,12 +1072,13 @@ components:
               product_id:
                 type: integer
                 example: 1
+              product_variant_id:
+                type: integer
+                nullable: true
+                example: 10
               quantity:
                 type: integer
                 example: 2
-        shipping_address:
-          type: string
-          example: 123 Main St, City, State 12345
         payment_placeholder:
           type: string
           description: Simulated payment information
