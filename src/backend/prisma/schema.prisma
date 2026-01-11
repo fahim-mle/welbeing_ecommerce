@@ -24,6 +24,26 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum OrderStatusChangedBy {
+  SYSTEM
+  USER
+  ADMIN
+}
+
+enum InventoryChangeType {
+  ORDER
+  RESTOCK
+  ADJUSTMENT
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -103,6 +123,7 @@ model Product {
   tags         WellbeingTag[]
   orderItems   OrderItem[]
   variants     ProductVariant[]
+  inventoryLogs InventoryLog[]
 
   @@map("products")
   @@index([categoryId])
@@ -122,7 +143,8 @@ model ProductVariant {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  product Product @relation(fields: [productId], references: [id])
+  product       Product          @relation(fields: [productId], references: [id])
+  inventoryLogs InventoryLog[]
 
   @@map("product_variants")
   @@index([productId])
@@ -151,6 +173,23 @@ model WellbeingTag {
   @@map("wellbeing_tags")
 }
 
+model InventoryLog {
+  id               Int                 @id @default(autoincrement())
+  productId        Int?                @map("product_id")
+  productVariantId Int?                @map("product_variant_id")
+  changeType       InventoryChangeType @map("change_type")
+  quantityDelta    Int                 @map("quantity_delta")
+  referenceId      String?             @map("reference_id")
+  createdAt        DateTime            @default(now()) @map("created_at")
+
+  product        Product?        @relation(fields: [productId], references: [id])
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id])
+
+  @@map("inventory_logs")
+  @@index([productId])
+  @@index([productVariantId])
+}
+
 model Order {
   id              Int      @id @default(autoincrement())
   userId          Int?     @map("user_id")
@@ -160,11 +199,26 @@ model Order {
   shippingAddress String   @map("shipping_address")
   createdAt       DateTime @default(now()) @map("created_at")
 
-  user       User?       @relation(fields: [userId], references: [id])
-  items      OrderItem[]
-  payment    Payment?
+  user          User?               @relation(fields: [userId], references: [id])
+  items         OrderItem[]
+  payment       Payment?
+  statusHistory OrderStatusHistory[]
 
   @@map("orders")
+}
+
+model OrderStatusHistory {
+  id         Int                   @id @default(autoincrement())
+  orderId    Int                   @map("order_id")
+  fromStatus OrderStatus           @map("from_status")
+  toStatus   OrderStatus           @map("to_status")
+  changedBy  OrderStatusChangedBy  @map("changed_by")
+  createdAt  DateTime              @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("order_status_history")
+  @@index([orderId])
 }
 
 model Payment {
