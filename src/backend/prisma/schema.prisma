@@ -24,6 +24,20 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum PaymentMethod {
+  STRIPE
+  PAYPAL
+  COD
+  MOCK
+}
+
+enum OrderPaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
 enum OrderStatus {
   PENDING
   PAID
@@ -105,7 +119,8 @@ model Address {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  user User? @relation(fields: [userId], references: [id])
+  user   User?  @relation(fields: [userId], references: [id])
+  orders Order[]
 
   @@map("addresses")
   @@index([userId])
@@ -166,6 +181,7 @@ model ProductVariant {
 
   product       Product          @relation(fields: [productId], references: [id])
   inventoryLogs InventoryLog[]
+  orderItems    OrderItem[]
 
   @@map("product_variants")
   @@index([productId])
@@ -212,20 +228,31 @@ model InventoryLog {
 }
 
 model Order {
-  id              Int      @id @default(autoincrement())
-  userId          Int?     @map("user_id")
-  guestEmail      String?  @map("guest_email")
-  status          String   @default("PENDING") // ENUM: PENDING, PAID, SHIPPED
-  totalPrice      Decimal  @map("total_price")
-  shippingAddress String   @map("shipping_address")
-  createdAt       DateTime @default(now()) @map("created_at")
+  id            Int                @id @default(autoincrement())
+  userId        Int?               @map("user_id")
+  addressId     Int?               @map("address_id")
+  guestEmail    String?            @map("guest_email")
+  status        OrderStatus        @default(PENDING)
+  paymentStatus OrderPaymentStatus @default(PENDING) @map("payment_status")
+  paymentMethod PaymentMethod?     @map("payment_method")
+  currency      String             @default("USD")
+  totalPrice    Decimal            @map("total_price")
+  shippingFee   Decimal            @default(0) @map("shipping_fee")
+  taxAmount     Decimal            @default(0) @map("tax_amount")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @default(now()) @updatedAt @map("updated_at")
+  shippedAt     DateTime?          @map("shipped_at")
+  deliveredAt   DateTime?          @map("delivered_at")
 
   user          User?               @relation(fields: [userId], references: [id])
+  address       Address?            @relation(fields: [addressId], references: [id])
   items         OrderItem[]
   payment       Payment?
   statusHistory OrderStatusHistory[]
 
   @@map("orders")
+  @@index([userId])
+  @@index([addressId])
 }
 
 model OrderStatusHistory {
@@ -258,14 +285,19 @@ model Payment {
 }
 
 model OrderItem {
-  id              Int     @id @default(autoincrement())
-  orderId         Int     @map("order_id")
-  productId       Int     @map("product_id")
+  id              Int      @id @default(autoincrement())
+  orderId         Int      @map("order_id")
+  productId       Int      @map("product_id")
+  productVariantId Int?    @map("product_variant_id")
   quantity        Int
-  priceAtPurchase Decimal @map("price_at_purchase")
+  priceAtPurchase Decimal  @map("price_at_purchase")
 
-  order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  order          Order          @relation(fields: [orderId], references: [id])
+  product        Product        @relation(fields: [productId], references: [id])
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id])
 
   @@map("order_items")
+  @@index([orderId])
+  @@index([productId])
+  @@index([productVariantId])
 }
