@@ -44,11 +44,27 @@ enum InventoryChangeType {
   ADJUSTMENT
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum WellbeingTagType {
+  GOAL
+  FEATURE
+  NEED
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  role      String   @default("USER") // ENUM: USER, ADMIN
-  createdAt DateTime @default(now()) @map("created_at")
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  phone       String?  @map("phone")
+  role        UserRole @default(USER)
+  isActive    Boolean  @default(true) @map("is_active")
+  lastLoginAt DateTime? @map("last_login_at")
+  createdAt   DateTime @default(now()) @map("created_at")
 
   orders     Order[]
   identities UserIdentity[]
@@ -63,6 +79,8 @@ model UserIdentity {
   provider     String   // ENUM: EMAIL, GOOGLE, GITHUB
   providerId   String   @map("provider_id") // UK per provider
   passwordHash String?  @map("password_hash")
+  isVerified   Boolean  @default(false) @map("is_verified")
+  verifiedAt   DateTime? @map("verified_at")
   createdAt    DateTime @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id])
@@ -107,8 +125,11 @@ model Product {
   id                Int     @id @default(autoincrement())
   name              String
   description       String
+  sku               String? @unique
   price             Decimal
+  originalPrice     Decimal? @map("original_price")
   stockQuantity     Int     @default(0) @map("stock_quantity")
+  reorderLevel      Int     @default(0) @map("reorder_level")
   isVisible         Boolean @default(true) @map("is_visible")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
@@ -166,7 +187,7 @@ model ProductImage {
 model WellbeingTag {
   id   Int    @id @default(autoincrement())
   name String
-  type String // ENUM: GOAL, FEATURE, NEED
+  type WellbeingTagType
 
   products Product[]
 
