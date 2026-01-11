@@ -100,6 +100,7 @@ model UserIdentity {
   user User @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerId])
+  @@index([userId])
   @@map("user_identities")
 }
 
@@ -253,6 +254,8 @@ model Order {
   @@map("orders")
   @@index([userId])
   @@index([addressId])
+  @@index([status])
+  @@index([paymentStatus])
 }
 
 model OrderStatusHistory {
