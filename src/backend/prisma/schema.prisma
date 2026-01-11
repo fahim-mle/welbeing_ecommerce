@@ -10,6 +10,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
+  COD
+  MOCK
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -18,6 +32,7 @@ model User {
 
   orders     Order[]
   identities UserIdentity[]
+  addresses  Address[]
 
   @@map("users")
 }
@@ -34,6 +49,28 @@ model UserIdentity {
 
   @@unique([provider, providerId])
   @@map("user_identities")
+}
+
+model Address {
+  id          Int      @id @default(autoincrement())
+  userId      Int?     @map("user_id")
+  label       String
+  fullName    String   @map("full_name")
+  phone       String
+  streetLine1 String   @map("street_line_1")
+  streetLine2 String?  @map("street_line_2")
+  city        String
+  state       String
+  postalCode  String   @map("postal_code")
+  country     String
+  isDefault   Boolean  @default(false) @map("is_default")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("addresses")
+  @@index([userId])
 }
 
 model Category {
@@ -65,12 +102,31 @@ model Product {
   images       ProductImage[]
   tags         WellbeingTag[]
   orderItems   OrderItem[]
+  variants     ProductVariant[]
 
   @@map("products")
   @@index([categoryId])
   @@index([stockQuantity])
   @@index([isVisible])
   @@index([updatedAt])
+}
+
+model ProductVariant {
+  id            Int      @id @default(autoincrement())
+  productId     Int      @map("product_id")
+  sku           String   @unique
+  price         Decimal
+  stockQuantity Int      @default(0) @map("stock_quantity")
+  optionValues  Json     @map("option_values")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("product_variants")
+  @@index([productId])
+  @@index([isActive])
 }
 
 model ProductImage {
@@ -106,8 +162,24 @@ model Order {
 
   user       User?       @relation(fields: [userId], references: [id])
   items      OrderItem[]
+  payment    Payment?
 
   @@map("orders")
+}
+
+model Payment {
+  id            Int             @id @default(autoincrement())
+  orderId       Int             @unique @map("order_id")
+  provider      PaymentProvider
+  transactionId String          @map("transaction_id")
+  amount        Decimal
+  currency      String
+  status        PaymentStatus
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("payments")
 }
 
 model OrderItem {
