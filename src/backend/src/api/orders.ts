@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createOrder, findOrdersByUserId, OrderValidationError } from '../services/orderService';
+import { createOrder, findOrdersByUserId, OrderValidationError, ShippingAddressInput } from '../services/orderService';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { auth } from '../lib/auth';
 
@@ -39,6 +39,7 @@ router.post('/', async (req, res, next) => {
       guest_email: guestEmail,
       items,
       shipping_address: shippingAddress,
+      address_id: addressId,
       payment_placeholder: paymentPlaceholder,
       disclaimer_accepted: disclaimerAccepted,
     } = req.body ?? {};
@@ -60,6 +61,7 @@ router.post('/', async (req, res, next) => {
 
     const normalizedItems = items.map((item: any) => ({
       productId: Number(item.product_id),
+      productVariantId: item.product_variant_id ? Number(item.product_variant_id) : undefined,
       quantity: Number(item.quantity),
     }));
 
@@ -68,10 +70,34 @@ router.post('/', async (req, res, next) => {
       return;
     }
 
+    const parsedAddressId = addressId ? Number(addressId) : undefined;
+    if (addressId && Number.isNaN(parsedAddressId)) {
+      res.status(400).json({ success: false, error: 'address_id must be a number' });
+      return;
+    }
+
+    let normalizedAddress: ShippingAddressInput | undefined;
+    if (shippingAddress) {
+      const source = shippingAddress as Record<string, any>;
+      normalizedAddress = {
+        label: String(source.label ?? 'Shipping'),
+        fullName: String(source.full_name ?? source.fullName ?? ''),
+        phone: String(source.phone ?? ''),
+        streetLine1: String(source.street_line_1 ?? source.streetLine1 ?? ''),
+        streetLine2: source.street_line_2 ?? source.streetLine2 ?? null,
+        city: String(source.city ?? ''),
+        state: String(source.state ?? ''),
+        postalCode: String(source.postal_code ?? source.postalCode ?? ''),
+        country: String(source.country ?? ''),
+        isDefault: Boolean(source.is_default ?? source.isDefault ?? false),
+      };
+    }
+
     const order = await createOrder({
       userId,
       guestEmail: userId ? undefined : String(guestEmail || ''),
-      shippingAddress: String(shippingAddress || ''),
+      addressId: parsedAddressId,
+      shippingAddress: normalizedAddress,
       items: normalizedItems,
     });
 
