@@ -10,8 +10,13 @@ describe('Admin Products API (Secured)', () => {
   beforeAll(async () => {
     // Clean dependencies first
     await prisma.orderItem.deleteMany();
+    await prisma.payment.deleteMany();
+    await prisma.orderStatusHistory.deleteMany();
     await prisma.order.deleteMany();
+    await prisma.address.deleteMany();
+    await prisma.inventoryLog.deleteMany();
     await prisma.productImage.deleteMany();
+    await prisma.productVariant.deleteMany();
     await prisma.product.deleteMany();
     await prisma.category.deleteMany();
     await prisma.wellbeingTag.deleteMany();
@@ -22,6 +27,8 @@ describe('Admin Products API (Secured)', () => {
     const admin = await prisma.user.create({
       data: {
         email: 'admin@test.com',
+        firstName: 'Admin',
+        lastName: 'User',
         role: 'ADMIN',
       },
     });
@@ -31,6 +38,8 @@ describe('Admin Products API (Secured)', () => {
     const user = await prisma.user.create({
       data: {
         email: 'user@test.com',
+        firstName: 'Normal',
+        lastName: 'User',
         role: 'USER',
       },
     });

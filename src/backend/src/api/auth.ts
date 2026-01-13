@@ -21,6 +21,8 @@ router.post('/register', async (req: Request, res: Response) => {
     const passwordHash = await auth.hashPassword(password);
     const { user } = await userService.createUserWithIdentity(
       email,
+      req.body.firstName || 'User',
+      req.body.lastName || 'User',
       'EMAIL',
       email,
       passwordHash

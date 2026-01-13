@@ -85,7 +85,6 @@ router.put('/:id', async (req: Request, res: Response) => {
       categoryId,
       imageUrls,
       tagIds,
-      stockStatus,
       stockQuantity,
       isVisible,
       ingredients,
@@ -94,6 +93,10 @@ router.put('/:id', async (req: Request, res: Response) => {
       benefits,
       safetyDisclaimers,
     } = req.body;
+
+    if ('stockStatus' in req.body) {
+      return res.status(400).json({ message: 'stockStatus is deprecated. Use stockQuantity instead.' });
+    }
 
     const product = await catalogService.updateProduct(id, {
       name,

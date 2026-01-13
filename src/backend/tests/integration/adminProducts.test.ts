@@ -15,7 +15,7 @@ describe('Admin Product API', () => {
 
     // Create Admin User
     const admin = await prisma.user.create({
-        data: { email: 'admin_test_products@test.com', role: 'ADMIN' }
+        data: { email: 'admin_test_products@test.com', firstName: 'Admin', lastName: 'User', role: 'ADMIN' }
     });
     adminToken = auth.generateToken({ userId: admin.id, email: admin.email, role: admin.role });
 
@@ -80,7 +80,7 @@ describe('Admin Product API', () => {
           categoryId: categoryId,
           imageUrls: ['http://example.com/img1.jpg', 'http://example.com/img2.jpg'],
           tagIds: [tagId],
-          stockStatus: 'IN_STOCK'
+          stockQuantity: 100
         });
 
       expect(res.status).toBe(201);
@@ -114,7 +114,7 @@ describe('Admin Product API', () => {
                 description: 'Original',
                 price: 50,
                 categoryId: categoryId,
-                stockStatus: 'IN_STOCK'
+                stockQuantity: 50
             }
         });
         productId = product.id;

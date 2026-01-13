@@ -12,7 +12,7 @@ describe('Admin Orders API', () => {
     let admin = await prisma.user.findFirst({ where: { role: 'ADMIN' } });
     if (!admin) {
         // Create basic admin if not seeded
-        admin = await prisma.user.create({ data: { email: 'admin_test_orders@test.com', role: 'ADMIN' } });
+        admin = await prisma.user.create({ data: { email: 'admin_test_orders@test.com', firstName: 'Admin', lastName: 'User', role: 'ADMIN' } });
     }
     
     // Generate valid admin token
@@ -24,13 +24,24 @@ describe('Admin Orders API', () => {
 
     // Create a dummy order for testing
     const product = await prisma.product.create({
-        data: { name: 'Order Test Product', description: 'Desc', price: 50, stockStatus: 'IN_STOCK', category: { create: { name: 'OrderTestCat' } } }
+        data: { name: 'Order Test Product ' + Date.now(), description: 'Desc', price: 50, stockQuantity: 10, category: { create: { name: 'OrderTestCat ' + Date.now() } } }
     });
 
     const order = await prisma.order.create({
         data: {
             guestEmail: 'test@customer.com',
-            shippingAddress: '123 Test St',
+            address: {
+                create: {
+                    label: 'Test Address',
+                    fullName: 'Test Customer',
+                    phone: '1234567890',
+                    streetLine1: '123 Test St',
+                    city: 'Test City',
+                    state: 'TS',
+                    postalCode: '12345',
+                    country: 'USA'
+                }
+            },
             totalPrice: 50,
             status: 'PAID',
             items: {

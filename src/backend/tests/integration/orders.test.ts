@@ -15,7 +15,17 @@ describe('Orders API', () => {
           quantity: 1,
         },
       ],
-      shipping_address: '123 Wellness Way, Fit City, FC 12345',
+      shipping_address: {
+        label: 'Home',
+        full_name: 'Guest User',
+        phone: '1234567890',
+        street_line_1: '123 Wellness Way',
+        street_line_2: 'Apt 1',
+        city: 'Fit City',
+        state: 'FC',
+        postal_code: '12345',
+        country: 'USA'
+      },
       payment_placeholder: 'test-card',
       disclaimer_accepted: true,
     };

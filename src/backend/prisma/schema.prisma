@@ -10,14 +10,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
+  COD
+  MOCK
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  STRIPE
+  PAYPAL
+  COD
+  MOCK
+}
+
+enum OrderPaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum OrderStatusChangedBy {
+  SYSTEM
+  USER
+  ADMIN
+}
+
+enum InventoryChangeType {
+  ORDER
+  RESTOCK
+  ADJUSTMENT
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum WellbeingTagType {
+  GOAL
+  FEATURE
+  NEED
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  role      String   @default("USER") // ENUM: USER, ADMIN
-  createdAt DateTime @default(now()) @map("created_at")
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  phone       String?  @map("phone")
+  role        UserRole @default(USER)
+  isActive    Boolean  @default(true) @map("is_active")
+  lastLoginAt DateTime? @map("last_login_at")
+  createdAt   DateTime @default(now()) @map("created_at")
 
   orders     Order[]
   identities UserIdentity[]
+  addresses  Address[]
 
   @@map("users")
 }
@@ -28,12 +93,38 @@ model UserIdentity {
   provider     String   // ENUM: EMAIL, GOOGLE, GITHUB
   providerId   String   @map("provider_id") // UK per provider
   passwordHash String?  @map("password_hash")
+  isVerified   Boolean  @default(false) @map("is_verified")
+  verifiedAt   DateTime? @map("verified_at")
   createdAt    DateTime @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerId])
+  @@index([userId])
   @@map("user_identities")
+}
+
+model Address {
+  id          Int      @id @default(autoincrement())
+  userId      Int?     @map("user_id")
+  label       String
+  fullName    String   @map("full_name")
+  phone       String
+  streetLine1 String   @map("street_line_1")
+  streetLine2 String?  @map("street_line_2")
+  city        String
+  state       String
+  postalCode  String   @map("postal_code")
+  country     String
+  isDefault   Boolean  @default(false) @map("is_default")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user   User?  @relation(fields: [userId], references: [id])
+  orders Order[]
+
+  @@map("addresses")
+  @@index([userId])
 }
 
 model Category {
@@ -50,8 +141,11 @@ model Product {
   id                Int     @id @default(autoincrement())
   name              String
   description       String
+  sku               String? @unique
   price             Decimal
+  originalPrice     Decimal? @map("original_price")
   stockQuantity     Int     @default(0) @map("stock_quantity")
+  reorderLevel      Int     @default(0) @map("reorder_level")
   isVisible         Boolean @default(true) @map("is_visible")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
@@ -65,12 +159,34 @@ model Product {
   images       ProductImage[]
   tags         WellbeingTag[]
   orderItems   OrderItem[]
+  variants     ProductVariant[]
+  inventoryLogs InventoryLog[]
 
   @@map("products")
   @@index([categoryId])
   @@index([stockQuantity])
   @@index([isVisible])
   @@index([updatedAt])
+}
+
+model ProductVariant {
+  id            Int      @id @default(autoincrement())
+  productId     Int      @map("product_id")
+  sku           String   @unique
+  price         Decimal
+  stockQuantity Int      @default(0) @map("stock_quantity")
+  optionValues  Json     @map("option_values")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  product       Product          @relation(fields: [productId], references: [id])
+  inventoryLogs InventoryLog[]
+  orderItems    OrderItem[]
+
+  @@map("product_variants")
+  @@index([productId])
+  @@index([isActive])
 }
 
 model ProductImage {
@@ -88,37 +204,103 @@ model ProductImage {
 model WellbeingTag {
   id   Int    @id @default(autoincrement())
   name String
-  type String // ENUM: GOAL, FEATURE, NEED
+  type WellbeingTagType
 
   products Product[]
 
   @@map("wellbeing_tags")
 }
 
-model Order {
-  id              Int      @id @default(autoincrement())
-  userId          Int?     @map("user_id")
-  guestEmail      String?  @map("guest_email")
-  status          String   @default("PENDING") // ENUM: PENDING, PAID, SHIPPED
-  totalPrice      Decimal  @map("total_price")
-  shippingAddress String   @map("shipping_address")
-  createdAt       DateTime @default(now()) @map("created_at")
+model InventoryLog {
+  id               Int                 @id @default(autoincrement())
+  productId        Int?                @map("product_id")
+  productVariantId Int?                @map("product_variant_id")
+  changeType       InventoryChangeType @map("change_type")
+  quantityDelta    Int                 @map("quantity_delta")
+  referenceId      String?             @map("reference_id")
+  createdAt        DateTime            @default(now()) @map("created_at")
 
-  user       User?       @relation(fields: [userId], references: [id])
-  items      OrderItem[]
+  product        Product?        @relation(fields: [productId], references: [id])
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id])
+
+  @@map("inventory_logs")
+  @@index([productId])
+  @@index([productVariantId])
+}
+
+model Order {
+  id            Int                @id @default(autoincrement())
+  userId        Int?               @map("user_id")
+  addressId     Int?               @map("address_id")
+  guestEmail    String?            @map("guest_email")
+  status        OrderStatus        @default(PENDING)
+  paymentStatus OrderPaymentStatus @default(PENDING) @map("payment_status")
+  paymentMethod PaymentMethod?     @map("payment_method")
+  currency      String             @default("USD")
+  totalPrice    Decimal            @map("total_price")
+  shippingFee   Decimal            @default(0) @map("shipping_fee")
+  taxAmount     Decimal            @default(0) @map("tax_amount")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @default(now()) @updatedAt @map("updated_at")
+  shippedAt     DateTime?          @map("shipped_at")
+  deliveredAt   DateTime?          @map("delivered_at")
+
+  user          User?               @relation(fields: [userId], references: [id])
+  address       Address?            @relation(fields: [addressId], references: [id])
+  items         OrderItem[]
+  payment       Payment?
+  statusHistory OrderStatusHistory[]
 
   @@map("orders")
+  @@index([userId])
+  @@index([addressId])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+model OrderStatusHistory {
+  id         Int                   @id @default(autoincrement())
+  orderId    Int                   @map("order_id")
+  fromStatus OrderStatus           @map("from_status")
+  toStatus   OrderStatus           @map("to_status")
+  changedBy  OrderStatusChangedBy  @map("changed_by")
+  createdAt  DateTime              @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("order_status_history")
+  @@index([orderId])
+}
+
+model Payment {
+  id            Int             @id @default(autoincrement())
+  orderId       Int             @unique @map("order_id")
+  provider      PaymentProvider
+  transactionId String          @map("transaction_id")
+  amount        Decimal
+  currency      String
+  status        PaymentStatus
+  createdAt     DateTime        @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("payments")
 }
 
 model OrderItem {
-  id              Int     @id @default(autoincrement())
-  orderId         Int     @map("order_id")
-  productId       Int     @map("product_id")
+  id              Int      @id @default(autoincrement())
+  orderId         Int      @map("order_id")
+  productId       Int      @map("product_id")
+  productVariantId Int?    @map("product_variant_id")
   quantity        Int
-  priceAtPurchase Decimal @map("price_at_purchase")
+  priceAtPurchase Decimal  @map("price_at_purchase")
 
-  order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  order          Order          @relation(fields: [orderId], references: [id])
+  product        Product        @relation(fields: [productId], references: [id])
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id])
 
   @@map("order_items")
+  @@index([orderId])
+  @@index([productId])
+  @@index([productVariantId])
 }
