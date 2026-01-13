@@ -1,7 +1,9 @@
 import { createClient, RedisClientType } from 'redis';
 
 let client: RedisClientType | null = null;
-let connectionPromise: Promise<RedisClientType> | null = null;
+let initPromise: Promise<RedisClientType> | null = null;
+
+const isTestEnv = process.env.NODE_ENV === 'test';
 
 const getRedisUrl = () => {
   if (process.env.REDIS_URL) {
@@ -14,7 +16,11 @@ const getRedisUrl = () => {
 };
 
 const getClient = async () => {
-  if (!client) {
+  if (initPromise) {
+    return initPromise;
+  }
+
+  initPromise = (async () => {
     client = createClient({
       url: getRedisUrl(),
       password: process.env.REDIS_PASSWORD || undefined,
@@ -23,16 +29,19 @@ const getClient = async () => {
     client.on('error', (error: unknown) => {
       console.error('Redis client error:', error);
     });
-  }
 
-  if (!connectionPromise) {
-    connectionPromise = client.connect().then(() => client as RedisClientType);
-  }
+    await client.connect();
+    return client as RedisClientType;
+  })();
 
-  return connectionPromise;
+  return initPromise;
 };
 
 export const getCache = async (key: string) => {
+  if (isTestEnv) {
+    return null;
+  }
+
   try {
     const redis = await getClient();
     return await redis.get(key);
@@ -43,6 +52,10 @@ export const getCache = async (key: string) => {
 };
 
 export const setCache = async (key: string, value: string, ttlSeconds: number) => {
+  if (isTestEnv) {
+    return;
+  }
+
   try {
     const redis = await getClient();
     await redis.set(key, value, { EX: ttlSeconds });
@@ -52,6 +65,10 @@ export const setCache = async (key: string, value: string, ttlSeconds: number) =
 };
 
 export const deleteCache = async (key: string) => {
+  if (isTestEnv) {
+    return;
+  }
+
   try {
     const redis = await getClient();
     await redis.del(key);
@@ -61,10 +78,17 @@ export const deleteCache = async (key: string) => {
 };
 
 export const deleteByPattern = async (pattern: string) => {
+  if (isTestEnv) {
+    return;
+  }
+
   try {
     const redis = await getClient();
     for await (const key of redis.scanIterator({ MATCH: pattern })) {
-      await redis.del(key as string);
+      const cacheKey = Array.isArray(key) ? key[0] : key;
+      if (typeof cacheKey === 'string') {
+        await redis.del(cacheKey);
+      }
     }
   } catch (error) {
     console.error(`Redis pattern delete failed for ${pattern}:`, error);
