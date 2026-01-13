@@ -6,8 +6,13 @@ export const getProducts = async (filters: {
   tagId?: number;
   search?: string;
   includeOutOfStock?: boolean;
+  page?: number;
+  limit?: number;
 }) => {
   const where: Prisma.ProductWhereInput = {};
+  const page = filters.page ?? 1;
+  const limit = filters.limit ?? 20;
+  const skip = (page - 1) * limit;
 
   if (!filters.includeOutOfStock) {
     where.stockQuantity = { gt: 0 };
@@ -35,6 +40,11 @@ export const getProducts = async (filters: {
 
   return prisma.product.findMany({
     where,
+    skip,
+    take: limit,
+    orderBy: {
+      updatedAt: 'desc',
+    },
     include: {
       category: true,
       images: {

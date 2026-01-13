@@ -1,12 +1,6 @@
-import { Prisma } from '@prisma/client';
+import { OrderStatus, Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma';
-
-export class OrderValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'OrderValidationError';
-  }
-}
+import { BusinessRuleError, ValidationError } from '../types/shared';
 
 export interface OrderItemInput {
   productId: number;
@@ -32,7 +26,7 @@ const normalizeItems = (items: OrderItemInput[]) => {
 
   items.forEach((item) => {
     if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
-      throw new OrderValidationError('Item quantity must be a positive integer');
+      throw new ValidationError('Item quantity must be a positive integer');
     }
     const key = `${item.productId}:${item.productVariantId ?? 'base'}`;
     const current = itemMap.get(key);
@@ -54,6 +48,21 @@ export interface CreateOrderInput {
   items: OrderItemInput[];
 }
 
+export interface OrderRequestItemInput {
+  product_id: number | string;
+  product_variant_id?: number | string;
+  quantity: number | string;
+}
+
+export interface OrderRequestPayload {
+  guest_email?: string;
+  items?: OrderRequestItemInput[];
+  shipping_address?: Record<string, any>;
+  address_id?: number | string;
+  payment_placeholder?: string;
+  disclaimer_accepted?: boolean;
+}
+
 const validateShippingAddress = (shippingAddress: ShippingAddressInput) => {
   const requiredFields: Array<keyof ShippingAddressInput> = [
     'label',
@@ -69,9 +78,72 @@ const validateShippingAddress = (shippingAddress: ShippingAddressInput) => {
   for (const field of requiredFields) {
     const value = shippingAddress[field];
     if (!value || String(value).trim().length === 0) {
-      throw new OrderValidationError(`Shipping address ${field} is required`);
+      throw new ValidationError(`Shipping address ${field} is required`);
     }
   }
+};
+
+export const createOrderFromPayload = async (userId: number | undefined, payload: OrderRequestPayload) => {
+  const {
+    guest_email: guestEmail,
+    items,
+    shipping_address: shippingAddress,
+    address_id: addressId,
+    payment_placeholder: paymentPlaceholder,
+    disclaimer_accepted: disclaimerAccepted,
+  } = payload ?? {};
+
+  if (!paymentPlaceholder) {
+    throw new ValidationError('Payment placeholder is required');
+  }
+
+  if (!disclaimerAccepted) {
+    throw new ValidationError('Health disclaimer must be accepted');
+  }
+
+  if (!Array.isArray(items)) {
+    throw new ValidationError('Items must be an array');
+  }
+
+  const normalizedItems = items.map((item) => ({
+    productId: Number(item.product_id),
+    productVariantId: item.product_variant_id ? Number(item.product_variant_id) : undefined,
+    quantity: Number(item.quantity),
+  }));
+
+  if (normalizedItems.some((item) => Number.isNaN(item.productId))) {
+    throw new ValidationError('Each item must include a product_id');
+  }
+
+  const parsedAddressId = addressId ? Number(addressId) : undefined;
+  if (addressId && Number.isNaN(parsedAddressId)) {
+    throw new ValidationError('address_id must be a number');
+  }
+
+  let normalizedAddress: ShippingAddressInput | undefined;
+  if (shippingAddress) {
+    const source = shippingAddress as Record<string, any>;
+    normalizedAddress = {
+      label: String(source.label ?? 'Shipping'),
+      fullName: String(source.full_name ?? source.fullName ?? ''),
+      phone: String(source.phone ?? ''),
+      streetLine1: String(source.street_line_1 ?? source.streetLine1 ?? ''),
+      streetLine2: source.street_line_2 ?? source.streetLine2 ?? null,
+      city: String(source.city ?? ''),
+      state: String(source.state ?? ''),
+      postalCode: String(source.postal_code ?? source.postalCode ?? ''),
+      country: String(source.country ?? ''),
+      isDefault: Boolean(source.is_default ?? source.isDefault ?? false),
+    };
+  }
+
+  return createOrder({
+    userId,
+    guestEmail: userId ? undefined : guestEmail ? String(guestEmail) : undefined,
+    addressId: parsedAddressId,
+    shippingAddress: normalizedAddress,
+    items: normalizedItems,
+  });
 };
 
 export const createOrder = async ({
@@ -82,11 +154,11 @@ export const createOrder = async ({
   items,
 }: CreateOrderInput) => {
   if (!userId && !guestEmail) {
-    throw new OrderValidationError('User ID or guest email is required');
+    throw new ValidationError('User ID or guest email is required');
   }
 
   if (!addressId && !shippingAddress) {
-    throw new OrderValidationError('Shipping address is required');
+    throw new ValidationError('Shipping address is required');
   }
 
   if (shippingAddress) {
@@ -94,7 +166,7 @@ export const createOrder = async ({
   }
 
   if (!items.length) {
-    throw new OrderValidationError('Order must include at least one item');
+    throw new ValidationError('Order must include at least one item');
   }
 
   const normalizedItems = normalizeItems(items);
@@ -106,7 +178,7 @@ export const createOrder = async ({
     });
 
     if (products.length !== productIds.length) {
-      throw new OrderValidationError('One or more products were not found');
+      throw new ValidationError('One or more products were not found');
     }
 
     const productMap = new Map(products.map((product) => [product.id, product]));
@@ -114,15 +186,15 @@ export const createOrder = async ({
     for (const item of normalizedItems) {
       const product = productMap.get(item.productId);
       if (!product) {
-        throw new OrderValidationError('One or more products were not found');
+        throw new ValidationError('One or more products were not found');
       }
 
       if (product.stockQuantity <= 0) {
-        throw new OrderValidationError(`${product.name} is out of stock`);
+        throw new BusinessRuleError(`${product.name} is out of stock`);
       }
 
       if (product.stockQuantity < item.quantity) {
-        throw new OrderValidationError(
+        throw new BusinessRuleError(
           `${product.name} only has ${product.stockQuantity} in stock (requested: ${item.quantity})`
         );
       }
@@ -143,7 +215,7 @@ export const createOrder = async ({
         where: { id: resolvedAddressId },
       });
       if (!existingAddress) {
-        throw new OrderValidationError('Shipping address was not found');
+        throw new ValidationError('Shipping address was not found');
       }
     }
 
@@ -211,9 +283,15 @@ export const createOrder = async ({
   });
 };
 
-export const findOrdersByUserId = async (userId: number) => {
+export const findOrdersByUserId = async (userId: number, options?: { page?: number; limit?: number }) => {
+  const page = options?.page ?? 1;
+  const limit = options?.limit ?? 20;
+  const skip = (page - 1) * limit;
+
   return prisma.order.findMany({
     where: { userId },
+    skip,
+    take: limit,
     include: {
       address: true,
       items: {
@@ -224,5 +302,49 @@ export const findOrdersByUserId = async (userId: number) => {
       },
     },
     orderBy: { createdAt: 'desc' },
+  });
+};
+
+export const findAdminOrders = async (options?: { page?: number; limit?: number }) => {
+  const page = options?.page ?? 1;
+  const limit = options?.limit ?? 20;
+  const skip = (page - 1) * limit;
+
+  return prisma.order.findMany({
+    skip,
+    take: limit,
+    include: {
+      items: {
+        include: {
+          product: true,
+          productVariant: true,
+        },
+      },
+      user: {
+        select: {
+          email: true,
+          role: true,
+        },
+      },
+      address: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+};
+
+export const updateOrderStatus = async (orderId: number, status: OrderStatus) => {
+  const validStatuses: OrderStatus[] = ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+  if (!validStatuses.includes(status)) {
+    throw new ValidationError('Invalid status');
+  }
+
+  return prisma.order.update({
+    where: { id: orderId },
+    data: { status },
+    include: {
+      items: true,
+    },
   });
 };

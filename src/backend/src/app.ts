@@ -11,6 +11,7 @@ import adminProductsRouter from './api/admin/products';
 import adminOrdersRouter from './api/admin/orders';
 import authRouter from './api/auth';
 import { setupSwagger } from './swagger';
+import { AppError } from './types/shared';
 
 const app = express();
 
@@ -39,6 +40,11 @@ app.use((req, res, next) => {
 
 // Global Error Handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({ message: err.message });
+    return;
+  }
+
   console.error(err.stack);
   res.status(500).json({ message: 'Internal Server Error' });
 });
