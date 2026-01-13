@@ -283,9 +283,15 @@ export const createOrder = async ({
   });
 };
 
-export const findOrdersByUserId = async (userId: number) => {
+export const findOrdersByUserId = async (userId: number, options?: { page?: number; limit?: number }) => {
+  const page = options?.page ?? 1;
+  const limit = options?.limit ?? 20;
+  const skip = (page - 1) * limit;
+
   return prisma.order.findMany({
     where: { userId },
+    skip,
+    take: limit,
     include: {
       address: true,
       items: {
@@ -299,8 +305,14 @@ export const findOrdersByUserId = async (userId: number) => {
   });
 };
 
-export const findAdminOrders = async () => {
+export const findAdminOrders = async (options?: { page?: number; limit?: number }) => {
+  const page = options?.page ?? 1;
+  const limit = options?.limit ?? 20;
+  const skip = (page - 1) * limit;
+
   return prisma.order.findMany({
+    skip,
+    take: limit,
     include: {
       items: {
         include: {

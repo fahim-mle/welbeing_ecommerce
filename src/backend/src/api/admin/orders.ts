@@ -10,8 +10,19 @@ router.use(adminAuth);
 // GET /api/admin/orders
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const orders = await findAdminOrders();
-    res.json({ data: orders });
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const limit = req.query.limit ? Number(req.query.limit) : 20;
+
+    if (!Number.isInteger(page) || page <= 0) {
+      return res.status(400).json({ message: 'page must be a positive integer' });
+    }
+
+    if (!Number.isInteger(limit) || limit <= 0) {
+      return res.status(400).json({ message: 'limit must be a positive integer' });
+    }
+
+    const orders = await findAdminOrders({ page, limit });
+    res.json({ data: orders, page, limit });
   } catch (error) {
     console.error('Error fetching admin orders:', error);
     next(error);

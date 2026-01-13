@@ -10,8 +10,19 @@ router.use(adminAuth);
 // GET /api/admin/products - List all products
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const products = await catalogService.getProducts({ includeOutOfStock: true });
-    res.json(products);
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const limit = req.query.limit ? Number(req.query.limit) : 20;
+
+    if (!Number.isInteger(page) || page <= 0) {
+      return res.status(400).json({ message: 'page must be a positive integer' });
+    }
+
+    if (!Number.isInteger(limit) || limit <= 0) {
+      return res.status(400).json({ message: 'limit must be a positive integer' });
+    }
+
+    const products = await catalogService.getProducts({ includeOutOfStock: true, page, limit });
+    res.json({ data: products, page, limit });
   } catch (error: any) {
     console.error('Error fetching admin products:', error);
     res.status(500).json({ message: 'Error fetching products', error: error.message });

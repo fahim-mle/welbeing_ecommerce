@@ -69,8 +69,19 @@ router.get('/', authenticate, async (req, res) => {
     }
 
     try {
-        const orders = await findOrdersByUserId(userId);
-        res.json({ data: orders });
+        const page = req.query.page ? Number(req.query.page) : 1;
+        const limit = req.query.limit ? Number(req.query.limit) : 20;
+
+        if (!Number.isInteger(page) || page <= 0) {
+            return res.status(400).json({ message: 'page must be a positive integer' });
+        }
+
+        if (!Number.isInteger(limit) || limit <= 0) {
+            return res.status(400).json({ message: 'limit must be a positive integer' });
+        }
+
+        const orders = await findOrdersByUserId(userId, { page, limit });
+        res.json({ data: orders, page, limit });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Failed to fetch orders' });
