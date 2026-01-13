@@ -1,4 +1,4 @@
-import { User, UserIdentity } from '@prisma/client';
+import { User, UserIdentity, UserRole } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 
 export const userService = {
@@ -23,10 +23,12 @@ export const userService = {
   /**
    * Create a new user record.
    */
-  async createUser(email: string, role: string = 'USER'): Promise<User> {
+  async createUser(email: string, firstName: string, lastName: string, role: UserRole = 'USER'): Promise<User> {
     return prisma.user.create({
       data: {
         email,
+        firstName,
+        lastName,
         role,
       },
     });
@@ -74,15 +76,19 @@ export const userService = {
    */
   async createUserWithIdentity(
     email: string,
+    firstName: string,
+    lastName: string,
     provider: string,
     providerId: string,
     passwordHash?: string,
-    role: string = 'USER'
+    role: UserRole = 'USER'
   ) {
     return prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
           email,
+          firstName,
+          lastName,
           role,
         },
       });

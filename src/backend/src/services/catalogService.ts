@@ -75,7 +75,6 @@ export const createProduct = async (data: {
   name: string;
   description: string;
   price: number;
-  stockStatus?: string;
   stockQuantity?: number;
   isVisible?: boolean;
   ingredients?: string;
@@ -122,7 +121,6 @@ export const updateProduct = async (
     name?: string;
     description?: string;
     price?: number;
-    stockStatus?: string;
     stockQuantity?: number;
     isVisible?: boolean;
     ingredients?: string;
