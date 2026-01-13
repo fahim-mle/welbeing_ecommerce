@@ -5,6 +5,12 @@ import { auth } from '../lib/auth';
 
 const router = Router();
 
+// POST /api/orders
+// Address handling:
+// - Authenticated users: Provide address_id (existing saved address)
+// - Guest users: Provide shipping_address object (creates new address record)
+// - Either address_id OR shipping_address is required
+
 // GET /api/orders (My Orders)
 router.get('/', authenticate, async (req, res) => {
     const userId = (req as AuthRequest).user?.userId;
