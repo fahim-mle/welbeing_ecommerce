@@ -1,5 +1,7 @@
 import { User, UserIdentity, UserRole } from '@prisma/client';
+import { randomUUID } from 'crypto';
 import { prisma } from '../lib/prisma';
+import { auth } from '../lib/auth';
 
 export const userService = {
   /**
@@ -59,7 +61,11 @@ export const userService = {
     userId: number,
     provider: string,
     providerId: string,
-    passwordHash?: string
+    passwordHash?: string,
+    options?: {
+      isVerified?: boolean;
+      verifiedAt?: Date;
+    }
   ): Promise<UserIdentity> {
     return prisma.userIdentity.create({
       data: {
@@ -67,6 +73,8 @@ export const userService = {
         provider,
         providerId,
         passwordHash,
+        isVerified: options?.isVerified ?? false,
+        verifiedAt: options?.verifiedAt,
       },
     });
   },
@@ -104,5 +112,130 @@ export const userService = {
 
       return { user, identity };
     });
+  },
+
+  async markIdentityVerified(userId: number, provider: string) {
+    await prisma.userIdentity.updateMany({
+      where: { userId, provider },
+      data: {
+        isVerified: true,
+        verifiedAt: new Date(),
+      },
+    });
+  },
+
+  async createRefreshToken(userId: number, ttlHours = 24 * 7) {
+    const token = randomUUID();
+    const expiresAt = new Date(Date.now() + ttlHours * 60 * 60 * 1000);
+
+    await prisma.refreshToken.create({
+      data: {
+        token,
+        userId,
+        expiresAt,
+      },
+    });
+
+    return { token, expiresAt };
+  },
+
+  async rotateRefreshToken(existingToken: string, ttlHours = 24 * 7) {
+    const stored = await prisma.refreshToken.findUnique({
+      where: { token: existingToken },
+    });
+
+    if (!stored || stored.expiresAt < new Date()) {
+      return null;
+    }
+
+    await prisma.refreshToken.delete({ where: { token: existingToken } });
+    const next = await this.createRefreshToken(stored.userId, ttlHours);
+    return { userId: stored.userId, token: next.token, expiresAt: next.expiresAt };
+  },
+
+  async revokeRefreshToken(token: string) {
+    await prisma.refreshToken.deleteMany({ where: { token } });
+  },
+
+  async createEmailVerificationToken(userId: number, ttlHours = 24) {
+    const token = randomUUID();
+    const expiresAt = new Date(Date.now() + ttlHours * 60 * 60 * 1000);
+
+    await prisma.emailVerificationToken.deleteMany({ where: { userId } });
+    await prisma.emailVerificationToken.create({
+      data: {
+        token,
+        userId,
+        expiresAt,
+      },
+    });
+
+    return { token, expiresAt };
+  },
+
+  async verifyEmailToken(token: string) {
+    const record = await prisma.emailVerificationToken.findUnique({
+      where: { token },
+    });
+
+    if (!record || record.expiresAt < new Date()) {
+      return null;
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.userIdentity.updateMany({
+        where: { userId: record.userId, provider: 'EMAIL' },
+        data: {
+          isVerified: true,
+          verifiedAt: new Date(),
+        },
+      });
+      await tx.emailVerificationToken.delete({ where: { token } });
+    });
+
+    return record.userId;
+  },
+
+  async createPasswordResetToken(email: string, ttlHours = 2) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return null;
+    }
+
+    const token = randomUUID();
+    const expiresAt = new Date(Date.now() + ttlHours * 60 * 60 * 1000);
+
+    await prisma.passwordResetToken.deleteMany({ where: { userId: user.id } });
+    await prisma.passwordResetToken.create({
+      data: {
+        token,
+        userId: user.id,
+        expiresAt,
+      },
+    });
+
+    return { token, expiresAt, user };
+  },
+
+  async resetPassword(token: string, newPassword: string) {
+    const record = await prisma.passwordResetToken.findUnique({
+      where: { token },
+    });
+
+    if (!record || record.expiresAt < new Date()) {
+      return null;
+    }
+
+    const passwordHash = await auth.hashPassword(newPassword);
+
+    await prisma.$transaction(async (tx) => {
+      await tx.userIdentity.updateMany({
+        where: { userId: record.userId, provider: 'EMAIL' },
+        data: { passwordHash },
+      });
+      await tx.passwordResetToken.delete({ where: { token } });
+    });
+
+    return record.userId;
   },
 };

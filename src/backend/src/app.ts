@@ -14,6 +14,7 @@ import authRouter from './api/auth';
 import { setupSwagger } from './swagger';
 import { AppError } from './types/shared';
 import { logger } from './lib/logger';
+import { apiLimiter, authLimiter } from './middleware/rateLimit';
 
 const app = express();
 
@@ -30,12 +31,16 @@ app.use((req, res, next) => {
 
 setupSwagger(app);
 
-app.use('/api/auth', authRouter);
-app.use('/api/products', productsRouter);
-app.use('/api/orders', ordersRouter);
-app.use('/api/admin/products', adminProductsRouter);
-app.use('/api/admin/orders', adminOrdersRouter);
-app.use('/api', metadataRouter); // /api/categories, /api/tags
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.use('/api/auth', authLimiter, authRouter);
+app.use('/api/products', apiLimiter, productsRouter);
+app.use('/api/orders', apiLimiter, ordersRouter);
+app.use('/api/admin/products', apiLimiter, adminProductsRouter);
+app.use('/api/admin/orders', apiLimiter, adminOrdersRouter);
+app.use('/api', apiLimiter, metadataRouter); // /api/categories, /api/tags
 
 app.get('/', (req, res) => {
   res.json({ message: 'Health and Wellbeing Store API' });

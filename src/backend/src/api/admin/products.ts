@@ -2,6 +2,8 @@ import { Request, Response, Router } from 'express';
 import { adminAuth } from '../../middleware/adminAuth';
 import * as catalogService from '../../services/catalogService';
 import { logger } from '../../lib/logger';
+import { validateBody } from '../../middleware/validation';
+import { createProductSchema, updateProductSchema } from '../../schemas/products';
 
 const router = Router();
 
@@ -32,7 +34,7 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // POST /api/admin/products - Create Product
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', validateBody(createProductSchema), async (req: Request, res: Response) => {
   try {
     const {
       name,
@@ -48,10 +50,6 @@ router.post('/', async (req: Request, res: Response) => {
       benefits,
       safetyDisclaimers,
     } = req.body;
-
-    if (!name || !description || !price || !categoryId) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
 
     if (price !== undefined && Number(price) <= 0) {
       return res.status(400).json({ message: 'Price must be greater than 0' });
@@ -85,7 +83,7 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 // PUT /api/admin/products/:id - Update Product
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', validateBody(updateProductSchema), async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   try {
     if (isNaN(id)) {
