@@ -105,7 +105,7 @@ router.post('/', async (req, res, next) => {
   try {
     const parsed = createOrderSchema.safeParse(req.body ?? {});
     if (!parsed.success) {
-      const message = parsed.error.errors.map((err) => err.message).join('; ');
+      const message = parsed.error.issues.map((issue) => issue.message).join('; ');
       throw new ValidationError(message || 'Invalid order payload');
     }
 
