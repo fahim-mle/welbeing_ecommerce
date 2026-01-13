@@ -57,6 +57,8 @@ router.post('/register', validateBody(registerSchema), async (req: Request, res:
       passwordHash
     );
 
+    await userService.linkGuestOrders(user.email, user.id);
+
     const accessToken = createAccessToken({ id: user.id, email: user.email, role: user.role });
     const refreshToken = await userService.createRefreshToken(user.id);
     const verification = await userService.createEmailVerificationToken(user.id);
@@ -95,6 +97,7 @@ router.post('/login', validateBody(loginSchema), async (req: Request, res: Respo
     }
 
     const user = identity.user;
+    await userService.linkGuestOrders(user.email, user.id);
     const accessToken = createAccessToken({ id: user.id, email: user.email, role: user.role });
     const refreshToken = await userService.createRefreshToken(user.id);
 

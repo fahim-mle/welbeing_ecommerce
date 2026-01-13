@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { createOrderFromPayload, findOrdersByUserId } from '../services/orderService';
+import { cancelOrder, createOrderFromPayload, findOrderById, findOrdersByUserId } from '../services/orderService';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { auth } from '../lib/auth';
 import { ValidationError } from '../types/shared';
 import { logger } from '../lib/logger';
+import { emailService } from '../lib/email';
 
 const router = Router();
 
@@ -88,6 +89,61 @@ router.get('/', authenticate, async (req, res) => {
         logger.error('Failed to fetch orders', { requestId, error, userId });
         res.status(500).json({ message: 'Failed to fetch orders' });
     }
+});
+
+// GET /api/orders/:id
+router.get('/:id', authenticate, async (req, res) => {
+  const userId = (req as AuthRequest).user?.userId;
+  const orderId = Number(req.params.id);
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  if (Number.isNaN(orderId)) {
+    return res.status(400).json({ message: 'Invalid order ID' });
+  }
+
+  try {
+    const order = await findOrderById(orderId);
+    if (!order || order.userId !== userId) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json({ data: order });
+  } catch (error) {
+    const requestId = (req as AuthRequest & { requestId?: string }).requestId;
+    logger.error('Failed to fetch order', { requestId, error, orderId, userId });
+    res.status(500).json({ message: 'Failed to fetch order' });
+  }
+});
+
+// POST /api/orders/:id/cancel
+router.post('/:id/cancel', authenticate, async (req, res) => {
+  const userId = (req as AuthRequest).user?.userId;
+  const orderId = Number(req.params.id);
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  if (Number.isNaN(orderId)) {
+    return res.status(400).json({ message: 'Invalid order ID' });
+  }
+
+  try {
+    const order = await cancelOrder(orderId, userId);
+    const recipient = order.user?.email ?? order.guestEmail;
+    if (recipient) {
+      await emailService.sendOrderStatusUpdate(recipient, order.id, order.status);
+    }
+
+    res.json({ data: order });
+  } catch (error) {
+    const requestId = (req as AuthRequest & { requestId?: string }).requestId;
+    logger.error('Failed to cancel order', { requestId, error, orderId, userId });
+    res.status(500).json({ message: 'Failed to cancel order' });
+  }
 });
 
 router.post('/', async (req, res, next) => {

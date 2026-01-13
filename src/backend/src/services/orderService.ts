@@ -1,6 +1,15 @@
-import { OrderStatus, Prisma } from '@prisma/client';
+import {
+  InventoryChangeType,
+  OrderPaymentStatus,
+  OrderStatus,
+  PaymentProvider,
+  PaymentStatus,
+  Prisma,
+} from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import { BusinessRuleError, ValidationError } from '../types/shared';
+import { paymentService } from './paymentService';
+import { emailService } from '../lib/email';
 
 export interface OrderItemInput {
   productId: number;
@@ -46,6 +55,7 @@ export interface CreateOrderInput {
   addressId?: number;
   shippingAddress?: ShippingAddressInput;
   items: OrderItemInput[];
+  paymentToken: string;
 }
 
 export interface OrderRequestItemInput {
@@ -143,6 +153,7 @@ export const createOrderFromPayload = async (userId: number | undefined, payload
     addressId: parsedAddressId,
     shippingAddress: normalizedAddress,
     items: normalizedItems,
+    paymentToken: String(paymentPlaceholder),
   });
 };
 
@@ -152,6 +163,7 @@ export const createOrder = async ({
   addressId,
   shippingAddress,
   items,
+  paymentToken,
 }: CreateOrderInput) => {
   if (!userId && !guestEmail) {
     throw new ValidationError('User ID or guest email is required');
@@ -172,7 +184,7 @@ export const createOrder = async ({
   const normalizedItems = normalizeItems(items);
   const productIds = normalizedItems.map((item) => item.productId);
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const products = await tx.product.findMany({
       where: { id: { in: productIds } },
     });
@@ -243,8 +255,8 @@ export const createOrder = async ({
         userId,
         guestEmail,
         addressId: resolvedAddressId,
-        status: 'PENDING',
-        paymentStatus: 'PENDING',
+        status: OrderStatus.PENDING,
+        paymentStatus: OrderPaymentStatus.PENDING,
         totalPrice,
         items: {
           create: normalizedItems.map((item) => ({
@@ -263,11 +275,15 @@ export const createOrder = async ({
             productVariant: true,
           },
         },
+        user: {
+          select: {
+            email: true,
+          },
+        },
       },
     });
 
     for (const item of normalizedItems) {
-      const product = productMap.get(item.productId)!;
       await tx.product.update({
         where: {
           id: item.productId,
@@ -277,10 +293,80 @@ export const createOrder = async ({
           stockQuantity: { decrement: item.quantity },
         },
       });
+
+      if (item.productVariantId) {
+        await tx.productVariant.update({
+          where: {
+            id: item.productVariantId,
+            stockQuantity: { gte: item.quantity },
+          },
+          data: {
+            stockQuantity: { decrement: item.quantity },
+          },
+        });
+      }
+
+      await tx.inventoryLog.create({
+        data: {
+          productId: item.productId,
+          productVariantId: item.productVariantId ?? null,
+          changeType: InventoryChangeType.ORDER,
+          quantityDelta: -item.quantity,
+          referenceId: String(order.id),
+        },
+      });
     }
 
-    return order;
+    const paymentResult = await paymentService.processPayment(totalPrice.toNumber(), paymentToken);
+    const paymentVerified = await paymentService.verifyPayment(paymentResult.transactionId);
+    const paymentStatus = paymentVerified ? PaymentStatus.SUCCESS : PaymentStatus.FAILED;
+    const orderPaymentStatus = paymentVerified ? OrderPaymentStatus.PAID : OrderPaymentStatus.FAILED;
+    const orderStatus = paymentVerified ? OrderStatus.PAID : OrderStatus.PENDING;
+
+    await tx.payment.create({
+      data: {
+        orderId: order.id,
+        provider: paymentResult.provider ?? PaymentProvider.MOCK,
+        transactionId: paymentResult.transactionId,
+        amount: totalPrice,
+        currency: order.currency,
+        status: paymentStatus,
+      },
+    });
+
+    const updatedOrder = await tx.order.update({
+      where: { id: order.id },
+      data: {
+        status: orderStatus,
+        paymentStatus: orderPaymentStatus,
+      },
+      include: {
+        address: true,
+        items: {
+          include: {
+            product: true,
+            productVariant: true,
+          },
+        },
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    });
+
+    return { order: updatedOrder, paymentVerified };
   });
+
+  if (result.paymentVerified) {
+    const recipient = result.order.user?.email ?? result.order.guestEmail;
+    if (recipient) {
+      await emailService.sendOrderConfirmation(recipient, result.order.id);
+    }
+  }
+
+  return result.order;
 };
 
 export const findOrdersByUserId = async (userId: number, options?: { page?: number; limit?: number }) => {
@@ -302,6 +388,106 @@ export const findOrdersByUserId = async (userId: number, options?: { page?: numb
       },
     },
     orderBy: { createdAt: 'desc' },
+  });
+};
+
+export const findOrderById = async (orderId: number) => {
+  return prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      address: true,
+      items: {
+        include: {
+          product: true,
+          productVariant: true,
+        },
+      },
+      user: {
+        select: {
+          email: true,
+        },
+      },
+    },
+  });
+};
+
+export const cancelOrder = async (orderId: number, userId?: number) => {
+  return prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: true,
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      throw new ValidationError('Order not found');
+    }
+
+    if (userId && order.userId !== userId) {
+      throw new ValidationError('Order not found');
+    }
+
+    const cancellableStatuses: OrderStatus[] = [OrderStatus.PENDING, OrderStatus.PAID];
+    if (!cancellableStatuses.includes(order.status)) {
+      throw new BusinessRuleError('Order cannot be cancelled');
+    }
+
+    for (const item of order.items) {
+      await tx.product.update({
+        where: { id: item.productId },
+        data: { stockQuantity: { increment: item.quantity } },
+      });
+
+      if (item.productVariantId) {
+        await tx.productVariant.update({
+          where: { id: item.productVariantId },
+          data: { stockQuantity: { increment: item.quantity } },
+        });
+      }
+
+      await tx.inventoryLog.create({
+        data: {
+          productId: item.productId,
+          productVariantId: item.productVariantId ?? null,
+          changeType: InventoryChangeType.ADJUSTMENT,
+          quantityDelta: item.quantity,
+          referenceId: String(order.id),
+        },
+      });
+    }
+
+    const updated = await tx.order.update({
+      where: { id: order.id },
+      data: {
+        status: OrderStatus.CANCELLED,
+        paymentStatus: order.paymentStatus === OrderPaymentStatus.PAID ? OrderPaymentStatus.REFUNDED : order.paymentStatus,
+      },
+      include: {
+        items: true,
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    });
+
+    await tx.orderStatusHistory.create({
+      data: {
+        orderId: order.id,
+        fromStatus: order.status,
+        toStatus: OrderStatus.CANCELLED,
+        changedBy: userId ? 'USER' : 'SYSTEM',
+      },
+    });
+
+    return updated;
   });
 };
 
@@ -340,11 +526,47 @@ export const updateOrderStatus = async (orderId: number, status: OrderStatus) =>
     throw new ValidationError('Invalid status');
   }
 
-  return prisma.order.update({
-    where: { id: orderId },
-    data: { status },
-    include: {
-      items: true,
-    },
+  const result = await prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: {
+          select: { email: true },
+        },
+      },
+    });
+
+    if (!order) {
+      throw new ValidationError('Order not found');
+    }
+
+    const updated = await tx.order.update({
+      where: { id: orderId },
+      data: { status },
+      include: {
+        items: true,
+        user: {
+          select: { email: true },
+        },
+      },
+    });
+
+    await tx.orderStatusHistory.create({
+      data: {
+        orderId: order.id,
+        fromStatus: order.status,
+        toStatus: status,
+        changedBy: 'ADMIN',
+      },
+    });
+
+    return updated;
   });
+
+  const recipient = result.user?.email ?? result.guestEmail;
+  if (recipient) {
+    await emailService.sendOrderStatusUpdate(recipient, result.id, status);
+  }
+
+  return result;
 };

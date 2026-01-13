@@ -10,7 +10,12 @@ import ordersRouter from './api/orders';
 import productsRouter from './api/products';
 import adminProductsRouter from './api/admin/products';
 import adminOrdersRouter from './api/admin/orders';
+import adminCatalogRouter from './api/admin/catalog';
+import adminUsersRouter from './api/admin/users';
+import adminAnalyticsRouter from './api/admin/analytics';
 import authRouter from './api/auth';
+import usersRouter from './api/users';
+import addressesRouter from './api/addresses';
 import { setupSwagger } from './swagger';
 import { AppError } from './types/shared';
 import { logger } from './lib/logger';
@@ -36,10 +41,15 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authLimiter, authRouter);
+app.use('/api', apiLimiter, usersRouter);
+app.use('/api/addresses', apiLimiter, addressesRouter);
 app.use('/api/products', apiLimiter, productsRouter);
 app.use('/api/orders', apiLimiter, ordersRouter);
 app.use('/api/admin/products', apiLimiter, adminProductsRouter);
 app.use('/api/admin/orders', apiLimiter, adminOrdersRouter);
+app.use('/api/admin/catalog', apiLimiter, adminCatalogRouter);
+app.use('/api/admin/users', apiLimiter, adminUsersRouter);
+app.use('/api/admin/analytics', apiLimiter, adminAnalyticsRouter);
 app.use('/api', apiLimiter, metadataRouter); // /api/categories, /api/tags
 
 app.get('/', (req, res) => {

@@ -238,4 +238,142 @@ export const userService = {
 
     return record.userId;
   },
+
+  async updateProfile(userId: number, data: { firstName?: string; lastName?: string; phone?: string }) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+      },
+    });
+  },
+
+  async updatePassword(userId: number, password: string) {
+    const passwordHash = await auth.hashPassword(password);
+    await prisma.userIdentity.updateMany({
+      where: { userId, provider: 'EMAIL' },
+      data: { passwordHash },
+    });
+  },
+
+  async linkGuestOrders(email: string, userId: number) {
+    await prisma.order.updateMany({
+      where: {
+        guestEmail: email,
+        userId: null,
+      },
+      data: {
+        userId,
+        guestEmail: null,
+      },
+    });
+  },
+
+  async listUsers(options?: { page?: number; limit?: number }) {
+    const page = options?.page ?? 1;
+    const limit = options?.limit ?? 20;
+    const skip = (page - 1) * limit;
+
+    return prisma.user.findMany({
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    });
+  },
+
+  async updateUser(userId: number, data: { role?: UserRole; isActive?: boolean }) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        role: data.role,
+        isActive: data.isActive,
+      },
+    });
+  },
+
+  async listAddresses(userId: number) {
+    return prisma.address.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
+  },
+
+  async createAddress(userId: number, data: {
+    label: string;
+    fullName: string;
+    phone: string;
+    streetLine1: string;
+    streetLine2?: string | null;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+    isDefault?: boolean;
+  }) {
+    return prisma.address.create({
+      data: {
+        userId,
+        label: data.label,
+        fullName: data.fullName,
+        phone: data.phone,
+        streetLine1: data.streetLine1,
+        streetLine2: data.streetLine2 ?? null,
+        city: data.city,
+        state: data.state,
+        postalCode: data.postalCode,
+        country: data.country,
+        isDefault: data.isDefault ?? false,
+      },
+    });
+  },
+
+  async updateAddress(userId: number, addressId: number, data: {
+    label?: string;
+    fullName?: string;
+    phone?: string;
+    streetLine1?: string;
+    streetLine2?: string | null;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
+    isDefault?: boolean;
+  }) {
+    const existing = await prisma.address.findFirst({
+      where: { id: addressId, userId },
+    });
+    if (!existing) {
+      return null;
+    }
+
+    return prisma.address.update({
+      where: { id: addressId },
+      data: {
+        label: data.label,
+        fullName: data.fullName,
+        phone: data.phone,
+        streetLine1: data.streetLine1,
+        streetLine2: data.streetLine2 ?? undefined,
+        city: data.city,
+        state: data.state,
+        postalCode: data.postalCode,
+        country: data.country,
+        isDefault: data.isDefault,
+      },
+    });
+  },
+
+  async deleteAddress(userId: number, addressId: number) {
+    const existing = await prisma.address.findFirst({
+      where: { id: addressId, userId },
+    });
+    if (!existing) {
+      return false;
+    }
+
+    await prisma.address.delete({ where: { id: addressId } });
+    return true;
+  },
 };
