@@ -1,12 +1,6 @@
 import { OrderStatus, Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma';
-
-export class OrderValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'OrderValidationError';
-  }
-}
+import { BusinessRuleError, ValidationError } from '../types/shared';
 
 export interface OrderItemInput {
   productId: number;
@@ -32,7 +26,7 @@ const normalizeItems = (items: OrderItemInput[]) => {
 
   items.forEach((item) => {
     if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
-      throw new OrderValidationError('Item quantity must be a positive integer');
+      throw new ValidationError('Item quantity must be a positive integer');
     }
     const key = `${item.productId}:${item.productVariantId ?? 'base'}`;
     const current = itemMap.get(key);
@@ -84,7 +78,7 @@ const validateShippingAddress = (shippingAddress: ShippingAddressInput) => {
   for (const field of requiredFields) {
     const value = shippingAddress[field];
     if (!value || String(value).trim().length === 0) {
-      throw new OrderValidationError(`Shipping address ${field} is required`);
+      throw new ValidationError(`Shipping address ${field} is required`);
     }
   }
 };
@@ -100,15 +94,15 @@ export const createOrderFromPayload = async (userId: number | undefined, payload
   } = payload ?? {};
 
   if (!paymentPlaceholder) {
-    throw new OrderValidationError('Payment placeholder is required');
+    throw new ValidationError('Payment placeholder is required');
   }
 
   if (!disclaimerAccepted) {
-    throw new OrderValidationError('Health disclaimer must be accepted');
+    throw new ValidationError('Health disclaimer must be accepted');
   }
 
   if (!Array.isArray(items)) {
-    throw new OrderValidationError('Items must be an array');
+    throw new ValidationError('Items must be an array');
   }
 
   const normalizedItems = items.map((item) => ({
@@ -118,12 +112,12 @@ export const createOrderFromPayload = async (userId: number | undefined, payload
   }));
 
   if (normalizedItems.some((item) => Number.isNaN(item.productId))) {
-    throw new OrderValidationError('Each item must include a product_id');
+    throw new ValidationError('Each item must include a product_id');
   }
 
   const parsedAddressId = addressId ? Number(addressId) : undefined;
   if (addressId && Number.isNaN(parsedAddressId)) {
-    throw new OrderValidationError('address_id must be a number');
+    throw new ValidationError('address_id must be a number');
   }
 
   let normalizedAddress: ShippingAddressInput | undefined;
@@ -160,11 +154,11 @@ export const createOrder = async ({
   items,
 }: CreateOrderInput) => {
   if (!userId && !guestEmail) {
-    throw new OrderValidationError('User ID or guest email is required');
+    throw new ValidationError('User ID or guest email is required');
   }
 
   if (!addressId && !shippingAddress) {
-    throw new OrderValidationError('Shipping address is required');
+    throw new ValidationError('Shipping address is required');
   }
 
   if (shippingAddress) {
@@ -172,7 +166,7 @@ export const createOrder = async ({
   }
 
   if (!items.length) {
-    throw new OrderValidationError('Order must include at least one item');
+    throw new ValidationError('Order must include at least one item');
   }
 
   const normalizedItems = normalizeItems(items);
@@ -184,7 +178,7 @@ export const createOrder = async ({
     });
 
     if (products.length !== productIds.length) {
-      throw new OrderValidationError('One or more products were not found');
+      throw new ValidationError('One or more products were not found');
     }
 
     const productMap = new Map(products.map((product) => [product.id, product]));
@@ -192,15 +186,15 @@ export const createOrder = async ({
     for (const item of normalizedItems) {
       const product = productMap.get(item.productId);
       if (!product) {
-        throw new OrderValidationError('One or more products were not found');
+        throw new ValidationError('One or more products were not found');
       }
 
       if (product.stockQuantity <= 0) {
-        throw new OrderValidationError(`${product.name} is out of stock`);
+        throw new BusinessRuleError(`${product.name} is out of stock`);
       }
 
       if (product.stockQuantity < item.quantity) {
-        throw new OrderValidationError(
+        throw new BusinessRuleError(
           `${product.name} only has ${product.stockQuantity} in stock (requested: ${item.quantity})`
         );
       }
@@ -221,7 +215,7 @@ export const createOrder = async ({
         where: { id: resolvedAddressId },
       });
       if (!existingAddress) {
-        throw new OrderValidationError('Shipping address was not found');
+        throw new ValidationError('Shipping address was not found');
       }
     }
 
@@ -331,7 +325,7 @@ export const findAdminOrders = async () => {
 export const updateOrderStatus = async (orderId: number, status: OrderStatus) => {
   const validStatuses: OrderStatus[] = ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
   if (!validStatuses.includes(status)) {
-    throw new OrderValidationError('Invalid status');
+    throw new ValidationError('Invalid status');
   }
 
   return prisma.order.update({

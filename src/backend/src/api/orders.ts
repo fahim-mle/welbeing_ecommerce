@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createOrderFromPayload, findOrdersByUserId, OrderValidationError } from '../services/orderService';
+import { createOrderFromPayload, findOrdersByUserId } from '../services/orderService';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { auth } from '../lib/auth';
 
@@ -44,10 +44,6 @@ router.post('/', async (req, res, next) => {
     const order = await createOrderFromPayload(userId, req.body ?? {});
     res.status(201).json({ success: true, data: order });
   } catch (error) {
-    if (error instanceof OrderValidationError) {
-      res.status(400).json({ success: false, error: error.message });
-      return;
-    }
     next(error);
   }
 });

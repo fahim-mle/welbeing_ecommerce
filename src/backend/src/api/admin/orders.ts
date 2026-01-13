@@ -1,6 +1,6 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { adminAuth } from '../../middleware/adminAuth';
-import { findAdminOrders, OrderValidationError, updateOrderStatus } from '../../services/orderService';
+import { findAdminOrders, updateOrderStatus } from '../../services/orderService';
 
 const router = Router();
 
@@ -8,18 +8,18 @@ const router = Router();
 router.use(adminAuth);
 
 // GET /api/admin/orders
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const orders = await findAdminOrders();
     res.json({ data: orders });
   } catch (error) {
     console.error('Error fetching admin orders:', error);
-    res.status(500).json({ message: 'Failed to fetch orders' });
+    next(error);
   }
 });
 
 // PATCH /api/admin/orders/:id/status
-router.patch('/:id/status', async (req: Request, res: Response) => {
+router.patch('/:id/status', async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   const { status } = req.body;
   const orderId = Number(id);
@@ -32,11 +32,8 @@ router.patch('/:id/status', async (req: Request, res: Response) => {
     const order = await updateOrderStatus(orderId, status);
     res.json({ data: order });
   } catch (error) {
-    if (error instanceof OrderValidationError) {
-      return res.status(400).json({ message: error.message });
-    }
     console.error('Error updating order status:', error);
-    res.status(500).json({ message: 'Failed to update order status' });
+    next(error);
   }
 });
 
