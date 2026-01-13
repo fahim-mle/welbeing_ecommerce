@@ -3,6 +3,7 @@ import 'dotenv/config';
 import express, { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import { randomUUID } from 'crypto';
 
 import metadataRouter from './api/metadata';
 import ordersRouter from './api/orders';
@@ -12,6 +13,7 @@ import adminOrdersRouter from './api/admin/orders';
 import authRouter from './api/auth';
 import { setupSwagger } from './swagger';
 import { AppError } from './types/shared';
+import { logger } from './lib/logger';
 
 const app = express();
 
@@ -19,6 +21,12 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+app.use((req, res, next) => {
+  const requestId = req.headers['x-request-id']?.toString() ?? randomUUID();
+  (req as Request & { requestId?: string }).requestId = requestId;
+  res.setHeader('x-request-id', requestId);
+  next();
+});
 
 setupSwagger(app);
 
@@ -40,12 +48,24 @@ app.use((req, res, next) => {
 
 // Global Error Handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  const requestId = (req as Request & { requestId?: string }).requestId;
   if (err instanceof AppError) {
+    logger.warn('Handled application error', {
+      requestId,
+      error: err,
+      path: req.path,
+      method: req.method,
+    });
     res.status(err.statusCode).json({ message: err.message });
     return;
   }
 
-  console.error(err.stack);
+  logger.error('Unhandled error', {
+    requestId,
+    error: err,
+    path: req.path,
+    method: req.method,
+  });
   res.status(500).json({ message: 'Internal Server Error' });
 });
 
@@ -53,7 +73,7 @@ const PORT = process.env.PORT || 3000;
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    logger.info('Server is running', { port: PORT });
   });
 }
 

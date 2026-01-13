@@ -1,6 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { adminAuth } from '../../middleware/adminAuth';
 import * as catalogService from '../../services/catalogService';
+import { logger } from '../../lib/logger';
 
 const router = Router();
 
@@ -24,7 +25,8 @@ router.get('/', async (req: Request, res: Response) => {
     const products = await catalogService.getProducts({ includeOutOfStock: true, page, limit });
     res.json({ data: products, page, limit });
   } catch (error: any) {
-    console.error('Error fetching admin products:', error);
+    const requestId = (req as Request & { requestId?: string }).requestId;
+    logger.error('Error fetching admin products', { requestId, error });
     res.status(500).json({ message: 'Error fetching products', error: error.message });
   }
 });
@@ -76,15 +78,16 @@ router.post('/', async (req: Request, res: Response) => {
 
     res.status(201).json(product);
   } catch (error: any) {
-    console.error('Error creating product:', error);
+    const requestId = (req as Request & { requestId?: string }).requestId;
+    logger.error('Error creating product', { requestId, error });
     res.status(500).json({ message: 'Error creating product', error: error.message });
   }
 });
 
 // PUT /api/admin/products/:id - Update Product
 router.put('/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
   try {
-    const id = Number(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ message: 'Invalid product ID' });
     }
@@ -126,7 +129,8 @@ router.put('/:id', async (req: Request, res: Response) => {
 
     res.json(product);
   } catch (error: any) {
-    console.error('Error updating product:', error);
+    const requestId = (req as Request & { requestId?: string }).requestId;
+    logger.error('Error updating product', { requestId, error, productId: id });
     if (error.code === 'P2025') {
        return res.status(404).json({ message: 'Product not found' });
     }
@@ -136,8 +140,8 @@ router.put('/:id', async (req: Request, res: Response) => {
 
 // DELETE /api/admin/products/:id - Delete Product
 router.delete('/:id', async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
   try {
-    const id = Number(req.params.id);
     if (isNaN(id)) {
       return res.status(400).json({ message: 'Invalid product ID' });
     }
@@ -145,7 +149,8 @@ router.delete('/:id', async (req: Request, res: Response) => {
     await catalogService.deleteProduct(id);
     res.status(204).send();
   } catch (error: any) {
-    console.error('Error deleting product:', error);
+    const requestId = (req as Request & { requestId?: string }).requestId;
+    logger.error('Error deleting product', { requestId, error, productId: id });
      if (error.message === 'Product not found' || error.code === 'P2025') {
        return res.status(404).json({ message: 'Product not found' });
     }

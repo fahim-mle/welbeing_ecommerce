@@ -4,6 +4,7 @@ import { createOrderFromPayload, findOrdersByUserId } from '../services/orderSer
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { auth } from '../lib/auth';
 import { ValidationError } from '../types/shared';
+import { logger } from '../lib/logger';
 
 const router = Router();
 
@@ -83,7 +84,8 @@ router.get('/', authenticate, async (req, res) => {
         const orders = await findOrdersByUserId(userId, { page, limit });
         res.json({ data: orders, page, limit });
     } catch (error) {
-        console.error(error);
+        const requestId = (req as AuthRequest & { requestId?: string }).requestId;
+        logger.error('Failed to fetch orders', { requestId, error, userId });
         res.status(500).json({ message: 'Failed to fetch orders' });
     }
 });

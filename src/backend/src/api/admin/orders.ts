@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { adminAuth } from '../../middleware/adminAuth';
 import { findAdminOrders, updateOrderStatus } from '../../services/orderService';
+import { logger } from '../../lib/logger';
 
 const router = Router();
 
@@ -24,7 +25,8 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     const orders = await findAdminOrders({ page, limit });
     res.json({ data: orders, page, limit });
   } catch (error) {
-    console.error('Error fetching admin orders:', error);
+    const requestId = (req as Request & { requestId?: string }).requestId;
+    logger.error('Error fetching admin orders', { requestId, error });
     next(error);
   }
 });
@@ -43,7 +45,8 @@ router.patch('/:id/status', async (req: Request, res: Response, next: NextFuncti
     const order = await updateOrderStatus(orderId, status);
     res.json({ data: order });
   } catch (error) {
-    console.error('Error updating order status:', error);
+    const requestId = (req as Request & { requestId?: string }).requestId;
+    logger.error('Error updating order status', { requestId, error, orderId });
     next(error);
   }
 });
