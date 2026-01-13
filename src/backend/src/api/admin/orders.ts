@@ -2,6 +2,8 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { adminAuth } from '../../middleware/adminAuth';
 import { findAdminOrders, updateOrderStatus } from '../../services/orderService';
 import { logger } from '../../lib/logger';
+import { validateQuery } from '../../middleware/validation';
+import { paginationSchema } from '../../schemas/pagination';
 
 const router = Router();
 
@@ -9,18 +11,9 @@ const router = Router();
 router.use(adminAuth);
 
 // GET /api/admin/orders
-router.get('/', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/', validateQuery(paginationSchema), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const page = req.query.page ? Number(req.query.page) : 1;
-    const limit = req.query.limit ? Number(req.query.limit) : 20;
-
-    if (!Number.isInteger(page) || page <= 0) {
-      return res.status(400).json({ message: 'page must be a positive integer' });
-    }
-
-    if (!Number.isInteger(limit) || limit <= 0) {
-      return res.status(400).json({ message: 'limit must be a positive integer' });
-    }
+    const { page, limit } = req.query as unknown as { page: number; limit: number };
 
     const orders = await findAdminOrders({ page, limit });
     res.json({ data: orders, page, limit });

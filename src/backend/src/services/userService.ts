@@ -355,7 +355,7 @@ export const userService = {
         fullName: data.fullName,
         phone: data.phone,
         streetLine1: data.streetLine1,
-        streetLine2: data.streetLine2 ?? undefined,
+        streetLine2: data.streetLine2 === undefined ? undefined : data.streetLine2,
         city: data.city,
         state: data.state,
         postalCode: data.postalCode,

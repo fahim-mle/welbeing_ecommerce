@@ -2,8 +2,9 @@ import { Request, Response, Router } from 'express';
 import { adminAuth } from '../../middleware/adminAuth';
 import * as catalogService from '../../services/catalogService';
 import { logger } from '../../lib/logger';
-import { validateBody } from '../../middleware/validation';
+import { validateBody, validateQuery } from '../../middleware/validation';
 import { createProductSchema, updateProductSchema } from '../../schemas/products';
+import { paginationSchema } from '../../schemas/pagination';
 
 const router = Router();
 
@@ -11,19 +12,9 @@ const router = Router();
 router.use(adminAuth);
 
 // GET /api/admin/products - List all products
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', validateQuery(paginationSchema), async (req: Request, res: Response) => {
   try {
-    const page = req.query.page ? Number(req.query.page) : 1;
-    const limit = req.query.limit ? Number(req.query.limit) : 20;
-
-    if (!Number.isInteger(page) || page <= 0) {
-      return res.status(400).json({ message: 'page must be a positive integer' });
-    }
-
-    if (!Number.isInteger(limit) || limit <= 0) {
-      return res.status(400).json({ message: 'limit must be a positive integer' });
-    }
-
+    const { page, limit } = req.query as unknown as { page: number; limit: number };
     const products = await catalogService.getProducts({ includeOutOfStock: true, page, limit });
     res.json({ data: products, page, limit });
   } catch (error: any) {

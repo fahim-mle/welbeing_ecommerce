@@ -19,3 +19,29 @@ export const createProductSchema = z.object({
 });
 
 export const updateProductSchema = createProductSchema.partial();
+
+export const productListQuerySchema = z
+  .object({
+    category: z.union([z.number(), z.string()]).optional(),
+    tag: z.union([z.number(), z.string()]).optional(),
+    search: z.string().optional(),
+    page: z.any().optional(),
+    limit: z.any().optional(),
+  })
+  .transform((data) => {
+    const parseNumber = (value: unknown) => {
+      const parsed = Number(value);
+      return Number.isNaN(parsed) ? undefined : parsed;
+    };
+
+    const page = parseNumber(data.page);
+    const limit = parseNumber(data.limit);
+
+    return {
+      category: parseNumber(data.category),
+      tag: parseNumber(data.tag),
+      search: data.search,
+      page: page && page > 0 ? page : 1,
+      limit: limit && limit > 0 ? limit : 20,
+    };
+  });
