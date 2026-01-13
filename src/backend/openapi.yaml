@@ -214,7 +214,7 @@ paths:
       tags:
         - Orders
       summary: Create order
-      description: Create a new order (guest or authenticated)
+      description: Create a new order (guest or authenticated). Provide address_id for saved addresses or shipping_address for guest checkout.
       requestBody:
         required: true
         content:
@@ -543,6 +543,14 @@ components:
           format: password
           minLength: 6
           example: securepassword123
+        firstName:
+          type: string
+          description: Optional first name (defaults to "User")
+          example: Jordan
+        lastName:
+          type: string
+          description: Optional last name (defaults to "User")
+          example: Lee
 
     LoginRequest:
       type: object
@@ -1028,6 +1036,15 @@ components:
         shipping_address:
           type: object
           description: Provide a structured address when no address_id is supplied
+          required:
+            - label
+            - full_name
+            - phone
+            - street_line_1
+            - city
+            - state
+            - postal_code
+            - country
           properties:
             label:
               type: string
