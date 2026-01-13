@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { userService } from '../services/userService';
 import { auth } from '../lib/auth';
+import { logger } from '../lib/logger';
 
 const router = Router();
 
@@ -39,7 +40,8 @@ router.post('/register', async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    const requestId = (req as Request & { requestId?: string }).requestId;
+    logger.error('Registration failed', { requestId, error, email: req.body?.email });
     res.status(500).json({ message: 'Registration failed' });
   }
 });
@@ -78,7 +80,8 @@ router.post('/login', async (req: Request, res: Response) => {
     });
 
   } catch (error) {
-    console.error('Login error:', error);
+    const requestId = (req as Request & { requestId?: string }).requestId;
+    logger.error('Login failed', { requestId, error, email: req.body?.email });
     res.status(500).json({ message: 'Login failed' });
   }
 });
