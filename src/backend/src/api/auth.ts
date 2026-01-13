@@ -5,6 +5,23 @@ import { logger } from '../lib/logger';
 
 const router = Router();
 
+const maskEmail = (value: unknown) => {
+  if (typeof value !== 'string') {
+    return 'unknown';
+  }
+
+  const [localPart, domain] = value.split('@');
+  if (!localPart || !domain) {
+    return 'unknown';
+  }
+
+  if (localPart.length <= 2) {
+    return `${localPart[0] ?? '*'}***@${domain}`;
+  }
+
+  return `${localPart.slice(0, 2)}***@${domain}`;
+};
+
 // POST /api/auth/register
 router.post('/register', async (req: Request, res: Response) => {
   try {
@@ -41,7 +58,7 @@ router.post('/register', async (req: Request, res: Response) => {
     });
   } catch (error) {
     const requestId = (req as Request & { requestId?: string }).requestId;
-    logger.error('Registration failed', { requestId, error, email: req.body?.email });
+    logger.error('Registration failed', { requestId, error, email: maskEmail(req.body?.email) });
     res.status(500).json({ message: 'Registration failed' });
   }
 });
@@ -81,7 +98,7 @@ router.post('/login', async (req: Request, res: Response) => {
 
   } catch (error) {
     const requestId = (req as Request & { requestId?: string }).requestId;
-    logger.error('Login failed', { requestId, error, email: req.body?.email });
+    logger.error('Login failed', { requestId, error, email: maskEmail(req.body?.email) });
     res.status(500).json({ message: 'Login failed' });
   }
 });
