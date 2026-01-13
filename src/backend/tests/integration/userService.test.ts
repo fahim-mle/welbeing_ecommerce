@@ -20,12 +20,16 @@ describe('UserService Integration', () => {
   describe('createUserWithIdentity', () => {
     it('should create a user and identity successfully', async () => {
       const email = 'test@example.com';
+      const firstName = 'Test';
+      const lastName = 'User';
       const provider = 'EMAIL';
       const providerId = 'test@example.com';
       const passwordHash = 'hashedpassword123';
 
       const result = await userService.createUserWithIdentity(
         email,
+        firstName,
+        lastName,
         provider,
         providerId,
         passwordHash
@@ -40,10 +44,12 @@ describe('UserService Integration', () => {
 
     it('should fail if email is already taken', async () => {
       const email = 'duplicate@example.com';
-      await userService.createUser(email);
+      const firstName = 'Duplicate';
+      const lastName = 'User';
+      await userService.createUser(email, firstName, lastName);
 
       await expect(
-        userService.createUserWithIdentity(email, 'EMAIL', 'dup-id', 'pass')
+        userService.createUserWithIdentity(email, firstName, lastName, 'EMAIL', 'dup-id', 'pass')
       ).rejects.toThrow();
     });
   });
@@ -51,11 +57,15 @@ describe('UserService Integration', () => {
   describe('findIdentity', () => {
     it('should find an identity and include the user', async () => {
       const email = 'identity@example.com';
+      const firstName = 'Identity';
+      const lastName = 'User';
       const provider = 'GOOGLE';
       const providerId = 'google-id-123';
-      
+
       const { user, identity } = await userService.createUserWithIdentity(
         email,
+        firstName,
+        lastName,
         provider,
         providerId
       );
@@ -77,7 +87,9 @@ describe('UserService Integration', () => {
   describe('findUserByEmail', () => {
     it('should find user by email', async () => {
       const email = 'findme@example.com';
-      await userService.createUser(email);
+      const firstName = 'Find';
+      const lastName = 'Me';
+      await userService.createUser(email, firstName, lastName);
 
       const user = await userService.findUserByEmail(email);
       expect(user).toBeDefined();
