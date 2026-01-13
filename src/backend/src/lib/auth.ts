@@ -4,6 +4,14 @@ import bcrypt from 'bcryptjs';
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-do-not-use-in-prod';
 const SALT_ROUNDS = 10;
 
+export interface TokenPayload {
+  userId: number;
+  email: string;
+  role: string;
+  iat?: number;
+  exp?: number;
+}
+
 export const auth = {
   /**
    * Hash a plain text password.
@@ -22,8 +30,8 @@ export const auth = {
   /**
    * Generate a JWT token.
    */
-  generateToken(payload: object, expiresIn: string | number = '7d'): string {
-    const options: SignOptions = { expiresIn: expiresIn as any }; 
+  generateToken(payload: TokenPayload, expiresIn: string | number = '7d'): string {
+    const options: SignOptions = { expiresIn: expiresIn as any };
     return jwt.sign(payload, JWT_SECRET, options);
   },
 
@@ -31,7 +39,20 @@ export const auth = {
    * Verify and decode a JWT token.
    * Throws an error if invalid.
    */
-  verifyToken(token: string) {
-    return jwt.verify(token, JWT_SECRET);
+  verifyToken(token: string): TokenPayload {
+    return jwt.verify(token, JWT_SECRET) as TokenPayload;
+  },
+
+  decodeAuthorizationHeader(headerValue?: string): TokenPayload | null {
+    if (!headerValue || !headerValue.startsWith('Bearer ')) {
+      return null;
+    }
+
+    const token = headerValue.split(' ')[1];
+    try {
+      return this.verifyToken(token);
+    } catch (error) {
+      return null;
+    }
   },
 };

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { auth } from '../lib/auth';
+import { auth, TokenPayload } from '../lib/auth';
 
 export const adminAuth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
@@ -11,14 +11,14 @@ export const adminAuth = (req: Request, res: Response, next: NextFunction) => {
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = auth.verifyToken(token) as any;
-    
+    const decoded = auth.verifyToken(token);
+
     if (decoded.role !== 'ADMIN') {
         return res.status(403).json({ message: 'Forbidden: Admin access only' });
     }
 
     // Attach user to request if needed, though usually handled by general auth middleware
-    (req as any).user = decoded;
+    (req as Request & { user?: TokenPayload }).user = decoded;
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Unauthorized: Invalid token' });

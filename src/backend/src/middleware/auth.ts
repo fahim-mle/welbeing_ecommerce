@@ -1,12 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { auth } from '../lib/auth';
+import { auth, TokenPayload } from '../lib/auth';
 
 export interface AuthRequest extends Request {
-  user?: {
-    userId: number;
-    email: string;
-    role: string;
-  };
+  user?: TokenPayload;
 }
 
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
@@ -17,7 +13,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
 
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = auth.verifyToken(token) as any;
+    const decoded = auth.verifyToken(token);
     (req as AuthRequest).user = decoded;
     next();
   } catch (error) {

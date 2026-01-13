@@ -7,4 +7,11 @@ describe('Health Check', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ message: 'Health and Wellbeing Store API' });
   });
+
+  it('should return API health status', async () => {
+    const res = await request(app).get('/api/health');
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('status', 'ok');
+    expect(res.body).toHaveProperty('timestamp');
+  });
 });

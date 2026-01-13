@@ -29,14 +29,15 @@ describe('Auth Library', () => {
 
   describe('JWT', () => {
     it('should generate and verify a token', () => {
-      const payload = { userId: 1, email: 'test@example.com' };
+      const payload = { userId: 1, email: 'test@example.com', role: 'USER' };
       const token = auth.generateToken(payload);
-      
-      const decoded = auth.verifyToken(token) as any;
-      
+
+      const decoded = auth.verifyToken(token);
+
       expect(decoded).toBeDefined();
       expect(decoded.userId).toBe(payload.userId);
       expect(decoded.email).toBe(payload.email);
+      expect(decoded.role).toBe(payload.role);
     });
 
     it('should throw on invalid token', () => {

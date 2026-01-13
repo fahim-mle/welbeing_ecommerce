@@ -1,59 +1,14 @@
 import { Router } from 'express';
-import { z } from 'zod';
-import { createOrderFromPayload, findOrdersByUserId } from '../services/orderService';
+import { cancelOrder, createOrderFromPayload, findOrderById, findOrdersByUserId } from '../services/orderService';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { auth } from '../lib/auth';
-import { ValidationError } from '../types/shared';
 import { logger } from '../lib/logger';
+import { emailService } from '../lib/email';
+import { validateBody, validateQuery } from '../middleware/validation';
+import { createOrderSchema } from '../schemas/orders';
+import { paginationSchema } from '../schemas/pagination';
 
 const router = Router();
-
-const orderItemSchema = z.object({
-  product_id: z.union([z.number(), z.string()]),
-  product_variant_id: z.union([z.number(), z.string()]).optional(),
-  quantity: z.union([z.number(), z.string()]),
-});
-
-const shippingAddressSchema = z
-  .object({
-    label: z.string().min(1, 'shipping_address.label is required'),
-    full_name: z.string().min(1).optional(),
-    fullName: z.string().min(1).optional(),
-    phone: z.string().min(1, 'shipping_address.phone is required'),
-    street_line_1: z.string().min(1).optional(),
-    streetLine1: z.string().min(1).optional(),
-    street_line_2: z.string().optional().nullable(),
-    streetLine2: z.string().optional().nullable(),
-    city: z.string().min(1, 'shipping_address.city is required'),
-    state: z.string().min(1, 'shipping_address.state is required'),
-    postal_code: z.string().min(1).optional(),
-    postalCode: z.string().min(1).optional(),
-    country: z.string().min(1, 'shipping_address.country is required'),
-    is_default: z.boolean().optional(),
-    isDefault: z.boolean().optional(),
-  })
-  .refine((data) => data.full_name || data.fullName, {
-    message: 'shipping_address.full_name is required',
-  })
-  .refine((data) => data.street_line_1 || data.streetLine1, {
-    message: 'shipping_address.street_line_1 is required',
-  })
-  .refine((data) => data.postal_code || data.postalCode, {
-    message: 'shipping_address.postal_code is required',
-  });
-
-const createOrderSchema = z
-  .object({
-    guest_email: z.string().email().optional(),
-    items: z.array(orderItemSchema),
-    shipping_address: shippingAddressSchema.optional(),
-    address_id: z.union([z.number(), z.string()]).optional(),
-    payment_placeholder: z.string().min(1, 'payment_placeholder is required'),
-    disclaimer_accepted: z.boolean(),
-  })
-  .refine((data) => data.address_id || data.shipping_address, {
-    message: 'Either address_id or shipping_address is required',
-  });
 
 // POST /api/orders
 // Address handling:
@@ -62,7 +17,7 @@ const createOrderSchema = z
 // - Either address_id OR shipping_address is required
 
 // GET /api/orders (My Orders)
-router.get('/', authenticate, async (req, res) => {
+router.get('/', authenticate, validateQuery(paginationSchema), async (req, res) => {
     const userId = (req as AuthRequest).user?.userId;
     if (!userId) {
         // Should be caught by middleware, but for safety
@@ -70,16 +25,7 @@ router.get('/', authenticate, async (req, res) => {
     }
 
     try {
-        const page = req.query.page ? Number(req.query.page) : 1;
-        const limit = req.query.limit ? Number(req.query.limit) : 20;
-
-        if (!Number.isInteger(page) || page <= 0) {
-            return res.status(400).json({ message: 'page must be a positive integer' });
-        }
-
-        if (!Number.isInteger(limit) || limit <= 0) {
-            return res.status(400).json({ message: 'limit must be a positive integer' });
-        }
+        const { page, limit } = req.query as unknown as { page: number; limit: number };
 
         const orders = await findOrdersByUserId(userId, { page, limit });
         res.json({ data: orders, page, limit });
@@ -90,26 +36,67 @@ router.get('/', authenticate, async (req, res) => {
     }
 });
 
-router.post('/', async (req, res, next) => {
-  let userId: number | undefined;
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-      try {
-          const decoded = auth.verifyToken(authHeader.split(' ')[1]) as any;
-          userId = decoded.userId;
-      } catch (e) {
-          // Token invalid, proceed as guest
-      }
+// GET /api/orders/:id
+router.get('/:id', authenticate, async (req, res) => {
+  const userId = (req as AuthRequest).user?.userId;
+  const orderId = Number(req.params.id);
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  if (Number.isNaN(orderId)) {
+    return res.status(400).json({ message: 'Invalid order ID' });
   }
 
   try {
-    const parsed = createOrderSchema.safeParse(req.body ?? {});
-    if (!parsed.success) {
-      const message = parsed.error.issues.map((issue) => issue.message).join('; ');
-      throw new ValidationError(message || 'Invalid order payload');
+    const order = await findOrderById(orderId);
+    if (!order || order.userId !== userId) {
+      return res.status(404).json({ message: 'Order not found' });
     }
 
-    const order = await createOrderFromPayload(userId, parsed.data);
+    res.json({ data: order });
+  } catch (error) {
+    const requestId = (req as AuthRequest & { requestId?: string }).requestId;
+    logger.error('Failed to fetch order', { requestId, error, orderId, userId });
+    res.status(500).json({ message: 'Failed to fetch order' });
+  }
+});
+
+// POST /api/orders/:id/cancel
+router.post('/:id/cancel', authenticate, async (req, res) => {
+  const userId = (req as AuthRequest).user?.userId;
+  const orderId = Number(req.params.id);
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  if (Number.isNaN(orderId)) {
+    return res.status(400).json({ message: 'Invalid order ID' });
+  }
+
+  try {
+    const order = await cancelOrder(orderId, userId);
+    const recipient = order.user?.email ?? order.guestEmail;
+    if (recipient) {
+      await emailService.sendOrderStatusUpdate(recipient, order.id, order.status);
+    }
+
+    res.json({ data: order });
+  } catch (error) {
+    const requestId = (req as AuthRequest & { requestId?: string }).requestId;
+    logger.error('Failed to cancel order', { requestId, error, orderId, userId });
+    res.status(500).json({ message: 'Failed to cancel order' });
+  }
+});
+
+router.post('/', validateBody(createOrderSchema), async (req, res, next) => {
+  const decoded = auth.decodeAuthorizationHeader(req.headers.authorization);
+  const userId = decoded?.userId;
+
+  try {
+    const order = await createOrderFromPayload(userId, req.body);
     res.status(201).json({ success: true, data: order });
   } catch (error) {
     next(error);

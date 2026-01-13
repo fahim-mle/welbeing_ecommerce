@@ -34,6 +34,9 @@ describe('Orders API', () => {
 
   afterAll(async () => {
     if (orderId) {
+      await prisma.orderStatusHistory.deleteMany({ where: { orderId } });
+      await prisma.payment.deleteMany({ where: { orderId } });
+      await prisma.inventoryLog.deleteMany({ where: { referenceId: String(orderId) } });
       await prisma.orderItem.deleteMany({ where: { orderId } });
       await prisma.order.deleteMany({ where: { id: orderId } });
     }

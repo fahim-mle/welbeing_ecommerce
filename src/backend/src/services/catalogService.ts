@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, WellbeingTagType } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import { deleteByPattern, deleteCache, getCache, setCache } from '../lib/redis';
 
@@ -42,6 +42,11 @@ const invalidateProductCaches = async (productId?: number) => {
   if (productId !== undefined) {
     await deleteCache(`${PRODUCT_CACHE_PREFIX}${productId}`);
   }
+};
+
+const invalidateCategoryTagCaches = async () => {
+  await deleteCache(CATEGORY_CACHE_KEY);
+  await deleteCache(TAG_CACHE_KEY);
 };
 
 export const getProducts = async (filters: {
@@ -313,4 +318,78 @@ export const deleteProduct = async (id: number) => {
   const result = await prisma.$transaction([deleteImages, deleteProduct]);
   await invalidateProductCaches(id);
   return result;
+};
+
+export const createCategory = async (data: { name: string; description?: string; parentId?: number }) => {
+  const category = await prisma.category.create({
+    data: {
+      name: data.name,
+      description: data.description,
+      parentId: data.parentId ?? null,
+    },
+  });
+  await invalidateCategoryTagCaches();
+  return category;
+};
+
+export const updateCategory = async (
+  id: number,
+  data: { name?: string; description?: string; parentId?: number | null }
+) => {
+  const category = await prisma.category.update({
+    where: { id },
+    data: {
+      name: data.name,
+      description: data.description,
+      parentId: data.parentId ?? undefined,
+    },
+  });
+  await invalidateCategoryTagCaches();
+  return category;
+};
+
+export const deleteCategory = async (id: number) => {
+  const category = await prisma.category.findUnique({
+    where: { id },
+    include: { products: true },
+  });
+
+  if (!category) {
+    throw new Error('Category not found');
+  }
+
+  if (category.products.length > 0) {
+    throw new Error('Cannot delete category with products');
+  }
+
+  await prisma.category.delete({ where: { id } });
+  await invalidateCategoryTagCaches();
+};
+
+export const createTag = async (data: { name: string; type: WellbeingTagType }) => {
+  const tag = await prisma.wellbeingTag.create({
+    data: {
+      name: data.name,
+      type: data.type,
+    },
+  });
+  await invalidateCategoryTagCaches();
+  return tag;
+};
+
+export const updateTag = async (id: number, data: { name?: string; type?: WellbeingTagType }) => {
+  const tag = await prisma.wellbeingTag.update({
+    where: { id },
+    data: {
+      name: data.name,
+      type: data.type,
+    },
+  });
+  await invalidateCategoryTagCaches();
+  return tag;
+};
+
+export const deleteTag = async (id: number) => {
+  await prisma.wellbeingTag.delete({ where: { id } });
+  await invalidateCategoryTagCaches();
 };
