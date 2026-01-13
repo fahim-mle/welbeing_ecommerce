@@ -83,6 +83,8 @@ model User {
   orders     Order[]
   identities UserIdentity[]
   addresses  Address[]
+  reviews    Review[]
+  auditLogs  AuditLog[]
 
   @@map("users")
 }
@@ -131,10 +133,14 @@ model Category {
   id          Int     @id @default(autoincrement())
   name        String  @unique
   description String?
+  parentId    Int?    @map("parent_id")
 
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryHierarchy")
   products Product[]
 
   @@map("categories")
+  @@index([parentId])
 }
 
 model Product {
@@ -156,11 +162,12 @@ model Product {
   categoryId        Int     @map("category_id")
 
   category     Category       @relation(fields: [categoryId], references: [id])
-  images       ProductImage[]
-  tags         WellbeingTag[]
-  orderItems   OrderItem[]
-  variants     ProductVariant[]
+  images        ProductImage[]
+  tags          WellbeingTag[]
+  orderItems    OrderItem[]
+  variants      ProductVariant[]
   inventoryLogs InventoryLog[]
+  reviews       Review[]
 
   @@map("products")
   @@index([categoryId])
@@ -211,6 +218,41 @@ model WellbeingTag {
   @@map("wellbeing_tags")
 }
 
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  productId Int      @map("product_id")
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("reviews")
+  @@index([userId])
+  @@index([productId])
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id")
+  userId     Int?     @map("user_id")
+  details    Json?
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+  @@index([userId])
+  @@index([entityType, entityId])
+}
+
 model InventoryLog {
   id               Int                 @id @default(autoincrement())
   productId        Int?                @map("product_id")
@@ -242,8 +284,10 @@ model Order {
   taxAmount     Decimal            @default(0) @map("tax_amount")
   createdAt     DateTime           @default(now()) @map("created_at")
   updatedAt     DateTime           @default(now()) @updatedAt @map("updated_at")
-  shippedAt     DateTime?          @map("shipped_at")
-  deliveredAt   DateTime?          @map("delivered_at")
+  shippedAt      DateTime?          @map("shipped_at")
+  deliveredAt    DateTime?          @map("delivered_at")
+  shippingCarrier String?           @map("shipping_carrier")
+  trackingCode   String?            @map("tracking_code")
 
   user          User?               @relation(fields: [userId], references: [id])
   address       Address?            @relation(fields: [addressId], references: [id])
