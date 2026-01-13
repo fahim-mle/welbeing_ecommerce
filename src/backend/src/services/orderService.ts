@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { OrderStatus, Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 
 export class OrderValidationError extends Error {
@@ -54,6 +54,21 @@ export interface CreateOrderInput {
   items: OrderItemInput[];
 }
 
+export interface OrderRequestItemInput {
+  product_id: number | string;
+  product_variant_id?: number | string;
+  quantity: number | string;
+}
+
+export interface OrderRequestPayload {
+  guest_email?: string;
+  items?: OrderRequestItemInput[];
+  shipping_address?: Record<string, any>;
+  address_id?: number | string;
+  payment_placeholder?: string;
+  disclaimer_accepted?: boolean;
+}
+
 const validateShippingAddress = (shippingAddress: ShippingAddressInput) => {
   const requiredFields: Array<keyof ShippingAddressInput> = [
     'label',
@@ -72,6 +87,69 @@ const validateShippingAddress = (shippingAddress: ShippingAddressInput) => {
       throw new OrderValidationError(`Shipping address ${field} is required`);
     }
   }
+};
+
+export const createOrderFromPayload = async (userId: number | undefined, payload: OrderRequestPayload) => {
+  const {
+    guest_email: guestEmail,
+    items,
+    shipping_address: shippingAddress,
+    address_id: addressId,
+    payment_placeholder: paymentPlaceholder,
+    disclaimer_accepted: disclaimerAccepted,
+  } = payload ?? {};
+
+  if (!paymentPlaceholder) {
+    throw new OrderValidationError('Payment placeholder is required');
+  }
+
+  if (!disclaimerAccepted) {
+    throw new OrderValidationError('Health disclaimer must be accepted');
+  }
+
+  if (!Array.isArray(items)) {
+    throw new OrderValidationError('Items must be an array');
+  }
+
+  const normalizedItems = items.map((item) => ({
+    productId: Number(item.product_id),
+    productVariantId: item.product_variant_id ? Number(item.product_variant_id) : undefined,
+    quantity: Number(item.quantity),
+  }));
+
+  if (normalizedItems.some((item) => Number.isNaN(item.productId))) {
+    throw new OrderValidationError('Each item must include a product_id');
+  }
+
+  const parsedAddressId = addressId ? Number(addressId) : undefined;
+  if (addressId && Number.isNaN(parsedAddressId)) {
+    throw new OrderValidationError('address_id must be a number');
+  }
+
+  let normalizedAddress: ShippingAddressInput | undefined;
+  if (shippingAddress) {
+    const source = shippingAddress as Record<string, any>;
+    normalizedAddress = {
+      label: String(source.label ?? 'Shipping'),
+      fullName: String(source.full_name ?? source.fullName ?? ''),
+      phone: String(source.phone ?? ''),
+      streetLine1: String(source.street_line_1 ?? source.streetLine1 ?? ''),
+      streetLine2: source.street_line_2 ?? source.streetLine2 ?? null,
+      city: String(source.city ?? ''),
+      state: String(source.state ?? ''),
+      postalCode: String(source.postal_code ?? source.postalCode ?? ''),
+      country: String(source.country ?? ''),
+      isDefault: Boolean(source.is_default ?? source.isDefault ?? false),
+    };
+  }
+
+  return createOrder({
+    userId,
+    guestEmail: userId ? undefined : guestEmail ? String(guestEmail) : undefined,
+    addressId: parsedAddressId,
+    shippingAddress: normalizedAddress,
+    items: normalizedItems,
+  });
 };
 
 export const createOrder = async ({
@@ -224,5 +302,43 @@ export const findOrdersByUserId = async (userId: number) => {
       },
     },
     orderBy: { createdAt: 'desc' },
+  });
+};
+
+export const findAdminOrders = async () => {
+  return prisma.order.findMany({
+    include: {
+      items: {
+        include: {
+          product: true,
+          productVariant: true,
+        },
+      },
+      user: {
+        select: {
+          email: true,
+          role: true,
+        },
+      },
+      address: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+};
+
+export const updateOrderStatus = async (orderId: number, status: OrderStatus) => {
+  const validStatuses: OrderStatus[] = ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+  if (!validStatuses.includes(status)) {
+    throw new OrderValidationError('Invalid status');
+  }
+
+  return prisma.order.update({
+    where: { id: orderId },
+    data: { status },
+    include: {
+      items: true,
+    },
   });
 };
