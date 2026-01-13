@@ -89,6 +89,7 @@ Response:
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "2c9d3c3f-9d5e-4f1d-a9b6-0aa8e9a6a4c1",
   "user": {
     "id": 1,
     "email": "user@example.com",
@@ -114,6 +115,7 @@ Response:
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "2c9d3c3f-9d5e-4f1d-a9b6-0aa8e9a6a4c1",
   "user": {
     "id": 1,
     "email": "user@example.com",
@@ -121,6 +123,15 @@ Response:
   }
 }
 ```
+
+Additional auth flows:
+- `POST /api/auth/refresh-token` - Rotate refresh token
+- `POST /api/auth/logout` - Revoke refresh token
+- `POST /api/auth/verify-email` - Request verification email
+- `GET /api/auth/verify-email/:token` - Confirm verification
+- `POST /api/auth/forgot-password` - Request reset email
+- `POST /api/auth/reset-password` - Reset password
+- `POST /api/auth/oauth/:provider` - OAuth login
 
 ### Using Authenticated Endpoints
 
@@ -134,6 +145,9 @@ curl http://localhost:3000/api/orders \
 ## Available Endpoints
 
 ### Public Endpoints
+
+#### Health
+- `GET /api/health` - Service health check
 
 #### Products
 - `GET /api/products` - List products with optional filtering
@@ -149,11 +163,31 @@ curl http://localhost:3000/api/orders \
 #### Authentication
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - Login user
+- `POST /api/auth/refresh-token` - Rotate refresh token
+- `POST /api/auth/logout` - Revoke refresh token
+- `POST /api/auth/verify-email` - Request email verification
+- `GET /api/auth/verify-email/:token` - Verify email
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/reset-password` - Reset password
+- `POST /api/auth/oauth/:provider` - OAuth login (google/github)
 
 ### Authenticated Endpoints (Require JWT)
 
+#### User Profile
+- `GET /api/me` - Get current profile
+- `PUT /api/me` - Update profile
+- `PUT /api/me/password` - Update password
+
+#### Addresses
+- `GET /api/addresses` - List saved addresses
+- `POST /api/addresses` - Create new address
+- `PUT /api/addresses/:id` - Update address
+- `DELETE /api/addresses/:id` - Delete address
+
 #### Orders
 - `GET /api/orders` - Get authenticated user's orders
+- `GET /api/orders/:id` - Get order detail
+- `POST /api/orders/:id/cancel` - Cancel order
 
 ### Admin Endpoints (Require JWT + ADMIN role)
 
@@ -170,6 +204,21 @@ curl http://localhost:3000/api/orders \
 #### Orders
 - `GET /api/admin/orders` - List all orders
 - `PATCH /api/admin/orders/:id/status` - Update order status
+
+#### Catalog
+- `POST /api/admin/catalog/categories` - Create category
+- `PUT /api/admin/catalog/categories/:id` - Update category
+- `DELETE /api/admin/catalog/categories/:id` - Delete category
+- `POST /api/admin/catalog/tags` - Create tag
+- `PUT /api/admin/catalog/tags/:id` - Update tag
+- `DELETE /api/admin/catalog/tags/:id` - Delete tag
+
+#### Users
+- `GET /api/admin/users` - List users
+- `PATCH /api/admin/users/:id` - Update user role/status
+
+#### Analytics
+- `GET /api/admin/analytics/dashboard` - Dashboard stats
 
 ## Common Usage Examples
 
@@ -206,7 +255,17 @@ curl -X POST http://localhost:3000/api/orders \
         "quantity": 2
       }
     ],
-    "shipping_address": "123 Main St, City, State 12345",
+    "shipping_address": {
+      "label": "Home",
+      "full_name": "Guest User",
+      "phone": "1234567890",
+      "street_line_1": "123 Wellness Ave",
+      "street_line_2": "Apt 4B",
+      "city": "Austin",
+      "state": "TX",
+      "postal_code": "73301",
+      "country": "US"
+    },
     "payment_placeholder": "Card ending in 4242",
     "disclaimer_accepted": true
   }'
@@ -224,7 +283,7 @@ curl -X POST http://localhost:3000/api/orders \
         "quantity": 2
       }
     ],
-    "shipping_address": "123 Main St, City, State 12345",
+    "address_id": 3,
     "payment_placeholder": "Card ending in 4242",
     "disclaimer_accepted": true
   }'
@@ -241,7 +300,6 @@ curl -X POST http://localhost:3000/api/admin/products \
     "description": "Product description",
     "price": 29.99,
     "categoryId": 1,
-    "stockStatus": "IN_STOCK",
     "stockQuantity": 10,
     "isVisible": true,
     "imageUrls": [
