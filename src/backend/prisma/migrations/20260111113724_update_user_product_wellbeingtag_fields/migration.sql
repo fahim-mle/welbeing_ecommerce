@@ -61,7 +61,8 @@ CREATE TABLE "new_users" (
     "last_login_at" DATETIME,
     "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-INSERT INTO "new_users" ("created_at", "email", "id", "role") SELECT "created_at", "email", "id", "role" FROM "users";
+INSERT INTO "new_users" ("created_at", "email", "id", "role", "first_name", "last_name")
+SELECT "created_at", "email", "id", "role", '', '' FROM "users";
 DROP TABLE "users";
 ALTER TABLE "new_users" RENAME TO "users";
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
