@@ -52,7 +52,7 @@ Server starts on `http://localhost:3000`
 
 Open your browser and navigate to:
 
-```
+```url
 http://localhost:3000/api-docs
 ```
 
@@ -88,7 +88,7 @@ http://localhost:3000/api-docs
 ## API Endpoints Summary
 
 | Category | Endpoints | Auth Required |
-|----------|-----------|---------------|
+| ---------- | ----------- | --------------- |
 | **Authentication** | POST /register, POST /login | No |
 | **Products** | GET /, GET /:id | No |
 | **Categories** | GET / | No |
@@ -112,7 +112,7 @@ http://localhost:3000/api-docs
 
 ## File Structure
 
-```
+```folder_structure
 src/backend/
 ├── openapi.yaml           # OpenAPI 3.0 specification
 ├── API_DOCS.md           # Comprehensive API documentation
