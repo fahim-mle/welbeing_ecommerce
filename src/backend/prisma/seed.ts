@@ -115,6 +115,16 @@ type SeedData = {
 
 const seedPath = path.join(__dirname, 'seed-data.json');
 
+/**
+ * Populates the database from the seed file and replaces existing seed-related data.
+ *
+ * Reads seed-data.json (via the module's `seedPath`), clears seed-related tables, and creates users
+ * (with identities), categories, wellbeing tags, products (and variants/images), addresses,
+ * inventory logs, and orders with their nested items, payments, and status history.
+ *
+ * @throws Error If a referenced category, product, product variant, or address required by the seed
+ * data is missing.
+ */
 async function main() {
   console.log('Seeding database...');
 
