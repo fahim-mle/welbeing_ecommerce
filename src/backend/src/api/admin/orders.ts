@@ -1,6 +1,7 @@
-import { Router, Request, Response } from 'express';
-import { prisma } from '../../lib/prisma';
+import { Router, Request, Response, NextFunction } from 'express';
 import { adminAuth } from '../../middleware/adminAuth';
+import { findAdminOrders, updateOrderStatus } from '../../services/orderService';
+import { logger } from '../../lib/logger';
 
 const router = Router();
 
@@ -8,54 +9,45 @@ const router = Router();
 router.use(adminAuth);
 
 // GET /api/admin/orders
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const orders = await prisma.order.findMany({
-      include: {
-        items: {
-          include: {
-            product: true
-          }
-        },
-        user: {
-          select: {
-            email: true,
-            role: true
-          }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
-    });
-    res.json({ data: orders });
+    const page = req.query.page ? Number(req.query.page) : 1;
+    const limit = req.query.limit ? Number(req.query.limit) : 20;
+
+    if (!Number.isInteger(page) || page <= 0) {
+      return res.status(400).json({ message: 'page must be a positive integer' });
+    }
+
+    if (!Number.isInteger(limit) || limit <= 0) {
+      return res.status(400).json({ message: 'limit must be a positive integer' });
+    }
+
+    const orders = await findAdminOrders({ page, limit });
+    res.json({ data: orders, page, limit });
   } catch (error) {
-    console.error('Error fetching admin orders:', error);
-    res.status(500).json({ message: 'Failed to fetch orders' });
+    const requestId = (req as Request & { requestId?: string }).requestId;
+    logger.error('Error fetching admin orders', { requestId, error });
+    next(error);
   }
 });
 
 // PATCH /api/admin/orders/:id/status
-router.patch('/:id/status', async (req: Request, res: Response) => {
+router.patch('/:id/status', async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   const { status } = req.body;
+  const orderId = Number(id);
 
-  const validStatuses = ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
-
-  if (!validStatuses.includes(status)) {
-    return res.status(400).json({ message: 'Invalid status' });
+  if (Number.isNaN(orderId)) {
+    return res.status(400).json({ message: 'Invalid order ID' });
   }
 
   try {
-    const order = await prisma.order.update({
-      where: { id: Number(id) },
-      data: { status },
-      include: { items: true } // Return updated order
-    });
+    const order = await updateOrderStatus(orderId, status);
     res.json({ data: order });
   } catch (error) {
-    console.error('Error updating order status:', error);
-    res.status(500).json({ message: 'Failed to update order status' });
+    const requestId = (req as Request & { requestId?: string }).requestId;
+    logger.error('Error updating order status', { requestId, error, orderId });
+    next(error);
   }
 });
 

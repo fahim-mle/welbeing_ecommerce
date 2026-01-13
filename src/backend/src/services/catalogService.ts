@@ -1,13 +1,61 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma';
+import { deleteByPattern, deleteCache, getCache, setCache } from '../lib/redis';
+
+const CATEGORY_CACHE_KEY = 'catalog:categories';
+const TAG_CACHE_KEY = 'catalog:tags';
+const PRODUCT_CACHE_PREFIX = 'catalog:product:';
+const PRODUCTS_CACHE_PREFIX = 'catalog:products:';
+const CATEGORY_CACHE_TTL_SECONDS = 300;
+const TAG_CACHE_TTL_SECONDS = 300;
+const PRODUCT_CACHE_TTL_SECONDS = 120;
+const PRODUCT_LIST_CACHE_TTL_SECONDS = 60;
+
+const parseCachedValue = <T>(value: string | null) => {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(value) as T;
+  } catch (error) {
+    console.error('Failed to parse cache value:', error);
+    return null;
+  }
+};
+
+const buildProductsCacheKey = (filters: {
+  categoryId?: number;
+  tagId?: number;
+  search?: string;
+  page: number;
+  limit: number;
+}) => {
+  const search = filters.search ? encodeURIComponent(filters.search) : 'all';
+  return `${PRODUCTS_CACHE_PREFIX}${filters.categoryId ?? 'all'}:${filters.tagId ?? 'all'}:${search}:${filters.page}:${filters.limit}`;
+};
+
+const invalidateProductCaches = async (productId?: number) => {
+  await deleteByPattern(`${PRODUCTS_CACHE_PREFIX}*`);
+  await deleteCache(CATEGORY_CACHE_KEY);
+  await deleteCache(TAG_CACHE_KEY);
+  if (productId !== undefined) {
+    await deleteCache(`${PRODUCT_CACHE_PREFIX}${productId}`);
+  }
+};
 
 export const getProducts = async (filters: {
   categoryId?: number;
   tagId?: number;
   search?: string;
   includeOutOfStock?: boolean;
+  page?: number;
+  limit?: number;
 }) => {
   const where: Prisma.ProductWhereInput = {};
+  const page = filters.page ?? 1;
+  const limit = filters.limit ?? 20;
+  const skip = (page - 1) * limit;
 
   if (!filters.includeOutOfStock) {
     where.stockQuantity = { gt: 0 };
@@ -33,8 +81,28 @@ export const getProducts = async (filters: {
     ];
   }
 
-  return prisma.product.findMany({
+  const cacheKey = buildProductsCacheKey({
+    categoryId: filters.categoryId,
+    tagId: filters.tagId,
+    search: filters.search,
+    page,
+    limit,
+  });
+
+  if (!filters.includeOutOfStock) {
+    const cached = parseCachedValue<Awaited<ReturnType<typeof prisma.product.findMany>>>(await getCache(cacheKey));
+    if (cached) {
+      return cached;
+    }
+  }
+
+  const products = await prisma.product.findMany({
     where,
+    skip,
+    take: limit,
+    orderBy: {
+      updatedAt: 'desc',
+    },
     include: {
       category: true,
       images: {
@@ -46,10 +114,22 @@ export const getProducts = async (filters: {
       tags: true,
     },
   });
+
+  if (!filters.includeOutOfStock) {
+    await setCache(cacheKey, JSON.stringify(products), PRODUCT_LIST_CACHE_TTL_SECONDS);
+  }
+
+  return products;
 };
 
 export const getProductById = async (id: number) => {
-  return prisma.product.findUnique({
+  const cacheKey = `${PRODUCT_CACHE_PREFIX}${id}`;
+  const cached = parseCachedValue<Awaited<ReturnType<typeof prisma.product.findUnique>>>(await getCache(cacheKey));
+  if (cached) {
+    return cached;
+  }
+
+  const product = await prisma.product.findUnique({
     where: { id },
     include: {
       category: true,
@@ -61,14 +141,38 @@ export const getProductById = async (id: number) => {
       tags: true,
     },
   });
+
+  if (product) {
+    await setCache(cacheKey, JSON.stringify(product), PRODUCT_CACHE_TTL_SECONDS);
+  }
+
+  return product;
 };
 
 export const getCategories = async () => {
-  return prisma.category.findMany();
+  const cached = parseCachedValue<Awaited<ReturnType<typeof prisma.category.findMany>>>(
+    await getCache(CATEGORY_CACHE_KEY)
+  );
+  if (cached) {
+    return cached;
+  }
+
+  const categories = await prisma.category.findMany();
+  await setCache(CATEGORY_CACHE_KEY, JSON.stringify(categories), CATEGORY_CACHE_TTL_SECONDS);
+  return categories;
 };
 
 export const getTags = async () => {
-  return prisma.wellbeingTag.findMany();
+  const cached = parseCachedValue<Awaited<ReturnType<typeof prisma.wellbeingTag.findMany>>>(
+    await getCache(TAG_CACHE_KEY)
+  );
+  if (cached) {
+    return cached;
+  }
+
+  const tags = await prisma.wellbeingTag.findMany();
+  await setCache(TAG_CACHE_KEY, JSON.stringify(tags), TAG_CACHE_TTL_SECONDS);
+  return tags;
 };
 
 export const createProduct = async (data: {
@@ -85,7 +189,7 @@ export const createProduct = async (data: {
   imageUrls: string[];
   tagIds: number[];
 }) => {
-  return prisma.product.create({
+  const product = await prisma.product.create({
     data: {
       name: data.name,
       description: data.description,
@@ -113,6 +217,9 @@ export const createProduct = async (data: {
       category: true,
     },
   });
+
+  await invalidateProductCaches(product.id);
+  return product;
 };
 
 export const updateProduct = async (
@@ -166,7 +273,7 @@ export const updateProduct = async (
     };
   }
 
-  return prisma.product.update({
+  const product = await prisma.product.update({
     where: { id },
     data: updateData,
     include: {
@@ -175,6 +282,9 @@ export const updateProduct = async (
       category: true,
     },
   });
+
+  await invalidateProductCaches(id);
+  return product;
 };
 
 export const deleteProduct = async (id: number) => {
@@ -200,5 +310,7 @@ export const deleteProduct = async (id: number) => {
     where: { id },
   });
 
-  return prisma.$transaction([deleteImages, deleteProduct]);
+  const result = await prisma.$transaction([deleteImages, deleteProduct]);
+  await invalidateProductCaches(id);
+  return result;
 };
