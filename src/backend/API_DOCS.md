@@ -37,6 +37,7 @@ npm run db:seed
 ```
 
 This creates sample data including:
+
 - Product categories (Supports, Braces, Supplements, Equipment, Therapy)
 - Wellbeing tags (Joint Pain, Sleep Support, Mobility, etc.)
 - Sample products
@@ -55,11 +56,12 @@ The server will start on `http://localhost:3000`
 
 Open your browser and navigate to:
 
-```
+```link
 http://localhost:3000/api-docs
 ```
 
 This will display the interactive Swagger UI where you can:
+
 - Browse all available endpoints
 - See request/response schemas
 - Test API endpoints directly from the browser
@@ -86,6 +88,7 @@ curl -X POST http://localhost:3000/api/auth/register \
 ```
 
 Response:
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -112,6 +115,7 @@ curl -X POST http://localhost:3000/api/auth/login \
 ```
 
 Response:
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -125,6 +129,7 @@ Response:
 ```
 
 Additional auth flows:
+
 - `POST /api/auth/refresh-token` - Rotate refresh token
 - `POST /api/auth/logout` - Revoke refresh token
 - `POST /api/auth/verify-email` - Request verification email
@@ -147,20 +152,25 @@ curl http://localhost:3000/api/orders \
 ### Public Endpoints
 
 #### Health
+
 - `GET /api/health` - Service health check
 
 #### Products
+
 - `GET /api/products` - List products with optional filtering
 - `GET /api/products/:id` - Get product details
 
 #### Metadata
+
 - `GET /api/categories` - List all categories
 - `GET /api/tags` - List all wellbeing tags
 
 #### Orders (Guest)
+
 - `POST /api/orders` - Create a guest order
 
-#### Authentication
+#### Authentication API List
+
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - Login user
 - `POST /api/auth/refresh-token` - Rotate refresh token
@@ -174,17 +184,20 @@ curl http://localhost:3000/api/orders \
 ### Authenticated Endpoints (Require JWT)
 
 #### User Profile
+
 - `GET /api/me` - Get current profile
 - `PUT /api/me` - Update profile
 - `PUT /api/me/password` - Update password
 
 #### Addresses
+
 - `GET /api/addresses` - List saved addresses
 - `POST /api/addresses` - Create new address
 - `PUT /api/addresses/:id` - Update address
 - `DELETE /api/addresses/:id` - Delete address
 
 #### Orders
+
 - `GET /api/orders` - Get authenticated user's orders
 - `GET /api/orders/:id` - Get order detail
 - `POST /api/orders/:id/cancel` - Cancel order
@@ -195,17 +208,20 @@ curl http://localhost:3000/api/orders \
 > Email: `admin@welbeing.com`
 > Password: `admin123`
 
-#### Products
+#### Products API List
+
 - `GET /api/admin/products` - List all products (including hidden)
 - `POST /api/admin/products` - Create new product
 - `PUT /api/admin/products/:id` - Update product
 - `DELETE /api/admin/products/:id` - Delete product
 
-#### Orders
+#### Orders API List
+
 - `GET /api/admin/orders` - List all orders
 - `PATCH /api/admin/orders/:id/status` - Update order status
 
 #### Catalog
+
 - `POST /api/admin/catalog/categories` - Create category
 - `PUT /api/admin/catalog/categories/:id` - Update category
 - `DELETE /api/admin/catalog/categories/:id` - Delete category
@@ -214,10 +230,12 @@ curl http://localhost:3000/api/orders \
 - `DELETE /api/admin/catalog/tags/:id` - Delete tag
 
 #### Users
+
 - `GET /api/admin/users` - List users
 - `PATCH /api/admin/users/:id` - Update user role/status
 
 #### Analytics
+
 - `GET /api/admin/analytics/dashboard` - Dashboard stats
 
 ## Common Usage Examples
@@ -244,6 +262,7 @@ curl http://localhost:3000/api/products/1
 ### Create Order
 
 **Guest Order:**
+
 ```bash
 curl -X POST http://localhost:3000/api/orders \
   -H "Content-Type: application/json" \
@@ -272,6 +291,7 @@ curl -X POST http://localhost:3000/api/orders \
 ```
 
 **Authenticated Order:**
+
 ```bash
 curl -X POST http://localhost:3000/api/orders \
   -H "Content-Type: application/json" \
@@ -322,6 +342,7 @@ All errors follow a consistent format:
 ```
 
 Common HTTP status codes:
+
 - `200` - Success
 - `201` - Created
 - `204` - No Content (successful deletion)
@@ -335,17 +356,20 @@ Common HTTP status codes:
 ## Testing
 
 ### Run All Tests
+
 ```bash
 npm test
 ```
 
 ### Run Specific Test Suite
+
 ```bash
 npm test tests/integration/products.test.ts
 npm test tests/unit/auth.test.ts
 ```
 
 ### Run Backend Tests
+
 ```bash
 npm test -- --testPathPattern=tests/
 ```
@@ -353,16 +377,19 @@ npm test -- --testPathPattern=tests/
 ## Development
 
 ### Build TypeScript
+
 ```bash
 npm run build
 ```
 
 ### Watch Mode (Development)
+
 ```bash
 npm run dev
 ```
 
 ### Production Mode
+
 ```bash
 npm start
 ```
@@ -370,6 +397,7 @@ npm start
 ## Database Management
 
 ### View Database
+
 ```bash
 npm run prisma studio
 ```
@@ -377,6 +405,7 @@ npm run prisma studio
 This opens Prisma Studio to view and edit your database.
 
 ### Reset Database
+
 ```bash
 npm run prisma migrate reset
 npm run db:seed
@@ -385,6 +414,7 @@ npm run db:seed
 ## OpenAPI Specification
 
 The complete OpenAPI 3.0 specification is available at:
+
 - **JSON**: `http://localhost:3000/api-docs.json`
 - **YAML**: `src/backend/openapi.yaml`
 
@@ -402,6 +432,7 @@ You can download the specification and use it to generate client SDKs in various
 ## Support
 
 For issues or questions:
+
 - Check the API docs: `http://localhost:3000/api-docs`
 - Review test files in `tests/`
 - Open an issue on GitHub

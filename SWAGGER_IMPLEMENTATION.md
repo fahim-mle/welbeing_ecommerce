@@ -84,7 +84,7 @@ Backend will start on `http://localhost:3000`
 
 Open your browser:
 
-```
+```link
 http://localhost:3000/api-docs
 ```
 
@@ -114,7 +114,7 @@ http://localhost:3000/api-docs
 ### Quick Reference Card
 
 | Method | Endpoint | Auth | Description |
-|---------|-----------|-------|-------------|
+| --------- | ----------- | ------- | ------------- |
 | **POST** | `/api/auth/register` | No | Register new user |
 | **POST** | `/api/auth/login` | No | Login user |
 | **GET** | `/api/products` | No | List products |
@@ -134,7 +134,7 @@ http://localhost:3000/api-docs
 
 ## File Structure
 
-```
+```structure
 src/backend/
 ├── openapi.yaml              # OpenAPI 3.0 specification
 ├── API_DOCS.md              # Comprehensive API documentation
