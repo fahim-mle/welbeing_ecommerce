@@ -3,9 +3,12 @@ import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { Cart } from './pages/Cart';
 import { Checkout } from './pages/Checkout';
+import { ForgotPassword } from './pages/ForgotPassword';
 import { OrderConfirmation } from './pages/OrderConfirmation';
 import { OrderDetail } from './pages/OrderDetail';
 import { ProductDetail } from './pages/ProductDetail';
+import { ResetPassword } from './pages/ResetPassword';
+import { VerifyEmail } from './pages/VerifyEmail';
 import { AdminDashboard } from './pages/admin/Dashboard';
 import { Login, Register } from './pages/Auth';
 import { Home } from './pages/Home';
@@ -20,6 +23,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/verify-email/:token" element={<VerifyEmail />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />

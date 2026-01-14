@@ -5,6 +5,7 @@ import { AuthContext } from './AuthContextDefinition';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem('refreshToken'));
   const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -20,19 +21,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check integrity or sync if token is missing
-    if (!token) {
-        setUser(null);
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+    if (!token && refreshToken) {
+      authApi
+        .refreshToken(refreshToken)
+        .then((data) => {
+          setToken(data.token);
+          setRefreshToken(data.refreshToken);
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('refreshToken', data.refreshToken);
+        })
+        .catch(() => {
+          setToken(null);
+          setUser(null);
+          setRefreshToken(null);
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+        });
+      return;
     }
-  }, [token]);
+
+    if (!token) {
+      setUser(null);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+    }
+  }, [token, refreshToken]);
 
   const setAuthData = (data: AuthResponse) => {
     setToken(data.token);
     setUser(data.user);
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
+
+    if (data.refreshToken) {
+      setRefreshToken(data.refreshToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+    }
   };
 
   const login = async (email: string, password: string) => {
@@ -68,8 +93,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setToken(null);
     setUser(null);
+    setRefreshToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('refreshToken');
   };
 
   const updateUser = (nextUser: User) => {
