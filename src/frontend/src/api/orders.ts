@@ -105,19 +105,49 @@ export const createOrder = async (payload: OrderPayload, token?: string): Promis
   return result.data;
 };
 
-export const fetchMyOrders = async (token: string): Promise<OrderResponse[]> => {
-    const response = await fetch(`${API_BASE_URL}/orders`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
-    
-    if (!response.ok) {
-        throw new Error('Failed to fetch orders');
-    }
-    
-    const result = await response.json();
-    return result.data;
+export interface PaginatedOrders {
+  data: OrderResponse[];
+  page: number;
+  limit: number;
+  hasNextPage: boolean;
+}
+
+export const fetchMyOrders = async (token: string, page = 1, limit = 6): Promise<PaginatedOrders> => {
+  const response = await fetch(`${API_BASE_URL}/orders?page=${page}&limit=${limit}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch orders');
+  }
+
+  const result = await response.json();
+  const data = Array.isArray(result.data) ? result.data : [];
+  return {
+    data,
+    page: result.page ?? page,
+    limit: result.limit ?? limit,
+    hasNextPage: data.length === (result.limit ?? limit),
+  };
+};
+
+export const cancelOrder = async (orderId: number, token: string): Promise<OrderResponse> => {
+  const response = await fetch(`${API_BASE_URL}/orders/${orderId}/cancel`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => null);
+    throw new Error(error?.message || 'Failed to cancel order');
+  }
+
+  const result = await response.json();
+  return result.data;
 };
 
 export const fetchOrder = async (id: number, token?: string): Promise<OrderResponse> => {

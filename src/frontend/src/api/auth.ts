@@ -4,6 +4,20 @@ export interface User {
   id: number;
   email: string;
   role: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string | null;
+  isActive?: boolean;
+}
+
+export interface ProfileResponse {
+  id: number;
+  email: string;
+  role: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string | null;
+  isActive?: boolean;
 }
 
 export interface AuthResponse {
@@ -19,8 +33,8 @@ export const authApi = {
       body: JSON.stringify({ email, password }),
     });
     if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || 'Registration failed');
+      const error = await res.json();
+      throw new Error(error.message || 'Registration failed');
     }
     return res.json();
   },
@@ -32,9 +46,58 @@ export const authApi = {
       body: JSON.stringify({ email, password }),
     });
     if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || 'Login failed');
+      const error = await res.json();
+      throw new Error(error.message || 'Login failed');
     }
     return res.json();
-  }
+  },
+
+  async fetchProfile(token: string): Promise<ProfileResponse> {
+    const res = await fetch(`${API_BASE_URL}/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => null);
+      throw new Error(error?.message || 'Failed to fetch profile');
+    }
+    const result = await res.json();
+    return result.data;
+  },
+
+  async updateProfile(
+    token: string,
+    data: { firstName?: string; lastName?: string; phone?: string },
+  ): Promise<ProfileResponse> {
+    const res = await fetch(`${API_BASE_URL}/me`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => null);
+      throw new Error(error?.message || 'Failed to update profile');
+    }
+    const result = await res.json();
+    return result.data;
+  },
+
+  async changePassword(token: string, password: string): Promise<void> {
+    const res = await fetch(`${API_BASE_URL}/me/password`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ password }),
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => null);
+      throw new Error(error?.message || 'Failed to change password');
+    }
+  },
 };

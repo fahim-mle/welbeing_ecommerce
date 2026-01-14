@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { Cart } from './pages/Cart';
 import { Checkout } from './pages/Checkout';
 import { OrderConfirmation } from './pages/OrderConfirmation';
+import { OrderDetail } from './pages/OrderDetail';
 import { ProductDetail } from './pages/ProductDetail';
 import { AdminDashboard } from './pages/admin/Dashboard';
 import { Login, Register } from './pages/Auth';
@@ -25,6 +26,7 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
             <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+            <Route path="/orders/:id" element={<OrderDetail />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </Router>

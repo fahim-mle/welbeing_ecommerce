@@ -72,8 +72,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('user');
   };
 
+  const updateUser = (nextUser: User) => {
+    setUser(nextUser);
+    localStorage.setItem('user', JSON.stringify(nextUser));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, login, register, logout, isLoading, error }}>
+    <AuthContext.Provider
+      value={{ user, token, isAuthenticated: !!token, login, register, logout, updateUser, isLoading, error }}
+    >
       {children}
     </AuthContext.Provider>
   );
