@@ -15,14 +15,23 @@ router.get('/', validateQuery(productListQuerySchema), async (req, res, next) =>
       limit: number;
     };
 
-    const products = await catalogService.getProducts({
+    const { products, total } = await catalogService.getProducts({
       categoryId: category,
       tagId: tag,
       search,
       page,
       limit,
     });
-    res.json({ success: true, data: products, page, limit });
+    res.json({
+      success: true,
+      data: products,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     next(error);
   }
