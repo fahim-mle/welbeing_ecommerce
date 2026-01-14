@@ -10,6 +10,13 @@ import { ProductDetail } from './pages/ProductDetail';
 import { ResetPassword } from './pages/ResetPassword';
 import { VerifyEmail } from './pages/VerifyEmail';
 import { AdminDashboard } from './pages/admin/Dashboard';
+import { AdminOrders } from './pages/admin/Orders';
+import { AdminProducts } from './pages/admin/Products';
+import { AdminCatalog } from './pages/admin/Catalog';
+import { AdminUsers } from './pages/admin/Users';
+import { AdminAnalytics } from './pages/admin/Analytics';
+import { AdminRoute } from './components/AdminRoute';
+import { AdminLayout } from './components/admin/AdminLayout';
 import { Login, Register } from './pages/Auth';
 import { Home } from './pages/Home';
 import { Profile } from './pages/Profile';
@@ -33,7 +40,16 @@ function App() {
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
             <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
             <Route path="/orders/:id" element={<OrderDetail />} />
-            <Route path="/admin" element={<AdminDashboard />} />
+            <Route element={<AdminRoute />}>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="catalog" element={<AdminCatalog />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="analytics" element={<AdminAnalytics />} />
+              </Route>
+            </Route>
           </Routes>
         </Router>
       </CartProvider>

@@ -1,117 +1,45 @@
-import { LayoutDashboard, Package, Plus } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ProductForm } from '../../components/admin/ProductForm';
-import { ProductList } from '../../components/admin/ProductList';
-import { OrderList } from '../../components/admin/OrderList';
-import type { Product } from '../../api/catalog';
-import { useAuth } from '../../hooks/useAuth';
+import { LayoutDashboard, Package, Tag, Users, BarChart3 } from 'lucide-react';
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const quickLinks = [
+  { label: 'Orders', path: '/admin/orders', icon: LayoutDashboard, description: 'Track customer orders and fulfillment.' },
+  { label: 'Products', path: '/admin/products', icon: Package, description: 'Manage product catalog and inventory.' },
+  { label: 'Catalog', path: '/admin/catalog', icon: Tag, description: 'Update categories and tags.' },
+  { label: 'Users', path: '/admin/users', icon: Users, description: 'Manage customer accounts and roles.' },
+  { label: 'Analytics', path: '/admin/analytics', icon: BarChart3, description: 'Review sales and performance trends.' },
+];
 
 export const AdminDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products');
-  const [isCreating, setIsCreating] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const { user, isLoading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isLoading && (!user || user.role !== 'ADMIN')) {
-      navigate('/');
-    }
-  }, [user, isLoading, navigate]);
-
-  if (isLoading) return <div className="p-8">Loading...</div>;
-  if (!user || user.role !== 'ADMIN') return null;
-
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200">
-        <div className="h-16 flex items-center justify-center border-b border-gray-200">
-          <h1 className="text-xl font-bold text-gray-900 tracking-tight">Admin</h1>
-        </div>
-        <nav className="p-4 space-y-1">
-          <button
-            onClick={() => setActiveTab('products')}
-            className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-              activeTab === 'products'
-                ? 'bg-indigo-50 text-indigo-700'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <Package className="h-5 w-5" />
-            Products
-          </button>
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-              activeTab === 'orders'
-                ? 'bg-indigo-50 text-indigo-700'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <LayoutDashboard className="h-5 w-5" />
-            Orders
-          </button>
-          <div className="pt-4 mt-4 border-t border-gray-100">
-             <Link to="/" className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg">
-                Back to Store
-             </Link>
-          </div>
-        </nav>
-      </aside>
+    <div className="p-8 space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+        <p className="text-sm text-gray-500 mt-2">Manage your storefront operations from a single place.</p>
+      </div>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <div className="p-8">
-           {activeTab === 'products' && (
-               <div>
-                   {!isCreating && !editingProduct ? (
-                       <>
-                           <div className="flex justify-between items-center mb-8">
-                               <h2 className="text-2xl font-bold text-gray-900">Product Management</h2>
-                                <button
-                                  onClick={() => setIsCreating(true)}
-                                  className="btn-primary"
-                                  aria-label="Add new product"
-                                >
-                                    <Plus className="h-4 w-4" />
-                                    Add Product
-                                </button>
-                           </div>
-                           <ProductList onEdit={(product) => setEditingProduct(product)} />
-                       </>
-                   ) : (
-                       <div>
-                           <div className="flex justify-between items-center mb-8">
-                               <h2 className="text-2xl font-bold text-gray-900">
-                                   {isCreating ? 'Create New Product' : 'Edit Product'}
-                               </h2>
-                           </div>
-                           <ProductForm 
-                               initialData={editingProduct} 
-                               onSave={() => {
-                                   setIsCreating(false);
-                                   setEditingProduct(null);
-                               }}
-                               onCancel={() => {
-                                   setIsCreating(false);
-                                   setEditingProduct(null);
-                               }}
-                           />
-                       </div>
-                   )}
-               </div>
-           )}
-           
-           {activeTab === 'orders' && (
-               <div>
-                   <h2 className="text-2xl font-bold text-gray-900 mb-8">Order Management</h2>
-                   <OrderList />
-               </div>
-           )}
-        </div>
-      </main>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {quickLinks.map((link) => {
+          const Icon = link.icon;
+          return (
+            <Link
+              key={link.label}
+              to={link.path}
+              className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:border-indigo-200 transition-colors"
+            >
+              <div className="flex items-start gap-4">
+                <span className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">{link.label}</h2>
+                  <p className="text-sm text-gray-500 mt-1">{link.description}</p>
+                </div>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 };
