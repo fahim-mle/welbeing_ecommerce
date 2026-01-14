@@ -407,6 +407,11 @@ export const findOrderById = async (orderId: number) => {
           email: true,
         },
       },
+      statusHistory: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
     },
   });
 };

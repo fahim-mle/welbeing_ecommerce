@@ -38,16 +38,48 @@ export interface OrderItemResponse {
     name: string;
     price: string;
   };
+  productVariant?: {
+    id: number;
+    sku: string;
+    optionValues?: Record<string, string>;
+  } | null;
+}
+
+export interface OrderAddressResponse {
+  id: number;
+  label: string;
+  fullName: string;
+  phone: string;
+  streetLine1: string;
+  streetLine2?: string | null;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
+export interface OrderStatusHistory {
+  id: number;
+  fromStatus: string;
+  toStatus: string;
+  changedBy?: string;
+  createdAt: string;
 }
 
 export interface OrderResponse {
   id: number;
-  guestEmail: string;
+  guestEmail?: string | null;
   status: string;
+  paymentStatus?: string;
   totalPrice: string;
-  shippingAddress: string;
+  shippingAddress?: string | null;
+  address?: OrderAddressResponse | null;
   createdAt: string;
   items: OrderItemResponse[];
+  user?: {
+    email: string;
+  } | null;
+  statusHistory?: OrderStatusHistory[];
 }
 
 export const createOrder = async (payload: OrderPayload, token?: string): Promise<OrderResponse> => {
@@ -86,4 +118,26 @@ export const fetchMyOrders = async (token: string): Promise<OrderResponse[]> => 
     
     const result = await response.json();
     return result.data;
+};
+
+export const fetchOrder = async (id: number, token?: string): Promise<OrderResponse> => {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/orders/${id}`, {
+    headers,
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+    throw new Error(errorBody?.message || 'Failed to fetch order');
+  }
+
+  const result = await response.json();
+  return result.data;
 };
