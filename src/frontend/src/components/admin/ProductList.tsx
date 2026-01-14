@@ -44,21 +44,15 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
   };
 
   const toggleStock = async (product: Product) => {
-      if (!token) return;
-      // Toggle logic: If > 0, make 0. If 0, make 10 (default restock).
-      // Or just keep status toggle logic but sync quantity?
-      // Requirement says: "admin should see and update the product quantity."
-      // So this simple toggle button might be insufficient.
-      // But for quick toggle:
-      const newStatus = product.stockStatus === 'IN_STOCK' ? 'OUT_OF_STOCK' : 'IN_STOCK';
-      const newQty = newStatus === 'IN_STOCK' ? (product.stockQuantity > 0 ? product.stockQuantity : 10) : 0;
+    if (!token) return;
+    const newQty = product.stockQuantity > 0 ? 0 : 10;
 
-      try {
-          const updated = await updateProduct(token, product.id, { stockStatus: newStatus, stockQuantity: newQty });
-          setProducts(products.map(p => p.id === product.id ? updated : p));
-      } catch (err) {
-          alert('Failed to update stock status');
-      }
+    try {
+      const updated = await updateProduct(token, product.id, { stockQuantity: newQty });
+      setProducts(products.map((p) => (p.id === product.id ? updated : p)));
+    } catch (err) {
+      alert('Failed to update stock status');
+    }
   };
 
   const toggleVisibility = async (product: Product) => {
