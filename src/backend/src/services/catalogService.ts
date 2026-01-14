@@ -95,9 +95,9 @@ export const getProducts = async (filters: {
   });
 
   if (!filters.includeOutOfStock) {
-    const cached = parseCachedValue<{ products: Awaited<ReturnType<typeof prisma.product.findMany>>; total: number }>(await getCache(cacheKey));
-    if (cached) {
-      return cached;
+    const cached = parseCachedValue<any>(await getCache(cacheKey));
+    if (cached && !Array.isArray(cached) && cached.products && typeof cached.total === 'number') {
+      return cached as { products: Awaited<ReturnType<typeof prisma.product.findMany>>; total: number };
     }
   }
 

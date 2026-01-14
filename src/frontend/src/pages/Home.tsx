@@ -62,8 +62,10 @@ export const Home: React.FC = () => {
           page,
           limit: 9,
         });
-        setProducts(data);
-        setTotalPages(pagination.totalPages);
+        setProducts(data || []);
+        if (pagination && pagination.totalPages) {
+           setTotalPages(pagination.totalPages);
+        }
       } catch (err) {
         console.error(err);
       } finally {
