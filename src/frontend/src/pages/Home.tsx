@@ -169,14 +169,15 @@ export const Home: React.FC = () => {
                        Login
                    </Link>
                )}
-                <Link to="/checkout" className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full" aria-label={`Shopping cart with ${totalItems} items`}>
-                  <ShoppingBag className="h-5 w-5" aria-hidden="true" />
-                  {totalItems > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs font-semibold rounded-full px-1.5" aria-hidden="true">
-                      {totalItems}
-                    </span>
-                  )}
-                </Link>
+                 <Link to="/cart" className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full" aria-label={`Shopping cart with ${totalItems} items`}>
+                   <ShoppingBag className="h-5 w-5" aria-hidden="true" />
+                   {totalItems > 0 && (
+                     <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs font-semibold rounded-full px-1.5" aria-hidden="true">
+                       {totalItems}
+                     </span>
+                   )}
+                 </Link>
+
 
            </div>
         </div>

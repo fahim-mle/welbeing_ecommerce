@@ -12,8 +12,8 @@ interface CartContextValue {
   totalItems: number;
   subtotal: number;
   addItem: (product: Product, quantity?: number, variant?: ProductVariant) => void;
-  removeItem: (productId: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+  removeItem: (productId: number, variantId?: number) => void;
+  updateQuantity: (productId: number, quantity: number, variantId?: number) => void;
   clearCart: () => void;
 }
 
@@ -38,15 +38,21 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
-  const removeItem = (productId: number) => {
-    setItems((prev) => prev.filter((item) => item.product.id !== productId));
+  const removeItem = (productId: number, variantId?: number) => {
+    setItems((prev) =>
+      prev.filter(
+        (item) => item.product.id !== productId || item.variant?.id !== variantId,
+      ),
+    );
   };
 
-  const updateQuantity = (productId: number, quantity: number) => {
+  const updateQuantity = (productId: number, quantity: number, variantId?: number) => {
     setItems((prev) =>
       prev
         .map((item) =>
-          item.product.id === productId ? { ...item, quantity } : item,
+          item.product.id === productId && item.variant?.id === variantId
+            ? { ...item, quantity }
+            : item,
         )
         .filter((item) => item.quantity > 0),
     );

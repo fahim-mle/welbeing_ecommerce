@@ -2,13 +2,28 @@ import { API_BASE_URL } from '../config';
 
 export interface OrderItemPayload {
   product_id: number;
+  product_variant_id?: number;
   quantity: number;
+}
+
+export interface ShippingAddressPayload {
+  label: string;
+  fullName: string;
+  phone: string;
+  streetLine1: string;
+  streetLine2?: string | null;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  isDefault?: boolean;
 }
 
 export interface OrderPayload {
   guest_email?: string;
   items: OrderItemPayload[];
-  shipping_address: string;
+  shipping_address?: ShippingAddressPayload;
+  address_id?: number;
   payment_placeholder: string;
   disclaimer_accepted: boolean;
 }
