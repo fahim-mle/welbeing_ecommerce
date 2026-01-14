@@ -525,6 +525,32 @@ export const findAdminOrders = async (options?: { page?: number; limit?: number 
   });
 };
 
+export const findAdminOrderById = async (orderId: number) => {
+  return prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      items: {
+        include: {
+          product: true,
+          productVariant: true,
+        },
+      },
+      user: {
+        select: {
+          email: true,
+          role: true,
+        },
+      },
+      address: true,
+      statusHistory: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+    },
+  });
+};
+
 export const updateOrderStatus = async (orderId: number, status: OrderStatus) => {
   const validStatuses: OrderStatus[] = ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
   if (!validStatuses.includes(status)) {
@@ -545,15 +571,9 @@ export const updateOrderStatus = async (orderId: number, status: OrderStatus) =>
       throw new ValidationError('Order not found');
     }
 
-    const updated = await tx.order.update({
+    await tx.order.update({
       where: { id: orderId },
       data: { status },
-      include: {
-        items: true,
-        user: {
-          select: { email: true },
-        },
-      },
     });
 
     await tx.orderStatusHistory.create({
@@ -565,8 +585,31 @@ export const updateOrderStatus = async (orderId: number, status: OrderStatus) =>
       },
     });
 
-    return updated;
+    return tx.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          include: {
+            product: true,
+            productVariant: true,
+          },
+        },
+        user: {
+          select: { email: true, role: true },
+        },
+        address: true,
+        statusHistory: {
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
+    });
   });
+
+  if (!result) {
+    throw new ValidationError('Order not found');
+  }
 
   const recipient = result.user?.email ?? result.guestEmail;
   if (recipient) {

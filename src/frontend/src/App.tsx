@@ -11,6 +11,7 @@ import { ResetPassword } from './pages/ResetPassword';
 import { VerifyEmail } from './pages/VerifyEmail';
 import { AdminDashboard } from './pages/admin/Dashboard';
 import { AdminOrders } from './pages/admin/Orders';
+import { AdminOrderDetail } from './pages/admin/OrderDetail';
 import { AdminProducts } from './pages/admin/Products';
 import { AdminCatalog } from './pages/admin/Catalog';
 import { AdminUsers } from './pages/admin/Users';
@@ -44,6 +45,7 @@ function App() {
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
                 <Route path="orders" element={<AdminOrders />} />
+                <Route path="orders/:id" element={<AdminOrderDetail />} />
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="catalog" element={<AdminCatalog />} />
                 <Route path="users" element={<AdminUsers />} />

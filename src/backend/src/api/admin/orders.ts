@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { adminAuth } from '../../middleware/adminAuth';
-import { findAdminOrders, updateOrderStatus } from '../../services/orderService';
+import { findAdminOrderById, findAdminOrders, updateOrderStatus } from '../../services/orderService';
 import { logger } from '../../lib/logger';
 import { validateQuery } from '../../middleware/validation';
 import { paginationSchema } from '../../schemas/pagination';
@@ -20,6 +20,26 @@ router.get('/', validateQuery(paginationSchema), async (req: Request, res: Respo
   } catch (error) {
     const requestId = (req as Request & { requestId?: string }).requestId;
     logger.error('Error fetching admin orders', { requestId, error });
+    next(error);
+  }
+});
+
+// GET /api/admin/orders/:id
+router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+  const orderId = Number(req.params.id);
+  if (Number.isNaN(orderId)) {
+    return res.status(400).json({ message: 'Invalid order ID' });
+  }
+
+  try {
+    const order = await findAdminOrderById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    res.json({ data: order });
+  } catch (error) {
+    const requestId = (req as Request & { requestId?: string }).requestId;
+    logger.error('Error fetching admin order detail', { requestId, error, orderId });
     next(error);
   }
 });
