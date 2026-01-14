@@ -143,7 +143,7 @@ export const Checkout: React.FC = () => {
       );
 
       clearCart();
-      navigate(`/order-confirmation/${order.id}`);
+      navigate(`/order-confirmation/${order.id}`, { state: { order } });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong.';
       setError(message);
