@@ -95,36 +95,41 @@ export const getProducts = async (filters: {
   });
 
   if (!filters.includeOutOfStock) {
-    const cached = parseCachedValue<Awaited<ReturnType<typeof prisma.product.findMany>>>(await getCache(cacheKey));
-    if (cached) {
-      return cached;
+    const cached = parseCachedValue<any>(await getCache(cacheKey));
+    if (cached && !Array.isArray(cached) && cached.products && typeof cached.total === 'number') {
+      return cached as { products: Awaited<ReturnType<typeof prisma.product.findMany>>; total: number };
     }
   }
 
-  const products = await prisma.product.findMany({
-    where,
-    skip,
-    take: limit,
-    orderBy: {
-      updatedAt: 'desc',
-    },
-    include: {
-      category: true,
-      images: {
-        orderBy: {
-          displayOrder: 'asc',
-        },
-        take: 1, // Only get primary image for list view
+  const [products, total] = await prisma.$transaction([
+    prisma.product.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: {
+        updatedAt: 'desc',
       },
-      tags: true,
-    },
-  });
+      include: {
+        category: true,
+        images: {
+          orderBy: {
+            displayOrder: 'asc',
+          },
+          take: 1, // Only get primary image for list view
+        },
+        tags: true,
+      },
+    }),
+    prisma.product.count({ where }),
+  ]);
+
+  const result = { products, total };
 
   if (!filters.includeOutOfStock) {
-    await setCache(cacheKey, JSON.stringify(products), PRODUCT_LIST_CACHE_TTL_SECONDS);
+    await setCache(cacheKey, JSON.stringify(result), PRODUCT_LIST_CACHE_TTL_SECONDS);
   }
 
-  return products;
+  return result;
 };
 
 export const getProductById = async (id: number) => {

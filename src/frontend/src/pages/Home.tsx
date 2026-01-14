@@ -13,6 +13,8 @@ export const Home: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<WellbeingTag[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile sidebar
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Profile dropdown
@@ -53,12 +55,17 @@ export const Home: React.FC = () => {
     const loadProducts = async () => {
       setLoading(true);
       try {
-        const data = await fetchProducts({
+        const { data, pagination } = await fetchProducts({
           categoryId: selectedCategory,
           tagId: selectedTag,
           search: searchQuery,
+          page,
+          limit: 9,
         });
-        setProducts(data);
+        setProducts(data || []);
+        if (pagination && pagination.totalPages) {
+           setTotalPages(pagination.totalPages);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -66,9 +73,10 @@ export const Home: React.FC = () => {
       }
     };
     loadProducts();
-  }, [selectedCategory, selectedTag, searchQuery]);
+  }, [selectedCategory, selectedTag, searchQuery, page]);
 
   const updateFilter = (key: string, value: string | undefined) => {
+    setPage(1);
     const newParams = new URLSearchParams(searchParams);
     if (value) {
       newParams.set(key, value);
@@ -275,8 +283,31 @@ export const Home: React.FC = () => {
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
-             )}
-          </div>
+              )}
+
+              {/* Pagination */}
+              {!loading && totalPages > 1 && (
+                <div className="flex justify-center mt-8 gap-2">
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  <span className="px-4 py-2 text-sm text-gray-700 flex items-center">
+                    Page {page} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+           </div>
         </div>
       </div>
     </div>

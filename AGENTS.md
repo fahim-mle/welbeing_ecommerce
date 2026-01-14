@@ -1,211 +1,140 @@
 # AGENTS.md
 
-This file guides agentic coding tools working in this repo.
+This document serves as the primary operational guide for AI agents and developers working in this repository.
+It defines the build processes, testing protocols, code style, and architectural standards that must be followed.
 
-## Scope
+## 1. Project Overview & Structure
 
-- Applies to the whole repository unless a deeper `AGENTS.md` overrides it.
+This is a Monorepo using Node.js workspaces.
 
-## Build / Lint / Test Commands
+- **Root**: Orchestration and shared config.
+- **src/backend**: Express.js + TypeScript + Prisma + PostgreSQL (via Docker/Supabase).
+- **src/frontend**: React + TypeScript + Vite + Tailwind CSS.
 
-### Workspace (root)
+### Key Directories
 
-- Install all deps: `npm run install:all`
-- Run all builds: `npm run build`
-- Run all tests: `npm run test`
-- Run all lint: `npm run lint`
-- Run both dev servers: `npm run dev`
+- `.docs/`: Documentation and task lists.
+- `src/backend/src/`: Backend source code.
+- `src/frontend/src/`: Frontend source code.
+
+## 2. Build, Lint & Test Commands
+
+### Workspace (Root)
+
+Run these commands from the root directory `/home/ghost/workspace/welbeing_ecommerce`:
+
+- **Install Dependencies**: `npm run install:all` (Installs root and workspace dependencies)
+- **Start All Dev Servers**: `npm run dev` (Runs backend and frontend concurrently)
+- **Build All**: `npm run build`
+- **Test All**: `npm run test`
+- **Lint All**: `npm run lint`
 
 ### Backend (`src/backend`)
 
-- Dev server: `npm run dev`
-- Build: `npm run build`
-- Start production build: `npm run start`
-- Lint: `npm run lint`
-- Tests (all): `npm run test`
-- Run a single test (jest): `npx jest path/to/test-file.test.ts`
-- Run tests by name: `npx jest -t "test name"`
-- DB migrate: `npm run db:migrate`
-- DB seed: `npm run db:seed`
+Commands should be run via `npm run <script> --workspace=@welbeing/backend` from root, or inside `src/backend`:
+
+- **Development**: `npm run dev` (Uses `tsx watch`)
+- **Build**: `npm run build` (Compiles TS to `dist/`)
+- **Lint**: `npm run lint` (ESLint)
+- **Test All**: `npm run test` (Jest)
+- **Test Single File**: `npx jest path/to/file.test.ts`
+- **Test Filter**: `npx jest -t "describe string"`
+- **Database Migrate**: `npm run db:migrate` (Prisma migrate dev)
+- **Database Seed**: `npm run db:seed` (Runs `prisma/seed.ts`)
 
 ### Frontend (`src/frontend`)
 
-- Dev server: `npm run dev`
-- Build: `npm run build`
-- Preview build: `npm run preview`
-- Lint: `npm run lint`
-- Tests (all): `npm run test`
-- Run a single test (vitest): `npx vitest run path/to/test-file.test.tsx`
-- Run tests by name: `npx vitest run -t "test name"`
+Commands should be run via `npm run <script> --workspace=@welbeing/frontend` from root, or inside `src/frontend`:
 
-## Code Style Guidelines
+- **Development**: `npm run dev` (Vite dev server)
+- **Build**: `npm run build` (TSC + Vite build)
+- **Preview**: `npm run preview` (Preview production build)
+- **Lint**: `npm run lint` (ESLint)
+- **Test All**: `npm run test` (Vitest)
+- **Test Single File**: `npx vitest run path/to/file.test.tsx`
+- **Test Filter**: `npx vitest run -t "test description"`
+
+## 3. Code Style & Conventions
 
 ### General
 
-- Use TypeScript everywhere (strict types preferred).
-- Prefer small, composable functions.
-- Keep changes minimal and scoped to the task.
-- Avoid introducing new dependencies unless required.
-- Use descriptive names; avoid one-letter identifiers.
+- **Language**: TypeScript is mandatory. Use `strict` mode. Avoid `any` - define interfaces/types.
+- **Functional**: Prefer functional programming patterns. Pure functions where possible.
+- **Conciseness**: Small, composable functions. One logical concern per function.
+- **Comments**: Focus on the *WHY*, not the *WHAT*. Do not add comments for obvious code.
+- **No Dead Code**: Remove unused imports, variables, and commented-out code immediately.
 
 ### Formatting
 
-- Use 2-space indentation.
-- Use semicolons consistently.
-- Prefer single quotes for strings in TS/TSX.
-- Use trailing commas where existing code does.
+- **Indentation**: 2 spaces.
+- **Quotes**: Single quotes `'` for strings (unless escaping requires double).
+- **Semicolons**: Always use semicolons.
+- **Trailing Commas**: ES5/ESNext trailing commas where applicable.
 
 ### Imports
 
-- Group imports: external libs first, then local modules.
-- Sort local imports from top-level to deeper paths.
-- Avoid unused imports; keep imports explicit.
+- **Order**:
+  1. External libraries (`react`, `express`, `zod`).
+  2. Internal absolute/alias imports (if configured).
+  3. Local relative imports (`../components`, `./types`).
+- **Cleanliness**: Remove unused imports.
 
 ### Naming Conventions
 
-- Variables/functions: `camelCase`.
-- Types/interfaces: `PascalCase`.
-- Components: `PascalCase`.
-- Files: `camelCase.ts` or `PascalCase.tsx` depending on component usage.
+- **Variables/Functions**: `camelCase` (e.g., `fetchProducts`, `isLoading`).
+- **Components**: `PascalCase` (e.g., `ProductCard`, `UserProfile`).
+- **Types/Interfaces**: `PascalCase` (e.g., `Product`, `AuthResponse`).
+- **Files**:
+  - React Components: `PascalCase.tsx`
+  - Logic/Utilities: `camelCase.ts`
+  - Tests: `*.test.ts` or `*.test.tsx`
 
 ### Error Handling
 
-- Backend: throw `AppError`, `BusinessRuleError`, or `ValidationError` from `src/backend/src/types/shared`.
-- Catch errors at the global handler (`src/backend/src/app.ts`) only.
-- Always return structured JSON errors (no raw stack traces).
+- **Backend**:
+  - Use custom error classes (`AppError`, `ValidationError`) likely found in `src/backend/src/types/` or `utils/`.
+  - Pass errors to the global error handler via `next(err)` in Express controllers.
+  - Return structured JSON: `{ success: false, error: { message: "...", code: "..." } }`.
+- **Frontend**:
+  - Use `try/catch` in async thunks/effects.
+  - Display user-friendly error messages (Toasts or Alerts), not raw stack traces.
+  - Log errors to console in development.
 
-### API and Services
+## 4. Architecture & Patterns
 
-- Keep route handlers thin: validate input, call services.
-- Put business logic in `src/backend/src/services`.
-- Use Prisma via `src/backend/src/lib/prisma`.
-- Use Zod schemas for request validation where possible.
+### Backend
 
-### React / Frontend
+- **Layered Architecture**: `Controller` -> `Service` -> `Data Access (Prisma)`.
+- **Controllers**: Thin. Validate input (Zod), call Service, send Response.
+- **Services**: Contain all business logic.
+- **Validation**: Use `zod` schemas for request validation.
+- **Database**: Use `prisma` client. Do not write raw SQL unless absolutely necessary.
 
-- Use functional components and hooks.
-- Keep API calls in `src/frontend/src/api`.
-- Use shared UI in `src/frontend/src/components`.
-- Prefer reusable components and consistent Tailwind classes.
+### Frontend
 
-## Docs and Specs
+- **Framework**: React 19 + Vite.
+- **Styling**: Tailwind CSS. Use utility classes directly in JSX.
+- **Icons**: `lucide-react`.
+- **State**: Use Context API for global state (Auth, Cart), local `useState` for UI state.
+- **Data Fetching**: Encapsulate `fetch` calls in `src/api/` modules. Do not fetch directly in components.
 
-- API reference: `src/backend/API_DOCS.md`
-- Swagger setup: `SWAGGER_SETUP.md`
-- Task lists: `.docs/*.md`
+## 5. Git Strategy
 
-## Agent Workflow (Gemini + Codex)
+Follow the rules in `.docs/git-strategy.md` strictly.
 
-Use the following agent logic to process frontend improvement tasks.
+- **Branch Naming**: `type/ID-description` (e.g., `feature/FF001-add-filters`).
+- **Commit Messages**: Descriptive, imperative mood.
 
-### Requirements
+## 6. Agent Workflow (Guidance)
 
-- Read the frontend task list file.
-- For each task:
-  - Identify relevant files and docs.
-  - Build a Gemini prompt with the required template.
-  - Call Gemini in headless mode.
-  - Parse the JSON response into steps.
-  - Implement steps via Codex (or other codegen tool).
-  - Log progress and mark tasks as done.
+1. **Understand**: Read task lists (`.docs/frontend_improvement_tasklist.md`) and related code.
+2. **Plan**: Identify files to change. Check for existing patterns.
+3. **Implement**: Write code. Use existing components/utilities.
+4. **Verify**: Run **LINT** and **TEST** commands before finishing.
+   - Frontend: `npm run lint --workspace=@welbeing/frontend && npm run test --workspace=@welbeing/frontend`
+   - Backend: `npm run lint --workspace=@welbeing/backend && npm run test --workspace=@welbeing/backend`
 
-### Gemini Prompt Template (MUST USE)
+## 7. Documentation
 
-```txt
-You are an expert MERN developer.
-Task: <task description>
-Files: <list of specific file paths relevant to the task>
-Docs: <list of relevant documentation file paths>
-Return only a JSON array of detailed step-by-step instructions:
-[
-  {
-    "description": "...",
-    "codeSnippet": "...",  # optional example code
-    "testSuggestions": [ "...", "..." ]
-  },
-  ...
-]
-```
-
-### Agent Logic (JavaScript-style pseudocode)
-
-```js
-import fs from 'fs';
-import path from 'path';
-import { execSync } from 'child_process';
-
-const TASKLIST = '.docs/frontend_improvement_tasklist.md';
-const DOCS_DIR = '.docs';
-const FRONTEND_DIR = 'src/frontend';
-const BACKEND_DIR = 'src/backend';
-
-function parseTaskList(markdown) {
-  return markdown
-    .split('\n')
-    .filter((line) => line.trim().startsWith('- [ ]'))
-    .map((line) => line.replace('- [ ]', '').trim());
-}
-
-function findRelevantFiles(task) {
-  const rules = [
-    { match: /profile|account/i, files: ['src/frontend/src/pages/Profile.tsx'] },
-    { match: /checkout/i, files: ['src/frontend/src/pages/Checkout.tsx'] },
-    { match: /cart/i, files: ['src/frontend/src/pages/Cart.tsx'] },
-    { match: /admin/i, files: ['src/frontend/src/pages/admin', 'src/frontend/src/components/admin'] },
-    { match: /orders?/i, files: ['src/frontend/src/pages/Orders.tsx', 'src/frontend/src/api/orders.ts'] },
-    { match: /product/i, files: ['src/frontend/src/pages/ProductDetail.tsx', 'src/frontend/src/api/catalog.ts'] },
-    { match: /auth|password|verify/i, files: ['src/frontend/src/pages/auth', 'src/frontend/src/api/auth.ts'] },
-  ];
-
-  const matches = new Set();
-  rules.forEach((rule) => {
-    if (rule.match.test(task)) {
-      rule.files.forEach((file) => matches.add(file));
-    }
-  });
-
-  return Array.from(matches);
-}
-
-function buildPrompt(task, files, docs) {
-  return `You are an expert MERN developer.\nTask: ${task}\nFiles: ${files.join(', ') || 'N/A'}\nDocs: ${docs.join(', ') || 'N/A'}\nReturn only a JSON array of detailed step-by-step instructions:\n[\n  {\n    "description": "...",\n    "codeSnippet": "...",  # optional example code\n    "testSuggestions": [ "...", "..." ]\n  }\n]`;
-}
-
-function runGemini(prompt, includeDirs) {
-  const cmd = `gemini -p ${JSON.stringify(prompt)} --include-directories ${includeDirs.join(',')} --output-format json`;
-  const output = execSync(cmd, { encoding: 'utf-8' });
-  return JSON.parse(output);
-}
-
-async function codexImplement(step) {
-  // Replace with real Codex tool invocation
-  console.log(`Codex implementing: ${step.description}`);
-}
-
-async function processTasks() {
-  const markdown = fs.readFileSync(TASKLIST, 'utf-8');
-  const tasks = parseTaskList(markdown);
-  const docs = fs.readdirSync(DOCS_DIR).filter((f) => f.endsWith('.md')).map((f) => path.join(DOCS_DIR, f));
-
-  for (const task of tasks) {
-    const files = findRelevantFiles(task);
-    const prompt = buildPrompt(task, files, docs);
-    const geminiResponse = runGemini(prompt, [FRONTEND_DIR, BACKEND_DIR]);
-
-    const steps = geminiResponse.response || geminiResponse;
-    for (const step of steps) {
-      await codexImplement(step);
-    }
-
-    console.log(`Done: ${task}`);
-  }
-}
-
-processTasks().catch(console.error);
-```
-
-## Notes for Agents
-
-- Do not commit unless explicitly asked.
-- Prefer existing patterns in `src/backend/src` and `src/frontend/src`.
-- Update `.docs` tasklists when tasks are completed.
+- **API Specs**: See `src/backend/API_DOCS.md`.
+- **Tasks**: Update `.docs/frontend_improvement_tasklist.md` when tasks are completed.

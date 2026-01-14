@@ -4,11 +4,8 @@ export interface Product {
   id: number;
   name: string;
   description: string;
-  price: number; // Decimal comes as string from Prisma usually, but here mapped to number or string? JSON usually string for Decimal.
-  // Wait, Prisma Decimal is string in JSON. But let's check my curl output.
-  // "price":"29.99"
-  // So it is string. But in frontend we might want number.
-  // I'll type it string for safety, but maybe convert.
+  price: number;
+  originalPrice?: number;
   stockQuantity: number;
   isVisible: boolean;
   categoryId: number;
@@ -46,19 +43,34 @@ export interface CatalogFilters {
   categoryId?: number;
   tagId?: number;
   search?: string;
+  page?: number;
+  limit?: number;
 }
 
-export const fetchProducts = async (filters: CatalogFilters = {}): Promise<Product[]> => {
+export interface Pagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface PaginatedProducts {
+  data: Product[];
+  pagination: Pagination;
+}
+
+export const fetchProducts = async (filters: CatalogFilters = {}): Promise<PaginatedProducts> => {
   const params = new URLSearchParams();
   if (filters.categoryId) params.append('category', String(filters.categoryId));
   if (filters.tagId) params.append('tag', String(filters.tagId));
   if (filters.search) params.append('search', filters.search);
+  if (filters.page) params.append('page', String(filters.page));
+  if (filters.limit) params.append('limit', String(filters.limit));
 
   const response = await fetch(`${API_BASE_URL}/products?${params.toString()}`);
   if (!response.ok) throw new Error('Failed to fetch products');
   const result = await response.json();
-  console.log(result);
-  return result.data;
+  return { data: result.data, pagination: result.pagination };
 };
 
 export const fetchProductById = async (id: number): Promise<Product> => {
