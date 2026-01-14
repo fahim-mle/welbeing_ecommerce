@@ -1,5 +1,15 @@
 import { API_BASE_URL } from '../config';
 
+export interface ProductVariant {
+  id: number;
+  productId: number;
+  sku: string;
+  price: number;
+  stockQuantity: number;
+  optionValues: Record<string, string>;
+  isActive: boolean;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -12,6 +22,7 @@ export interface Product {
   category?: Category;
   images: ProductImage[];
   tags: WellbeingTag[];
+  variants?: ProductVariant[];
   ingredients?: string;
   usageInstructions?: string;
   benefits?: string;

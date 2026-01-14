@@ -149,6 +149,9 @@ export const getProductById = async (id: number) => {
         },
       },
       tags: true,
+      variants: {
+        where: { isActive: true },
+      },
     },
   });
 

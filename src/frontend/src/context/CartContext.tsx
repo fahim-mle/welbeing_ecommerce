@@ -1,16 +1,17 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
-import { type Product } from '../api/catalog';
+import { type Product, type ProductVariant } from '../api/catalog';
 
 export interface CartItem {
   product: Product;
   quantity: number;
+  variant?: ProductVariant;
 }
 
 interface CartContextValue {
   items: CartItem[];
   totalItems: number;
   subtotal: number;
-  addItem: (product: Product) => void;
+  addItem: (product: Product, quantity?: number, variant?: ProductVariant) => void;
   removeItem: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
@@ -21,17 +22,19 @@ const CartContext = createContext<CartContextValue | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  const addItem = (product: Product) => {
+  const addItem = (product: Product, quantity = 1, variant?: ProductVariant) => {
     setItems((prev) => {
-      const existing = prev.find((item) => item.product.id === product.id);
+      const existing = prev.find(
+        (item) => item.product.id === product.id && item.variant?.id === variant?.id,
+      );
       if (existing) {
         return prev.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+          item.product.id === product.id && item.variant?.id === variant?.id
+            ? { ...item, quantity: item.quantity + quantity }
             : item,
         );
       }
-      return [...prev, { product, quantity: 1 }];
+      return [...prev, { product, quantity, variant }];
     });
   };
 
@@ -58,10 +61,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const subtotal = useMemo(
     () =>
-      items.reduce(
-        (total, item) => total + Number(item.product.price) * item.quantity,
-        0,
-      ),
+      items.reduce((total, item) => {
+        const price = item.variant?.price ?? item.product.price;
+        return total + Number(price) * item.quantity;
+      }, 0),
     [items],
   );
 
