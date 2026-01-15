@@ -5,7 +5,7 @@ import { auth } from '../lib/auth';
 import { logger } from '../lib/logger';
 import { emailService } from '../lib/email';
 import { validateBody, validateQuery } from '../middleware/validation';
-import { createOrderSchema } from '../schemas/orders';
+import { createOrderSchema, guestLookupSchema } from '../schemas/orders';
 import { paginationSchema } from '../schemas/pagination';
 
 const router = Router();
@@ -41,33 +41,84 @@ router.get('/:id', async (req, res) => {
   const orderId = Number(req.params.id);
   const authPayload = auth.decodeAuthorizationHeader(req.headers.authorization);
   const userId = authPayload?.userId;
-  const guestEmail = req.query.guestEmail ? String(req.query.guestEmail).toLowerCase() : undefined;
 
   if (Number.isNaN(orderId)) {
-    return res.status(400).json({ message: 'Invalid order ID' });
+    return res.status(400).json({
+      success: false,
+      error: { message: 'Invalid order ID', code: 'INVALID_ORDER_ID' },
+    });
   }
 
   try {
     const order = await findOrderById(orderId);
     if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({
+        success: false,
+        error: { message: 'Order not found', code: 'NOT_FOUND' },
+      });
     }
 
-    if (order.userId) {
-      if (!userId || order.userId !== userId) {
-        return res.status(403).json({ message: 'Unauthorized' });
-      }
-    } else {
-      if (!guestEmail || order.guestEmail?.toLowerCase() !== guestEmail) {
-        return res.status(403).json({ message: 'Unauthorized' });
-      }
+    if (!userId || order.userId !== userId) {
+      return res.status(403).json({
+        success: false,
+        error: { message: 'Unauthorized', code: 'UNAUTHORIZED' },
+      });
     }
 
-    res.json({ data: order });
+    return res.json({ success: true, data: order });
   } catch (error) {
     const requestId = (req as AuthRequest & { requestId?: string }).requestId;
     logger.error('Failed to fetch order', { requestId, error, orderId, userId });
-    res.status(500).json({ message: 'Failed to fetch order' });
+    return res.status(500).json({
+      success: false,
+      error: { message: 'Failed to fetch order', code: 'INTERNAL_SERVER_ERROR' },
+    });
+  }
+});
+
+// POST /api/orders/:id/guest
+router.post('/:id/guest', validateBody(guestLookupSchema), async (req, res) => {
+  const orderId = Number(req.params.id);
+  const guestEmail = String(req.body.guestEmail ?? req.body.guest_email).toLowerCase();
+
+  if (Number.isNaN(orderId)) {
+    return res.status(400).json({
+      success: false,
+      error: { message: 'Invalid order ID', code: 'INVALID_ORDER_ID' },
+    });
+  }
+
+  try {
+    const order = await findOrderById(orderId);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: { message: 'Order not found', code: 'NOT_FOUND' },
+      });
+    }
+
+    if (order.userId) {
+      return res.status(403).json({
+        success: false,
+        error: { message: 'Unauthorized', code: 'UNAUTHORIZED' },
+      });
+    }
+
+    if (!order.guestEmail || order.guestEmail.toLowerCase() !== guestEmail) {
+      return res.status(403).json({
+        success: false,
+        error: { message: 'Unauthorized', code: 'UNAUTHORIZED' },
+      });
+    }
+
+    return res.json({ success: true, data: order });
+  } catch (error) {
+    const requestId = (req as AuthRequest & { requestId?: string }).requestId;
+    logger.error('Failed to fetch guest order', { requestId, error, orderId });
+    return res.status(500).json({
+      success: false,
+      error: { message: 'Failed to fetch order', code: 'INTERNAL_SERVER_ERROR' },
+    });
   }
 });
 
