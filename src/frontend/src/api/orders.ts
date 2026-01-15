@@ -150,22 +150,25 @@ export const cancelOrder = async (orderId: number, token: string): Promise<Order
   return result.data;
 };
 
-export const fetchOrder = async (id: number, token?: string): Promise<OrderResponse> => {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
+export const fetchOrder = async (
+  id: number,
+  token?: string,
+  guestEmail?: string,
+): Promise<OrderResponse> => {
+  const headers: Record<string, string> = {};
 
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}/orders/${id}`, {
+  const query = guestEmail ? `?guestEmail=${encodeURIComponent(guestEmail)}` : '';
+  const response = await fetch(`${API_BASE_URL}/orders/${id}${query}`, {
     headers,
   });
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => null);
-    throw new Error(errorBody?.message || 'Failed to fetch order');
+    throw new Error(errorBody?.error || errorBody?.message || 'Failed to fetch order');
   }
 
   const result = await response.json();

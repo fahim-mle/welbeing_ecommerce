@@ -77,6 +77,8 @@ export const Checkout: React.FC = () => {
 
     if (!guestEmail) {
       nextErrors.guestEmail = 'Email is required.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
+      nextErrors.guestEmail = 'Please enter a valid email address.';
     }
 
     if (!paymentPlaceholder) {
@@ -114,16 +116,15 @@ export const Checkout: React.FC = () => {
       let addressId: number | undefined;
       let shippingAddress: ShippingAddressPayload | undefined;
 
-      if (user && token && selectedAddressId && selectedAddressId !== 'new') {
-        addressId = selectedAddressId;
+      if (user && token) {
+        if (selectedAddressId === 'new') {
+          const createdAddress = await createAddress(addressForm, token);
+          addressId = createdAddress.id;
+        } else if (selectedAddressId) {
+          addressId = selectedAddressId;
+        }
       } else {
         shippingAddress = addressForm;
-      }
-
-      if (user && token && selectedAddressId === 'new') {
-        const createdAddress = await createAddress(addressForm, token);
-        addressId = createdAddress.id;
-        shippingAddress = undefined;
       }
 
       const order = await createOrder(
@@ -143,7 +144,8 @@ export const Checkout: React.FC = () => {
       );
 
       clearCart();
-      navigate(`/order-confirmation/${order.id}`, { state: { order } });
+      const guestQuery = token ? '' : `?guestEmail=${encodeURIComponent(guestEmail)}`;
+      navigate(`/order-confirmation/${order.id}${guestQuery}`, { state: { order } });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong.';
       setError(message);

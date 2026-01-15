@@ -35,7 +35,7 @@ const buildProductsCacheKey = (filters: {
   return `${PRODUCTS_CACHE_PREFIX}${filters.categoryId ?? 'all'}:${filters.tagId ?? 'all'}:${search}:${filters.page}:${filters.limit}`;
 };
 
-const invalidateProductCaches = async (productId?: number) => {
+export const invalidateProductCaches = async (productId?: number) => {
   await deleteByPattern(`${PRODUCTS_CACHE_PREFIX}*`);
   await deleteCache(CATEGORY_CACHE_KEY);
   await deleteCache(TAG_CACHE_KEY);
