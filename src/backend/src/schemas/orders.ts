@@ -46,3 +46,12 @@ export const createOrderSchema = z
   .refine((data) => data.address_id || data.shipping_address, {
     message: 'Either address_id or shipping_address is required',
   });
+
+export const guestLookupSchema = z
+  .object({
+    guestEmail: z.string().email().optional(),
+    guest_email: z.string().email().optional(),
+  })
+  .refine((data) => data.guestEmail || data.guest_email, {
+    message: 'guestEmail is required',
+  });

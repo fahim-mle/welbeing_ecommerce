@@ -10,6 +10,7 @@ import { prisma } from '../lib/prisma';
 import { BusinessRuleError, ValidationError } from '../types/shared';
 import { paymentService } from './paymentService';
 import { emailService } from '../lib/email';
+import { invalidateProductCaches } from './catalogService';
 
 export interface OrderItemInput {
   productId: number;
@@ -366,6 +367,15 @@ export const createOrder = async ({
     }
   }
 
+  const affectedProductIds = new Set(normalizedItems.map((item) => item.productId));
+  for (const productId of affectedProductIds) {
+    try {
+      await invalidateProductCaches(productId);
+    } catch (error) {
+      console.error(`Failed to invalidate cache for product ${productId}`, error);
+    }
+  }
+
   return result.order;
 };
 
@@ -407,12 +417,17 @@ export const findOrderById = async (orderId: number) => {
           email: true,
         },
       },
+      statusHistory: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
     },
   });
 };
 
 export const cancelOrder = async (orderId: number, userId?: number) => {
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const order = await tx.order.findUnique({
       where: { id: orderId },
       include: {
@@ -489,6 +504,17 @@ export const cancelOrder = async (orderId: number, userId?: number) => {
 
     return updated;
   });
+
+  const affectedProductIds = new Set(result.items.map((item) => item.productId));
+  for (const productId of affectedProductIds) {
+    try {
+      await invalidateProductCaches(productId);
+    } catch (error) {
+      console.error(`Failed to invalidate cache for product ${productId}`, error);
+    }
+  }
+
+  return result;
 };
 
 export const findAdminOrders = async (options?: { page?: number; limit?: number }) => {
