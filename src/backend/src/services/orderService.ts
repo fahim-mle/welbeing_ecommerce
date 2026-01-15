@@ -369,7 +369,11 @@ export const createOrder = async ({
 
   const affectedProductIds = new Set(normalizedItems.map((item) => item.productId));
   for (const productId of affectedProductIds) {
-    await invalidateProductCaches(productId);
+    try {
+      await invalidateProductCaches(productId);
+    } catch (error) {
+      console.error(`Failed to invalidate cache for product ${productId}`, error);
+    }
   }
 
   return result.order;
@@ -503,7 +507,11 @@ export const cancelOrder = async (orderId: number, userId?: number) => {
 
   const affectedProductIds = new Set(result.items.map((item) => item.productId));
   for (const productId of affectedProductIds) {
-    await invalidateProductCaches(productId);
+    try {
+      await invalidateProductCaches(productId);
+    } catch (error) {
+      console.error(`Failed to invalidate cache for product ${productId}`, error);
+    }
   }
 
   return result;
