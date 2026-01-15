@@ -1,262 +1,1011 @@
 {
   "users": [
     {
-      "email": "admin@welbeing.com",
+      "email": "admin1@welbeing.com",
       "firstName": "Admin",
-      "lastName": "User",
+      "lastName": "One",
       "phone": "+15550000001",
       "role": "ADMIN",
       "isActive": true,
-      "lastLoginAt": "2026-01-10T09:00:00.000Z",
       "identity": {
         "provider": "EMAIL",
-        "providerId": "admin@welbeing.com",
-        "password": "admin123",
-        "isVerified": true,
-        "verifiedAt": "2026-01-10T09:00:00.000Z"
+        "providerId": "admin1@welbeing.com",
+        "password": "password123",
+        "isVerified": true
       }
     },
     {
-      "email": "user@welbeing.com",
-      "firstName": "Jordan",
-      "lastName": "Lee",
+      "email": "admin2@welbeing.com",
+      "firstName": "Admin",
+      "lastName": "Two",
       "phone": "+15550000002",
+      "role": "ADMIN",
+      "isActive": true,
+      "identity": {
+        "provider": "EMAIL",
+        "providerId": "admin2@welbeing.com",
+        "password": "password123",
+        "isVerified": true
+      }
+    },
+    {
+      "email": "user1@welbeing.com",
+      "firstName": "Alice",
+      "lastName": "Anderson",
+      "phone": "+15550000011",
       "role": "USER",
       "isActive": true,
       "identity": {
         "provider": "EMAIL",
-        "providerId": "user@welbeing.com",
-        "password": "user123",
-        "isVerified": false
+        "providerId": "user1@welbeing.com",
+        "password": "password123",
+        "isVerified": true
+      }
+    },
+    {
+      "email": "user2@welbeing.com",
+      "firstName": "Bob",
+      "lastName": "Brown",
+      "phone": "+15550000012",
+      "role": "USER",
+      "isActive": true,
+      "identity": {
+        "provider": "EMAIL",
+        "providerId": "user2@welbeing.com",
+        "password": "password123",
+        "isVerified": true
+      }
+    },
+    {
+      "email": "user3@welbeing.com",
+      "firstName": "Charlie",
+      "lastName": "Clark",
+      "phone": "+15550000013",
+      "role": "USER",
+      "isActive": true,
+      "identity": {
+        "provider": "EMAIL",
+        "providerId": "user3@welbeing.com",
+        "password": "password123",
+        "isVerified": true
+      }
+    },
+    {
+      "email": "user4@welbeing.com",
+      "firstName": "Diana",
+      "lastName": "Davis",
+      "phone": "+15550000014",
+      "role": "USER",
+      "isActive": true,
+      "identity": {
+        "provider": "EMAIL",
+        "providerId": "user4@welbeing.com",
+        "password": "password123",
+        "isVerified": true
+      }
+    },
+    {
+      "email": "user5@welbeing.com",
+      "firstName": "Evan",
+      "lastName": "Evans",
+      "phone": "+15550000015",
+      "role": "USER",
+      "isActive": true,
+      "identity": {
+        "provider": "EMAIL",
+        "providerId": "user5@welbeing.com",
+        "password": "password123",
+        "isVerified": true
+      }
+    },
+    {
+      "email": "user6@welbeing.com",
+      "firstName": "Fiona",
+      "lastName": "Frank",
+      "phone": "+15550000016",
+      "role": "USER",
+      "isActive": true,
+      "identity": {
+        "provider": "EMAIL",
+        "providerId": "user6@welbeing.com",
+        "password": "password123",
+        "isVerified": true
+      }
+    },
+    {
+      "email": "user7@welbeing.com",
+      "firstName": "George",
+      "lastName": "Green",
+      "phone": "+15550000017",
+      "role": "USER",
+      "isActive": true,
+      "identity": {
+        "provider": "EMAIL",
+        "providerId": "user7@welbeing.com",
+        "password": "password123",
+        "isVerified": true
+      }
+    },
+    {
+      "email": "user8@welbeing.com",
+      "firstName": "Hannah",
+      "lastName": "Hill",
+      "phone": "+15550000018",
+      "role": "USER",
+      "isActive": true,
+      "identity": {
+        "provider": "EMAIL",
+        "providerId": "user8@welbeing.com",
+        "password": "password123",
+        "isVerified": true
       }
     }
   ],
   "categories": [
     {
-      "name": "Supports",
-      "description": "Supports for joints and muscles"
+      "name": "Supplements",
+      "description": "Vitamins, minerals, and performance supplements"
     },
     {
-      "name": "Supplements",
-      "description": "Vitamins and minerals"
+      "name": "Fitness Gear",
+      "description": "Equipment for home and gym workouts"
+    },
+    {
+      "name": "Recovery",
+      "description": "Tools and aids for muscle recovery and pain relief"
+    },
+    {
+      "name": "Nutrition",
+      "description": "Healthy food, snacks, and hydration"
+    },
+    {
+      "name": "Mental Wellness",
+      "description": "Products for stress relief, sleep, and mindfulness"
     }
   ],
   "tags": [
     {
-      "name": "Joint Pain",
+      "name": "Muscle Relief",
       "type": "GOAL"
+    },
+    {
+      "name": "Sleep Support",
+      "type": "GOAL"
+    },
+    {
+      "name": "Stress Relief",
+      "type": "GOAL"
+    },
+    {
+      "name": "Energy Boost",
+      "type": "GOAL"
+    },
+    {
+      "name": "Organic",
+      "type": "FEATURE"
+    },
+    {
+      "name": "Vegan",
+      "type": "FEATURE"
+    },
+    {
+      "name": "Gluten-Free",
+      "type": "NEED"
+    },
+    {
+      "name": "Dairy-Free",
+      "type": "NEED"
+    },
+    {
+      "name": "Home Gym",
+      "type": "FEATURE"
+    },
+    {
+      "name": "Meditation",
+      "type": "FEATURE"
     },
     {
       "name": "Mobility",
       "type": "GOAL"
     },
     {
-      "name": "Gluten-Free",
+      "name": "Recovery",
+      "type": "GOAL"
+    },
+    {
+      "name": "Sugar-Free",
       "type": "NEED"
     }
   ],
   "products": [
     {
-      "sku": "SUP-KNEE-001",
-      "name": "Knee Support Pro",
-      "description": "Advanced knee support for active lifestyles.",
-      "price": 29.99,
-      "originalPrice": 39.99,
-      "stockQuantity": 5,
+      "sku": "SUPP-001",
+      "name": "Premium Whey Protein",
+      "description": "High-quality whey protein for muscle building.",
+      "price": 49.99,
+      "stockQuantity": 50,
       "reorderLevel": 10,
-      "category": "Supports",
-      "tags": ["Joint Pain", "Mobility"],
-      "images": [
-        "https://placehold.co/600x400?text=Knee+Support+1",
-        "https://placehold.co/600x400?text=Knee+Support+2"
-      ],
+      "category": "Supplements",
+      "tags": ["Muscle Relief", "Gluten-Free"],
+      "images": ["https://placehold.co/600x400?text=Whey+Protein"],
       "variants": [
         {
-          "sku": "SUP-KNEE-001-BLK-M",
-          "price": 29.99,
-          "stockQuantity": 3,
-          "optionValues": {
-            "size": "M",
-            "color": "Black"
-          },
+          "sku": "SUPP-001-CHOC",
+          "price": 49.99,
+          "stockQuantity": 25,
+          "optionValues": { "flavor": "Chocolate" },
           "isActive": true
         },
         {
-          "sku": "SUP-KNEE-001-BLK-L",
-          "price": 29.99,
-          "stockQuantity": 0,
-          "optionValues": {
-            "size": "L",
-            "color": "Black"
-          },
+          "sku": "SUPP-001-VAN",
+          "price": 49.99,
+          "stockQuantity": 25,
+          "optionValues": { "flavor": "Vanilla" },
           "isActive": true
         }
       ]
     },
     {
-      "sku": "SUP-ANK-001",
-      "name": "Ankle Stabilizer",
-      "description": "Lightweight ankle stabilizer.",
-      "price": 19.99,
-      "originalPrice": 24.99,
-      "stockQuantity": 0,
-      "reorderLevel": 5,
-      "category": "Supports",
-      "tags": ["Mobility"],
-      "images": [
-        "https://placehold.co/600x400?text=Ankle+Stabilizer"
-      ],
+      "sku": "SUPP-002",
+      "name": "Creatine Monohydrate",
+      "description": "Pure creatine for strength and power.",
+      "price": 24.99,
+      "stockQuantity": 40,
+      "reorderLevel": 10,
+      "category": "Supplements",
+      "tags": ["Energy Boost", "Vegan"],
+      "images": ["https://placehold.co/600x400?text=Creatine"],
       "variants": []
     },
     {
-      "sku": "SUPP-MAG-001",
-      "name": "Magnesium Calm",
-      "description": "Daily magnesium supplement for calm and recovery.",
-      "price": 15.5,
-      "originalPrice": 18,
-      "stockQuantity": 25,
-      "reorderLevel": 8,
+      "sku": "SUPP-003",
+      "name": "Daily Multivitamin",
+      "description": "Complete daily nutrition support.",
+      "price": 19.99,
+      "stockQuantity": 100,
+      "reorderLevel": 10,
+      "category": "Supplements",
+      "tags": ["Organic", "Gluten-Free"],
+      "images": ["https://placehold.co/600x400?text=Multivitamin"],
+      "variants": []
+    },
+    {
+      "sku": "SUPP-004",
+      "name": "Vitamin D3",
+      "description": "Support bone health and immunity.",
+      "price": 12.99,
+      "stockQuantity": 60,
+      "reorderLevel": 10,
       "category": "Supplements",
       "tags": ["Gluten-Free"],
-      "images": [
-        "https://placehold.co/600x400?text=Magnesium+Calm"
-      ],
+      "images": ["https://placehold.co/600x400?text=Vitamin+D3"],
+      "variants": []
+    },
+    {
+      "sku": "SUPP-005",
+      "name": "Omega-3 Fish Oil",
+      "description": "Heart and brain health support.",
+      "price": 22.99,
+      "stockQuantity": 45,
+      "reorderLevel": 10,
+      "category": "Supplements",
+      "tags": ["Gluten-Free"],
+      "images": ["https://placehold.co/600x400?text=Fish+Oil"],
+      "variants": []
+    },
+    {
+      "sku": "SUPP-006",
+      "name": "BCAA Powder",
+      "description": "Branched-chain amino acids for recovery.",
+      "price": 29.99,
+      "stockQuantity": 30,
+      "reorderLevel": 10,
+      "category": "Supplements",
+      "tags": ["Muscle Relief", "Sugar-Free"],
+      "images": ["https://placehold.co/600x400?text=BCAA"],
+      "variants": []
+    },
+    {
+      "sku": "SUPP-007",
+      "name": "Pre-Workout Formula",
+      "description": "Energy and focus for your workouts.",
+      "price": 34.99,
+      "stockQuantity": 35,
+      "reorderLevel": 10,
+      "category": "Supplements",
+      "tags": ["Energy Boost"],
+      "images": ["https://placehold.co/600x400?text=Pre-Workout"],
+      "variants": []
+    },
+    {
+      "sku": "SUPP-008",
+      "name": "Zinc Picolinate",
+      "description": "Immune system support.",
+      "price": 9.99,
+      "stockQuantity": 80,
+      "reorderLevel": 10,
+      "category": "Supplements",
+      "tags": ["Vegan", "Gluten-Free"],
+      "images": ["https://placehold.co/600x400?text=Zinc"],
+      "variants": []
+    },
+    {
+      "sku": "SUPP-009",
+      "name": "Magnesium Glycinate",
+      "description": "For sleep and relaxation.",
+      "price": 18.99,
+      "stockQuantity": 55,
+      "reorderLevel": 10,
+      "category": "Supplements",
+      "tags": ["Sleep Support", "Vegan"],
+      "images": ["https://placehold.co/600x400?text=Magnesium"],
+      "variants": []
+    },
+    {
+      "sku": "SUPP-010",
+      "name": "Iron Supplement",
+      "description": "Prevents iron deficiency.",
+      "price": 14.99,
+      "stockQuantity": 70,
+      "reorderLevel": 10,
+      "category": "Supplements",
+      "tags": ["Vegan"],
+      "images": ["https://placehold.co/600x400?text=Iron"],
+      "variants": []
+    },
+    {
+      "sku": "GEAR-001",
+      "name": "Pro Yoga Mat",
+      "description": "Non-slip mat for yoga and pilates.",
+      "price": 39.99,
+      "stockQuantity": 20,
+      "reorderLevel": 10,
+      "category": "Fitness Gear",
+      "tags": ["Home Gym"],
+      "images": ["https://placehold.co/600x400?text=Yoga+Mat"],
+      "variants": [
+        {
+          "sku": "GEAR-001-BLU",
+          "price": 39.99,
+          "stockQuantity": 10,
+          "optionValues": { "color": "Blue" },
+          "isActive": true
+        },
+        {
+          "sku": "GEAR-001-PNK",
+          "price": 39.99,
+          "stockQuantity": 10,
+          "optionValues": { "color": "Pink" },
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "sku": "GEAR-002",
+      "name": "Dumbbells 5lb Pair",
+      "description": "Vinyl coated dumbbells.",
+      "price": 15.0,
+      "stockQuantity": 25,
+      "reorderLevel": 10,
+      "category": "Fitness Gear",
+      "tags": ["Home Gym"],
+      "images": ["https://placehold.co/600x400?text=Dumbbells+5lb"],
+      "variants": []
+    },
+    {
+      "sku": "GEAR-003",
+      "name": "Dumbbells 10lb Pair",
+      "description": "Vinyl coated dumbbells.",
+      "price": 30.0,
+      "stockQuantity": 20,
+      "reorderLevel": 10,
+      "category": "Fitness Gear",
+      "tags": ["Home Gym"],
+      "images": ["https://placehold.co/600x400?text=Dumbbells+10lb"],
+      "variants": []
+    },
+    {
+      "sku": "GEAR-004",
+      "name": "Resistance Bands Set",
+      "description": "5 bands with different resistance levels.",
+      "price": 12.99,
+      "stockQuantity": 100,
+      "reorderLevel": 10,
+      "category": "Fitness Gear",
+      "tags": ["Home Gym", "Mobility"],
+      "images": ["https://placehold.co/600x400?text=Resistance+Bands"],
+      "variants": []
+    },
+    {
+      "sku": "GEAR-005",
+      "name": "Foam Roller",
+      "description": "High density foam roller for muscle massage.",
+      "price": 19.99,
+      "stockQuantity": 30,
+      "reorderLevel": 10,
+      "category": "Fitness Gear",
+      "tags": ["Muscle Relief", "Recovery"],
+      "images": ["https://placehold.co/600x400?text=Foam+Roller"],
+      "variants": []
+    },
+    {
+      "sku": "GEAR-006",
+      "name": "Kettlebell 20lb",
+      "description": "Cast iron kettlebell.",
+      "price": 35.0,
+      "stockQuantity": 15,
+      "reorderLevel": 10,
+      "category": "Fitness Gear",
+      "tags": ["Home Gym"],
+      "images": ["https://placehold.co/600x400?text=Kettlebell"],
+      "variants": []
+    },
+    {
+      "sku": "GEAR-007",
+      "name": "Speed Jump Rope",
+      "description": "Adjustable speed rope for cardio.",
+      "price": 9.99,
+      "stockQuantity": 60,
+      "reorderLevel": 10,
+      "category": "Fitness Gear",
+      "tags": ["Home Gym", "Energy Boost"],
+      "images": ["https://placehold.co/600x400?text=Jump+Rope"],
+      "variants": []
+    },
+    {
+      "sku": "GEAR-008",
+      "name": "Gym Gloves",
+      "description": "Protect your hands during lifting.",
+      "price": 14.99,
+      "stockQuantity": 40,
+      "reorderLevel": 10,
+      "category": "Fitness Gear",
+      "tags": ["Home Gym"],
+      "images": ["https://placehold.co/600x400?text=Gym+Gloves"],
+      "variants": [
+        {
+          "sku": "GEAR-008-S",
+          "price": 14.99,
+          "stockQuantity": 10,
+          "optionValues": { "size": "S" },
+          "isActive": true
+        },
+        {
+          "sku": "GEAR-008-M",
+          "price": 14.99,
+          "stockQuantity": 20,
+          "optionValues": { "size": "M" },
+          "isActive": true
+        },
+        {
+          "sku": "GEAR-008-L",
+          "price": 14.99,
+          "stockQuantity": 10,
+          "optionValues": { "size": "L" },
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "sku": "GEAR-009",
+      "name": "Exercise Ball",
+      "description": "Anti-burst stability ball.",
+      "price": 22.99,
+      "stockQuantity": 25,
+      "reorderLevel": 10,
+      "category": "Fitness Gear",
+      "tags": ["Home Gym", "Mobility"],
+      "images": ["https://placehold.co/600x400?text=Exercise+Ball"],
+      "variants": []
+    },
+    {
+      "sku": "GEAR-010",
+      "name": "Pull-up Bar",
+      "description": "Doorway pull-up bar.",
+      "price": 29.99,
+      "stockQuantity": 15,
+      "reorderLevel": 10,
+      "category": "Fitness Gear",
+      "tags": ["Home Gym"],
+      "images": ["https://placehold.co/600x400?text=Pull-up+Bar"],
+      "variants": []
+    },
+    {
+      "sku": "RECO-001",
+      "name": "Percussion Massage Gun",
+      "description": "Deep tissue massage gun.",
+      "price": 129.99,
+      "stockQuantity": 10,
+      "reorderLevel": 10,
+      "category": "Recovery",
+      "tags": ["Muscle Relief", "Recovery"],
+      "images": ["https://placehold.co/600x400?text=Massage+Gun"],
+      "variants": []
+    },
+    {
+      "sku": "RECO-002",
+      "name": "Compression Socks",
+      "description": "Improve circulation and reduce fatigue.",
+      "price": 18.99,
+      "stockQuantity": 60,
+      "reorderLevel": 10,
+      "category": "Recovery",
+      "tags": ["Recovery"],
+      "images": ["https://placehold.co/600x400?text=Compression+Socks"],
+      "variants": [
+        {
+          "sku": "RECO-002-S",
+          "price": 18.99,
+          "stockQuantity": 20,
+          "optionValues": { "size": "S" },
+          "isActive": true
+        },
+        {
+          "sku": "RECO-002-M",
+          "price": 18.99,
+          "stockQuantity": 20,
+          "optionValues": { "size": "M" },
+          "isActive": true
+        },
+        {
+          "sku": "RECO-002-L",
+          "price": 18.99,
+          "stockQuantity": 20,
+          "optionValues": { "size": "L" },
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "sku": "RECO-003",
+      "name": "Reusable Ice Pack",
+      "description": "Gel pack for hot or cold therapy.",
+      "price": 11.99,
+      "stockQuantity": 50,
+      "reorderLevel": 10,
+      "category": "Recovery",
+      "tags": ["Muscle Relief", "Recovery"],
+      "images": ["https://placehold.co/600x400?text=Ice+Pack"],
+      "variants": []
+    },
+    {
+      "sku": "RECO-004",
+      "name": "Electric Heating Pad",
+      "description": "Soothing heat for muscle pain.",
+      "price": 24.99,
+      "stockQuantity": 30,
+      "reorderLevel": 10,
+      "category": "Recovery",
+      "tags": ["Muscle Relief"],
+      "images": ["https://placehold.co/600x400?text=Heating+Pad"],
+      "variants": []
+    },
+    {
+      "sku": "RECO-005",
+      "name": "TENS Unit Muscle Stimulator",
+      "description": "Electronic pulse massager.",
+      "price": 39.99,
+      "stockQuantity": 15,
+      "reorderLevel": 10,
+      "category": "Recovery",
+      "tags": ["Muscle Relief", "Recovery"],
+      "images": ["https://placehold.co/600x400?text=TENS+Unit"],
+      "variants": []
+    },
+    {
+      "sku": "RECO-006",
+      "name": "Adjustable Knee Brace",
+      "description": "Support and stability for knees.",
+      "price": 21.99,
+      "stockQuantity": 40,
+      "reorderLevel": 10,
+      "category": "Recovery",
+      "tags": ["Recovery", "Mobility"],
+      "images": ["https://placehold.co/600x400?text=Knee+Brace"],
+      "variants": []
+    },
+    {
+      "sku": "RECO-007",
+      "name": "Ankle Support Sleeve",
+      "description": "Compression sleeve for ankles.",
+      "price": 14.99,
+      "stockQuantity": 45,
+      "reorderLevel": 10,
+      "category": "Recovery",
+      "tags": ["Recovery", "Mobility"],
+      "images": ["https://placehold.co/600x400?text=Ankle+Support"],
+      "variants": []
+    },
+    {
+      "sku": "RECO-008",
+      "name": "Lumbar Support Belt",
+      "description": "Back brace for lower back pain.",
+      "price": 29.99,
+      "stockQuantity": 20,
+      "reorderLevel": 10,
+      "category": "Recovery",
+      "tags": ["Recovery"],
+      "images": ["https://placehold.co/600x400?text=Back+Belt"],
+      "variants": []
+    },
+    {
+      "sku": "RECO-009",
+      "name": "Epsom Salts (5lb)",
+      "description": "Magnesium sulfate for soaking.",
+      "price": 8.99,
+      "stockQuantity": 60,
+      "reorderLevel": 10,
+      "category": "Recovery",
+      "tags": ["Muscle Relief", "Stress Relief"],
+      "images": ["https://placehold.co/600x400?text=Epsom+Salts"],
+      "variants": []
+    },
+    {
+      "sku": "RECO-010",
+      "name": "Muscle Recovery Cream",
+      "description": "Topical cream for soreness.",
+      "price": 13.99,
+      "stockQuantity": 50,
+      "reorderLevel": 10,
+      "category": "Recovery",
+      "tags": ["Muscle Relief"],
+      "images": ["https://placehold.co/600x400?text=Recovery+Cream"],
+      "variants": []
+    },
+    {
+      "sku": "NUTR-001",
+      "name": "Protein Bars (12 Pack)",
+      "description": "20g protein per bar.",
+      "price": 24.99,
+      "stockQuantity": 40,
+      "reorderLevel": 10,
+      "category": "Nutrition",
+      "tags": ["Energy Boost", "Gluten-Free"],
+      "images": ["https://placehold.co/600x400?text=Protein+Bars"],
+      "variants": [
+        {
+          "sku": "NUTR-001-CHOC",
+          "price": 24.99,
+          "stockQuantity": 20,
+          "optionValues": { "flavor": "Chocolate" },
+          "isActive": true
+        },
+        {
+          "sku": "NUTR-001-PB",
+          "price": 24.99,
+          "stockQuantity": 20,
+          "optionValues": { "flavor": "Peanut Butter" },
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "sku": "NUTR-002",
+      "name": "Energy Gel (24 Pack)",
+      "description": "Quick energy for endurance sports.",
+      "price": 34.99,
+      "stockQuantity": 30,
+      "reorderLevel": 10,
+      "category": "Nutrition",
+      "tags": ["Energy Boost", "Vegan"],
+      "images": ["https://placehold.co/600x400?text=Energy+Gel"],
+      "variants": []
+    },
+    {
+      "sku": "NUTR-003",
+      "name": "Electrolyte Powder",
+      "description": "Hydration multiplier.",
+      "price": 19.99,
+      "stockQuantity": 50,
+      "reorderLevel": 10,
+      "category": "Nutrition",
+      "tags": ["Energy Boost", "Gluten-Free"],
+      "images": ["https://placehold.co/600x400?text=Electrolyte"],
+      "variants": []
+    },
+    {
+      "sku": "NUTR-004",
+      "name": "Meal Replacement Shake",
+      "description": "Balanced nutrition on the go.",
+      "price": 39.99,
+      "stockQuantity": 25,
+      "reorderLevel": 10,
+      "category": "Nutrition",
+      "tags": ["Gluten-Free"],
+      "images": ["https://placehold.co/600x400?text=Meal+Replacement"],
+      "variants": []
+    },
+    {
+      "sku": "NUTR-005",
+      "name": "Organic Granola",
+      "description": "Healthy breakfast cereal.",
+      "price": 7.99,
+      "stockQuantity": 60,
+      "reorderLevel": 10,
+      "category": "Nutrition",
+      "tags": ["Organic", "Vegan"],
+      "images": ["https://placehold.co/600x400?text=Granola"],
+      "variants": []
+    },
+    {
+      "sku": "NUTR-006",
+      "name": "Almond Butter",
+      "description": "Creamy natural almond butter.",
+      "price": 11.99,
+      "stockQuantity": 40,
+      "reorderLevel": 10,
+      "category": "Nutrition",
+      "tags": ["Organic", "Vegan", "Gluten-Free"],
+      "images": ["https://placehold.co/600x400?text=Almond+Butter"],
+      "variants": []
+    },
+    {
+      "sku": "NUTR-007",
+      "name": "Organic Quinoa",
+      "description": "Superfood grain.",
+      "price": 6.99,
+      "stockQuantity": 70,
+      "reorderLevel": 10,
+      "category": "Nutrition",
+      "tags": ["Organic", "Vegan", "Gluten-Free"],
+      "images": ["https://placehold.co/600x400?text=Quinoa"],
+      "variants": []
+    },
+    {
+      "sku": "NUTR-008",
+      "name": "Chia Seeds",
+      "description": "Omega-3 rich seeds.",
+      "price": 8.99,
+      "stockQuantity": 65,
+      "reorderLevel": 10,
+      "category": "Nutrition",
+      "tags": ["Organic", "Vegan", "Gluten-Free"],
+      "images": ["https://placehold.co/600x400?text=Chia+Seeds"],
+      "variants": []
+    },
+    {
+      "sku": "NUTR-009",
+      "name": "Green Tea Extract",
+      "description": "Antioxidant supplement.",
+      "price": 15.99,
+      "stockQuantity": 45,
+      "reorderLevel": 10,
+      "category": "Nutrition",
+      "tags": ["Organic", "Vegan"],
+      "images": ["https://placehold.co/600x400?text=Green+Tea"],
+      "variants": []
+    },
+    {
+      "sku": "NUTR-010",
+      "name": "Coconut Water (12 Pack)",
+      "description": "Natural hydration.",
+      "price": 24.99,
+      "stockQuantity": 35,
+      "reorderLevel": 10,
+      "category": "Nutrition",
+      "tags": ["Vegan", "Gluten-Free"],
+      "images": ["https://placehold.co/600x400?text=Coconut+Water"],
+      "variants": []
+    },
+    {
+      "sku": "MIND-001",
+      "name": "Essential Oil Diffuser",
+      "description": "Ultrasonic aromatherapy diffuser.",
+      "price": 29.99,
+      "stockQuantity": 25,
+      "reorderLevel": 10,
+      "category": "Mental Wellness",
+      "tags": ["Stress Relief", "Sleep Support"],
+      "images": ["https://placehold.co/600x400?text=Diffuser"],
+      "variants": []
+    },
+    {
+      "sku": "MIND-002",
+      "name": "Lavender Essential Oil",
+      "description": "Pure calming lavender oil.",
+      "price": 12.99,
+      "stockQuantity": 50,
+      "reorderLevel": 10,
+      "category": "Mental Wellness",
+      "tags": ["Stress Relief", "Sleep Support", "Organic"],
+      "images": ["https://placehold.co/600x400?text=Lavender+Oil"],
+      "variants": []
+    },
+    {
+      "sku": "MIND-003",
+      "name": "Meditation Cushion",
+      "description": "Comfortable seat for mindfulness.",
+      "price": 34.99,
+      "stockQuantity": 20,
+      "reorderLevel": 10,
+      "category": "Mental Wellness",
+      "tags": ["Meditation", "Stress Relief"],
+      "images": ["https://placehold.co/600x400?text=Cushion"],
+      "variants": []
+    },
+    {
+      "sku": "MIND-004",
+      "name": "Sleep Mask",
+      "description": "Silk blackout eye mask.",
+      "price": 14.99,
+      "stockQuantity": 60,
+      "reorderLevel": 10,
+      "category": "Mental Wellness",
+      "tags": ["Sleep Support"],
+      "images": ["https://placehold.co/600x400?text=Sleep+Mask"],
+      "variants": []
+    },
+    {
+      "sku": "MIND-005",
+      "name": "White Noise Machine",
+      "description": "Sound machine for sleeping.",
+      "price": 24.99,
+      "stockQuantity": 30,
+      "reorderLevel": 10,
+      "category": "Mental Wellness",
+      "tags": ["Sleep Support"],
+      "images": ["https://placehold.co/600x400?text=White+Noise"],
+      "variants": []
+    },
+    {
+      "sku": "MIND-006",
+      "name": "Gratitude Journal",
+      "description": "Daily guided journal.",
+      "price": 16.99,
+      "stockQuantity": 40,
+      "reorderLevel": 10,
+      "category": "Mental Wellness",
+      "tags": ["Meditation", "Stress Relief"],
+      "images": ["https://placehold.co/600x400?text=Journal"],
+      "variants": []
+    },
+    {
+      "sku": "MIND-007",
+      "name": "Stress Ball Set",
+      "description": "Squeeze balls for anxiety.",
+      "price": 9.99,
+      "stockQuantity": 80,
+      "reorderLevel": 10,
+      "category": "Mental Wellness",
+      "tags": ["Stress Relief"],
+      "images": ["https://placehold.co/600x400?text=Stress+Ball"],
+      "variants": []
+    },
+    {
+      "sku": "MIND-008",
+      "name": "Herbal Tea Sampler",
+      "description": "Variety of calming teas.",
+      "price": 19.99,
+      "stockQuantity": 35,
+      "reorderLevel": 10,
+      "category": "Mental Wellness",
+      "tags": ["Stress Relief", "Organic"],
+      "images": ["https://placehold.co/600x400?text=Herbal+Tea"],
+      "variants": []
+    },
+    {
+      "sku": "MIND-009",
+      "name": "Weighted Blanket",
+      "description": "15lb weighted blanket for anxiety.",
+      "price": 69.99,
+      "stockQuantity": 15,
+      "reorderLevel": 10,
+      "category": "Mental Wellness",
+      "tags": ["Sleep Support", "Stress Relief"],
+      "images": ["https://placehold.co/600x400?text=Weighted+Blanket"],
+      "variants": []
+    },
+    {
+      "sku": "MIND-010",
+      "name": "Light Therapy Lamp",
+      "description": "Happy light for mood boost.",
+      "price": 49.99,
+      "stockQuantity": 20,
+      "reorderLevel": 10,
+      "category": "Mental Wellness",
+      "tags": ["Energy Boost", "Stress Relief"],
+      "images": ["https://placehold.co/600x400?text=Light+Lamp"],
       "variants": []
     }
   ],
   "addresses": [
     {
-      "key": "user-home",
-      "userEmail": "user@welbeing.com",
+      "key": "addr-user1-home",
+      "userEmail": "user1@welbeing.com",
       "label": "Home",
-      "fullName": "Jordan Lee",
-      "phone": "+15550000002",
-      "streetLine1": "123 Wellness Ave",
-      "streetLine2": "Apt 4B",
-      "city": "Austin",
-      "state": "TX",
-      "postalCode": "73301",
+      "fullName": "Alice Anderson",
+      "phone": "+15550000011",
+      "streetLine1": "101 Maple St",
+      "city": "Springfield",
+      "state": "IL",
+      "postalCode": "62704",
       "country": "US",
       "isDefault": true
     },
     {
-      "key": "guest-shipping",
-      "label": "Guest Checkout",
-      "fullName": "Guest Buyer",
-      "phone": "+15550000999",
-      "streetLine1": "700 Market Street",
-      "streetLine2": null,
-      "city": "San Francisco",
-      "state": "CA",
-      "postalCode": "94103",
+      "key": "addr-user2-home",
+      "userEmail": "user2@welbeing.com",
+      "label": "Home",
+      "fullName": "Bob Brown",
+      "phone": "+15550000012",
+      "streetLine1": "202 Oak St",
+      "city": "Columbus",
+      "state": "OH",
+      "postalCode": "43085",
       "country": "US",
-      "isDefault": false
+      "isDefault": true
     }
   ],
   "inventoryLogs": [
     {
-      "productSku": "SUP-ANK-001",
+      "productSku": "SUPP-001",
       "changeType": "RESTOCK",
-      "quantityDelta": 20,
-      "referenceId": "seed-restock-ankle"
-    },
-    {
-      "variantSku": "SUP-KNEE-001-BLK-M",
-      "changeType": "ORDER",
-      "quantityDelta": -2,
-      "referenceId": "seed-order-1"
-    },
-    {
-      "variantSku": "SUP-KNEE-001-BLK-L",
-      "changeType": "ADJUSTMENT",
-      "quantityDelta": -1,
-      "referenceId": "seed-adjust-l"
+      "quantityDelta": 50,
+      "referenceId": "init-stock-supp-001"
     }
   ],
   "orders": [
     {
-      "key": "guest-order",
-      "guestEmail": "guest@example.com",
-      "addressKey": "guest-shipping",
-      "status": "SHIPPED",
+      "key": "order-user1-001",
+      "userEmail": "user1@welbeing.com",
+      "addressKey": "addr-user1-home",
+      "status": "DELIVERED",
       "paymentStatus": "PAID",
       "paymentMethod": "STRIPE",
       "currency": "USD",
-      "shippingFee": 5,
-      "taxAmount": 2.5,
-      "totalPrice": 38.5,
-      "shippedAt": "2026-01-09T12:00:00.000Z",
+      "shippingFee": 0,
+      "taxAmount": 5.0,
+      "totalPrice": 54.99,
+      "shippedAt": "2026-01-10T10:00:00.000Z",
+      "deliveredAt": "2026-01-12T14:00:00.000Z",
       "items": [
         {
-          "productSku": "SUPP-MAG-001",
-          "quantity": 2,
-          "priceAtPurchase": 15.5
+          "productSku": "SUPP-001",
+          "variantSku": "SUPP-001-CHOC",
+          "quantity": 1,
+          "priceAtPurchase": 49.99
         }
       ],
       "payment": {
         "provider": "STRIPE",
-        "transactionId": "pi_guest_001",
-        "amount": 38.5,
+        "transactionId": "pi_user1_001",
+        "amount": 54.99,
         "currency": "USD",
         "status": "SUCCESS"
       },
       "statusHistory": [
-        {
-          "fromStatus": "PENDING",
-          "toStatus": "PAID",
-          "changedBy": "SYSTEM"
-        },
-        {
-          "fromStatus": "PAID",
-          "toStatus": "SHIPPED",
-          "changedBy": "ADMIN"
-        }
+        { "fromStatus": "PENDING", "toStatus": "PAID", "changedBy": "SYSTEM" },
+        { "fromStatus": "PAID", "toStatus": "SHIPPED", "changedBy": "SYSTEM" },
+        { "fromStatus": "SHIPPED", "toStatus": "DELIVERED", "changedBy": "SYSTEM" }
       ]
     },
     {
-      "key": "user-order",
-      "userEmail": "user@welbeing.com",
-      "addressKey": "user-home",
-      "status": "DELIVERED",
+      "key": "order-user2-001",
+      "userEmail": "user2@welbeing.com",
+      "addressKey": "addr-user2-home",
+      "status": "PAID",
       "paymentStatus": "PAID",
       "paymentMethod": "PAYPAL",
       "currency": "USD",
-      "shippingFee": 0,
-      "taxAmount": 3.2,
-      "totalPrice": 33.19,
-      "shippedAt": "2026-01-05T10:00:00.000Z",
-      "deliveredAt": "2026-01-07T14:00:00.000Z",
+      "shippingFee": 5.0,
+      "taxAmount": 1.5,
+      "totalPrice": 26.49,
       "items": [
         {
-          "productSku": "SUP-KNEE-001",
-          "variantSku": "SUP-KNEE-001-BLK-M",
+          "productSku": "NUTR-003",
           "quantity": 1,
-          "priceAtPurchase": 29.99
+          "priceAtPurchase": 19.99
         }
       ],
       "payment": {
         "provider": "PAYPAL",
-        "transactionId": "pp_user_001",
-        "amount": 33.19,
+        "transactionId": "pp_user2_001",
+        "amount": 26.49,
         "currency": "USD",
         "status": "SUCCESS"
       },
       "statusHistory": [
-        {
-          "fromStatus": "PENDING",
-          "toStatus": "PAID",
-          "changedBy": "SYSTEM"
-        },
-        {
-          "fromStatus": "PAID",
-          "toStatus": "SHIPPED",
-          "changedBy": "SYSTEM"
-        },
-        {
-          "fromStatus": "SHIPPED",
-          "toStatus": "DELIVERED",
-          "changedBy": "SYSTEM"
-        }
+        { "fromStatus": "PENDING", "toStatus": "PAID", "changedBy": "SYSTEM" }
       ]
     }
   ]
