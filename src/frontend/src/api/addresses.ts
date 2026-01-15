@@ -22,7 +22,8 @@ export const fetchAddresses = async (token: string): Promise<Address[]> => {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to fetch addresses');
+    const errorBody = await response.json().catch(() => null);
+    throw new Error(errorBody?.message || 'Failed to fetch addresses');
   }
 
   const result = await response.json();

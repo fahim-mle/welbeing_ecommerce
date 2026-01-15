@@ -37,13 +37,11 @@ router.get('/', authenticate, validateQuery(paginationSchema), async (req, res) 
 });
 
 // GET /api/orders/:id
-router.get('/:id', authenticate, async (req, res) => {
-  const userId = (req as AuthRequest).user?.userId;
+router.get('/:id', async (req, res) => {
   const orderId = Number(req.params.id);
-
-  if (!userId) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
+  const authPayload = auth.decodeAuthorizationHeader(req.headers.authorization);
+  const userId = authPayload?.userId;
+  const guestEmail = req.query.guestEmail ? String(req.query.guestEmail).toLowerCase() : undefined;
 
   if (Number.isNaN(orderId)) {
     return res.status(400).json({ message: 'Invalid order ID' });
@@ -51,8 +49,18 @@ router.get('/:id', authenticate, async (req, res) => {
 
   try {
     const order = await findOrderById(orderId);
-    if (!order || order.userId !== userId) {
+    if (!order) {
       return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (order.userId) {
+      if (!userId || order.userId !== userId) {
+        return res.status(403).json({ message: 'Unauthorized' });
+      }
+    } else {
+      if (!guestEmail || order.guestEmail?.toLowerCase() !== guestEmail) {
+        return res.status(403).json({ message: 'Unauthorized' });
+      }
     }
 
     res.json({ data: order });
