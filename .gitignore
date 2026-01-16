@@ -3,6 +3,7 @@ dist
 .env
 *.db
 *.log
+.vite
 
 # Agent and spec files
 .agent
