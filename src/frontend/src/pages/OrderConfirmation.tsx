@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { fetchOrder, type OrderResponse } from '../api/orders';
 import { useAuth } from '../hooks/useAuth';
 
 export const OrderConfirmation: React.FC = () => {
   const location = useLocation();
   const { orderId } = useParams<{ orderId: string }>();
+  const [searchParams] = useSearchParams();
   const { token } = useAuth();
   const stateOrder = (location.state as { order?: OrderResponse } | null)?.order;
+  const guestEmail = searchParams.get('guestEmail')?.toLowerCase();
 
   const [order, setOrder] = useState<OrderResponse | null>(stateOrder ?? null);
   const [loading, setLoading] = useState(Boolean(orderId && !stateOrder));
@@ -19,8 +21,8 @@ export const OrderConfirmation: React.FC = () => {
       return;
     }
 
-    if (!token) {
-      setError('Please sign in to view this order.');
+    if (!token && !guestEmail) {
+      setError('Please sign in or provide the guest email to view this order.');
       setLoading(false);
       return;
     }
@@ -33,7 +35,7 @@ export const OrderConfirmation: React.FC = () => {
     }
 
     setLoading(true);
-    fetchOrder(parsedId, token)
+    fetchOrder(parsedId, token || undefined, guestEmail || undefined)
       .then((data) => {
         setOrder(data);
         setError(null);
@@ -43,7 +45,7 @@ export const OrderConfirmation: React.FC = () => {
         setError('Failed to load order details. Please try again.');
       })
       .finally(() => setLoading(false));
-  }, [orderId, stateOrder, token]);
+  }, [orderId, stateOrder, token, guestEmail]);
 
   if (loading) {
     return (

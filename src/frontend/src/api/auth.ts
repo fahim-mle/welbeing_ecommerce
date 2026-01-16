@@ -87,14 +87,14 @@ export const authApi = {
     return result.data;
   },
 
-  async changePassword(token: string, password: string): Promise<void> {
+  async changePassword(token: string, currentPassword: string, password: string): Promise<void> {
     const res = await fetch(`${API_BASE_URL}/me/password`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ currentPassword, password }),
     });
     if (!res.ok) {
       const error = await res.json().catch(() => null);

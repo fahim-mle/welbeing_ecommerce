@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode } from 'react';
+import { useCallback, useState, useEffect, type ReactNode } from 'react';
 import { authApi, type AuthResponse, type User } from '../api/auth';
 import { getErrorMessage } from '../utils/error';
 import { AuthContext } from './AuthContextDefinition';
@@ -99,10 +99,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('refreshToken');
   };
 
-  const updateUser = (nextUser: User) => {
+  const updateUser = useCallback((nextUser: User) => {
     setUser(nextUser);
     localStorage.setItem('user', JSON.stringify(nextUser));
-  };
+  }, []);
 
   return (
     <AuthContext.Provider

@@ -76,7 +76,7 @@ export const Cart: React.FC = () => {
                         onChange={(event) =>
                           updateQuantity(
                             item.product.id,
-                            Number(event.target.value) || 1,
+                            Math.max(1, Number(event.target.value) || 1),
                             item.variant?.id,
                           )
                         }
