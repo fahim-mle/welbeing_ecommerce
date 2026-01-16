@@ -15,8 +15,10 @@ router.use(adminAuth);
 router.get('/', validateQuery(paginationSchema), async (req: Request, res: Response) => {
   try {
     const { page, limit } = req.query as unknown as { page: number; limit: number };
-    const products = await catalogService.getProducts({ includeOutOfStock: true, page, limit });
-    res.json({ data: products, page, limit });
+    const result = await catalogService.getProducts({ includeOutOfStock: true, page, limit });
+    const products = Array.isArray(result) ? result : result.products;
+    const total = Array.isArray(result) ? undefined : result.total;
+    res.json({ data: products, page, limit, total });
   } catch (error: any) {
     const requestId = (req as Request & { requestId?: string }).requestId;
     logger.error('Error fetching admin products', { requestId, error });
