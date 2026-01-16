@@ -143,7 +143,7 @@ export const cancelOrder = async (orderId: number, token: string): Promise<Order
 
   if (!response.ok) {
     const error = await response.json().catch(() => null);
-    throw new Error(error?.message || 'Failed to cancel order');
+    throw new Error(error?.error?.message || error?.message || 'Failed to cancel order');
   }
 
   const result = await response.json();

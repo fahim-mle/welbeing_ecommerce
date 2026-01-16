@@ -26,7 +26,7 @@ export const Profile = () => {
     lastName: '',
     phone: '',
   });
-  const [passwordForm, setPasswordForm] = useState({ password: '', confirm: '' });
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', password: '', confirm: '' });
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
@@ -122,6 +122,10 @@ export const Profile = () => {
     setPasswordError(null);
 
     if (!token) return;
+    if (!passwordForm.currentPassword) {
+      setPasswordError('Current password is required.');
+      return;
+    }
     if (passwordForm.password.length < 6) {
       setPasswordError('Password must be at least 6 characters.');
       return;
@@ -132,9 +136,9 @@ export const Profile = () => {
     }
 
     try {
-      await authApi.changePassword(token, passwordForm.password);
+      await authApi.changePassword(token, passwordForm.currentPassword, passwordForm.password);
       setPasswordMessage('Password updated successfully.');
-      setPasswordForm({ password: '', confirm: '' });
+      setPasswordForm({ currentPassword: '', password: '', confirm: '' });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update password.';
       setPasswordError(message);
@@ -373,6 +377,17 @@ export const Profile = () => {
                 {passwordError && <p className="text-sm text-red-600">{passwordError}</p>}
 
                 <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
+                  <label className="space-y-2">
+                    <span className="form-label">Current password</span>
+                    <input
+                      type="password"
+                      value={passwordForm.currentPassword}
+                      onChange={(event) =>
+                        setPasswordForm({ ...passwordForm, currentPassword: event.target.value })
+                      }
+                      className="form-input"
+                    />
+                  </label>
                   <label className="space-y-2">
                     <span className="form-label">New password</span>
                     <input

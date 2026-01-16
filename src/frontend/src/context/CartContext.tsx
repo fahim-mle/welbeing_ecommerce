@@ -40,9 +40,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const removeItem = (productId: number, variantId?: number) => {
     setItems((prev) =>
-      prev.filter(
-        (item) => item.product.id !== productId || item.variant?.id !== variantId,
-      ),
+      prev.filter((item) => {
+        if (item.product.id !== productId) {
+          return true;
+        }
+
+        if (variantId !== undefined) {
+          return item.variant?.id !== variantId;
+        }
+
+        return item.variant !== undefined;
+      }),
     );
   };
 
