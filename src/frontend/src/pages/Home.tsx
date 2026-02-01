@@ -5,6 +5,7 @@ import { fetchCategories, fetchProducts, fetchTags, type Category, type Product,
 import { ProductCard } from '../components/ProductCard';
 import { useCart } from '../context/useCart';
 import { useAuth } from '../hooks/useAuth';
+import { useDebouncedValue } from '../hooks/useDebouncedValue';
 
 export const Home: React.FC = () => {
   const { totalItems } = useCart();
@@ -37,6 +38,7 @@ export const Home: React.FC = () => {
   const selectedCategory = searchParams.get('category') ? Number(searchParams.get('category')) : undefined;
   const selectedTag = searchParams.get('tag') ? Number(searchParams.get('tag')) : undefined;
   const searchQuery = searchParams.get('search') || '';
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 300);
 
   useEffect(() => {
     const loadMetadata = async () => {
@@ -58,7 +60,7 @@ export const Home: React.FC = () => {
         const { data, pagination } = await fetchProducts({
           categoryId: selectedCategory,
           tagId: selectedTag,
-          search: searchQuery,
+          search: debouncedSearchQuery,
           page,
           limit: 9,
         });
@@ -73,7 +75,7 @@ export const Home: React.FC = () => {
       }
     };
     loadProducts();
-  }, [selectedCategory, selectedTag, searchQuery, page]);
+  }, [selectedCategory, selectedTag, debouncedSearchQuery, page]);
 
   const updateFilter = (key: string, value: string | undefined) => {
     setPage(1);
