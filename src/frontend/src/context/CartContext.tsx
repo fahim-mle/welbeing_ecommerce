@@ -45,11 +45,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return true;
         }
 
+        // If a variantId is provided, remove only that specific variant line.
         if (variantId !== undefined) {
           return item.variant?.id !== variantId;
         }
 
-        return item.variant !== undefined;
+        // Otherwise remove all lines for this product.
+        return false;
       }),
     );
   };
