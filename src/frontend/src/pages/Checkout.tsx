@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createAddress, fetchAddresses, type Address } from '../api/addresses';
 import { createOrder, type ShippingAddressPayload } from '../api/orders';
 import { CartSummary } from '../components/CartSummary';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../context/useCart';
 import { useAuth } from '../hooks/useAuth';
 
 export const Checkout: React.FC = () => {

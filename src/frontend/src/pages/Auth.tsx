@@ -13,8 +13,8 @@ export const Login = () => {
     try {
       await login(email, password);
       navigate('/');
-    } catch (err) {
-      // Error handled by context/hook usually, but we have error state there
+    } catch {
+      // Error handled by context/hook
     }
   };
 
@@ -78,7 +78,7 @@ export const Register = () => {
     try {
       await register(email, password);
       navigate('/');
-    } catch (err) {
+    } catch {
       // Error handled
     }
   };

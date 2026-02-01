@@ -6,7 +6,7 @@ import { ProductCard } from '../ProductCard';
 
 // Mock useCart
 const mockAddItem = vi.fn();
-vi.mock('../../context/CartContext', () => ({
+vi.mock('../../context/useCart', () => ({
   useCart: () => ({
     addItem: mockAddItem,
   }),

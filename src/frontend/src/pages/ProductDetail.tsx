@@ -15,7 +15,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { fetchProductById, fetchProducts, type Product, type ProductVariant } from '../api/catalog';
 import { ProductCard } from '../components/ProductCard';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../context/useCart';
 
 export const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
