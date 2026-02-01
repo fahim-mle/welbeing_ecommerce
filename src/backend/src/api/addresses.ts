@@ -7,6 +7,48 @@ import { logger } from '../lib/logger';
 
 const router = Router();
 
+router.get('/autocomplete', async (req: Request, res: Response) => {
+  const query = String(req.query.q ?? '').trim();
+  if (!query) {
+    return res.json({ data: [] });
+  }
+
+  try {
+    const url = new URL('https://nominatim.openstreetmap.org/search');
+    url.searchParams.set('format', 'jsonv2');
+    url.searchParams.set('addressdetails', '1');
+    url.searchParams.set('limit', '5');
+    url.searchParams.set('q', query);
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        // Nominatim usage policy expects a valid UA.
+        'User-Agent': process.env.NOMINATIM_USER_AGENT || 'welbeing-ecommerce-dev',
+        ...(process.env.NOMINATIM_EMAIL ? { 'From': process.env.NOMINATIM_EMAIL } : {}),
+      },
+    });
+
+    if (!response.ok) {
+      return res.status(502).json({ message: 'Failed to fetch address suggestions' });
+    }
+
+    const data = (await response.json()) as any[];
+    const mapped = (Array.isArray(data) ? data : []).map((item) => ({
+      placeId: item.place_id,
+      displayName: item.display_name,
+      lat: item.lat,
+      lon: item.lon,
+      address: item.address,
+    }));
+
+    res.json({ data: mapped });
+  } catch (error) {
+    const requestId = (req as Request & { requestId?: string }).requestId;
+    logger.error('Failed to autocomplete address', { requestId, error, query });
+    res.status(500).json({ message: 'Failed to autocomplete address' });
+  }
+});
+
 router.get('/', authenticate, async (req: Request, res: Response) => {
   const userId = (req as AuthRequest).user?.userId;
   if (!userId) {

@@ -3,8 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createAddress, fetchAddresses, type Address } from '../api/addresses';
 import { createOrder, type ShippingAddressPayload } from '../api/orders';
 import { CartSummary } from '../components/CartSummary';
+import { AddressAutocomplete } from '../components/AddressAutocomplete';
 import { useCart } from '../context/useCart';
 import { useAuth } from '../hooks/useAuth';
+import type { AddressSuggestion } from '../api/geo';
 
 export const Checkout: React.FC = () => {
   const navigate = useNavigate();
@@ -18,6 +20,7 @@ export const Checkout: React.FC = () => {
   const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<number | 'new' | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [addressSearch, setAddressSearch] = useState('');
   const [addressForm, setAddressForm] = useState<ShippingAddressPayload>({
     label: 'Home',
     fullName: '',
@@ -60,6 +63,26 @@ export const Checkout: React.FC = () => {
     setAddressForm((prev) => ({
       ...prev,
       [field]: value,
+    }));
+  };
+
+  const handleAddressSuggestionSelect = (suggestion: AddressSuggestion) => {
+    const addr = suggestion.address || {};
+    const houseNumber = addr.house_number || '';
+    const road = addr.road || addr.pedestrian || addr.footway || '';
+    const suburb = addr.suburb || addr.neighbourhood || '';
+    const city = addr.city || addr.town || addr.village || suburb;
+
+    const streetLine1 = [houseNumber, road].filter(Boolean).join(' ').trim() || suggestion.displayName;
+
+    setAddressSearch(suggestion.displayName);
+    setAddressForm((prev) => ({
+      ...prev,
+      streetLine1,
+      city: city || prev.city,
+      state: addr.state || addr.region || prev.state,
+      postalCode: addr.postcode || prev.postalCode,
+      country: addr.country || prev.country,
     }));
   };
 
@@ -291,6 +314,19 @@ export const Checkout: React.FC = () => {
                     <span className="text-xs text-red-600">{fieldErrors.phone}</span>
                   )}
                 </label>
+                <label className="sm:col-span-2">
+                  <span className="form-label">Search address</span>
+                  <AddressAutocomplete
+                    value={addressSearch}
+                    onChange={setAddressSearch}
+                    onSelect={handleAddressSuggestionSelect}
+                    placeholder="Type to search (e.g. 10 Main St, Brisbane)"
+                  />
+                  <span className="text-xs text-gray-500">
+                    Uses OpenStreetMap suggestions. After selecting, fields below will auto-fill.
+                  </span>
+                </label>
+
                 <label className="sm:col-span-2">
                   <span className="form-label">Street address</span>
                   <input
