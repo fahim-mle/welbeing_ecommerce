@@ -1,6 +1,9 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
+import { CartUIProvider } from './context/CartUIContext';
+import { CartDrawer } from './components/cart/CartDrawer';
+import { FloatingCartButton } from './components/cart/FloatingCartButton';
 import { Cart } from './pages/Cart';
 import { Checkout } from './pages/Checkout';
 import { ForgotPassword } from './pages/ForgotPassword';
@@ -26,8 +29,11 @@ function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <Router>
-          <Routes>
+        <CartUIProvider>
+          <Router>
+            <CartDrawer />
+            <FloatingCartButton />
+            <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -52,8 +58,9 @@ function App() {
                 <Route path="analytics" element={<AdminAnalytics />} />
               </Route>
             </Route>
-          </Routes>
-        </Router>
+            </Routes>
+          </Router>
+        </CartUIProvider>
       </CartProvider>
     </AuthProvider>
   );
