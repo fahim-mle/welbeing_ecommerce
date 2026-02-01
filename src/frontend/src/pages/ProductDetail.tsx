@@ -10,12 +10,13 @@ import {
   Sparkles,
   Minus,
   Plus,
+  ShoppingBag,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { fetchProductById, fetchProducts, type Product, type ProductVariant } from '../api/catalog';
 import { ProductCard } from '../components/ProductCard';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../context/useCart';
 
 export const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -235,7 +236,10 @@ export const ProductDetail: React.FC = () => {
                          className="btn-primary w-full py-4 text-lg font-bold shadow-lg shadow-indigo-200 hover:-translate-y-0.5 active:translate-y-0"
                          aria-label={`Add ${product.name} to cart`}
                      >
-                         Add to Cart
+                        <span className="inline-flex items-center justify-center gap-2">
+                          <ShoppingBag className="h-5 w-5" aria-hidden="true" />
+                          Add to Cart
+                        </span>
                       </button>
 
 

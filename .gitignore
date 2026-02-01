@@ -5,6 +5,12 @@ dist
 *.log
 .vite
 
+# local-only
+.idea/
+.docs/
+docs/
+identifier.sqlite
+
 # Agent and spec files
 .agent
 .gemini

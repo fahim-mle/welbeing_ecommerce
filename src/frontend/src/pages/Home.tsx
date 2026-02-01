@@ -3,11 +3,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { fetchCategories, fetchProducts, fetchTags, type Category, type Product, type WellbeingTag } from '../api/catalog';
 import { ProductCard } from '../components/ProductCard';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../context/useCart';
 import { useAuth } from '../hooks/useAuth';
+import { useDebouncedValue } from '../hooks/useDebouncedValue';
+import { useCartUI } from '../hooks/useCartUI';
 
 export const Home: React.FC = () => {
   const { totalItems } = useCart();
+  const { openCart } = useCartUI();
   const { user, logout } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -37,6 +40,7 @@ export const Home: React.FC = () => {
   const selectedCategory = searchParams.get('category') ? Number(searchParams.get('category')) : undefined;
   const selectedTag = searchParams.get('tag') ? Number(searchParams.get('tag')) : undefined;
   const searchQuery = searchParams.get('search') || '';
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 300);
 
   useEffect(() => {
     const loadMetadata = async () => {
@@ -58,7 +62,7 @@ export const Home: React.FC = () => {
         const { data, pagination } = await fetchProducts({
           categoryId: selectedCategory,
           tagId: selectedTag,
-          search: searchQuery,
+          search: debouncedSearchQuery,
           page,
           limit: 9,
         });
@@ -73,7 +77,7 @@ export const Home: React.FC = () => {
       }
     };
     loadProducts();
-  }, [selectedCategory, selectedTag, searchQuery, page]);
+  }, [selectedCategory, selectedTag, debouncedSearchQuery, page]);
 
   const updateFilter = (key: string, value: string | undefined) => {
     setPage(1);
@@ -169,14 +173,19 @@ export const Home: React.FC = () => {
                        Login
                    </Link>
                )}
-                 <Link to="/cart" className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full" aria-label={`Shopping cart with ${totalItems} items`}>
+                 <button
+                   type="button"
+                   onClick={openCart}
+                   className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full"
+                   aria-label={`Open cart with ${totalItems} items`}
+                 >
                    <ShoppingBag className="h-5 w-5" aria-hidden="true" />
                    {totalItems > 0 && (
                      <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs font-semibold rounded-full px-1.5" aria-hidden="true">
                        {totalItems}
                      </span>
                    )}
-                 </Link>
+                 </button>
 
 
            </div>

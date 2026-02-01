@@ -51,7 +51,7 @@ export const auth = {
     const token = headerValue.split(' ')[1];
     try {
       return this.verifyToken(token);
-    } catch (error) {
+    } catch {
       return null;
     }
   },

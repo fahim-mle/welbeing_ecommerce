@@ -33,7 +33,7 @@ export const OrderList: React.FC = () => {
     try {
       const updatedOrder = await updateOrderStatus(token, orderId, newStatus);
       setOrders(orders.map((order) => (order.id === orderId ? updatedOrder : order)));
-    } catch (err) {
+    } catch {
       alert('Failed to update status');
     }
   };

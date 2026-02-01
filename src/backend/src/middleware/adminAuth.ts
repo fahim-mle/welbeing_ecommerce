@@ -20,7 +20,7 @@ export const adminAuth = (req: Request, res: Response, next: NextFunction) => {
     // Attach user to request if needed, though usually handled by general auth middleware
     (req as Request & { user?: TokenPayload }).user = decoded;
     next();
-  } catch (error) {
+  } catch {
     return res.status(401).json({ message: 'Unauthorized: Invalid token' });
   }
 };
