@@ -65,7 +65,9 @@ export const updateOrderStatus = async (token: string, id: number, status: strin
     return result.data;
 };
 
-export const createProduct = async (token: string, productData: any): Promise<Product> => {
+export type AdminProductPayload = Partial<Product> & Record<string, unknown>;
+
+export const createProduct = async (token: string, productData: AdminProductPayload): Promise<Product> => {
     const response = await fetch(`${API_BASE_URL}/admin/products`, {
         method: 'POST',
         headers: getHeaders(token),
@@ -75,7 +77,7 @@ export const createProduct = async (token: string, productData: any): Promise<Pr
     return response.json();
 };
 
-export const updateProduct = async (token: string, id: number, productData: any): Promise<Product> => {
+export const updateProduct = async (token: string, id: number, productData: AdminProductPayload): Promise<Product> => {
     const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
         method: 'PUT',
         headers: getHeaders(token),

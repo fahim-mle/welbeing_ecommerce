@@ -21,8 +21,9 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
     try {
       const data = await fetchAdminProducts(token);
       setProducts(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load products');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to load products';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -38,7 +39,7 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
     try {
       await deleteProduct(token, id);
       setProducts(products.filter(p => p.id !== id));
-    } catch (err) {
+    } catch {
       alert('Failed to delete product');
     }
   };
@@ -50,7 +51,7 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
     try {
       const updated = await updateProduct(token, product.id, { stockQuantity: newQty });
       setProducts(products.map((p) => (p.id === product.id ? updated : p)));
-    } catch (err) {
+    } catch {
       alert('Failed to update stock status');
     }
   };
@@ -60,7 +61,7 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
       try {
           const updated = await updateProduct(token, product.id, { isVisible: !product.isVisible });
           setProducts(products.map(p => p.id === product.id ? updated : p));
-      } catch (err) {
+      } catch {
           alert('Failed to update visibility');
       }
   };
