@@ -11,7 +11,8 @@ const normalizeDatabaseUrl = () => {
   if (!url.startsWith('file:./')) return;
 
   const relPath = url.slice('file:'.length); // includes leading './'
-  // __dirname is `src/backend/src/lib`, so go up to `src/backend/`.
+  // In this repo we want sqlite paths to be stable regardless of where the process is started.
+  // Resolve relative to the backend package root (`src/backend/`).
   const backendRoot = path.resolve(__dirname, '..', '..');
   const absPath = path.resolve(backendRoot, relPath);
   process.env.DATABASE_URL = `file:${absPath}`;

@@ -1,6 +1,11 @@
 import cors from 'cors';
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'path';
 import express, { NextFunction, Request, Response } from 'express';
+
+// Load backend-local .env reliably even when running from monorepo root.
+// (dotenv/config loads from process.cwd(), which is unstable with workspaces.)
+dotenv.config({ path: path.resolve(__dirname, '..', '..', '.env') });
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { randomUUID } from 'crypto';

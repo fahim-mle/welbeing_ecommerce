@@ -10,8 +10,10 @@
     "test": "jest",
     "lint": "eslint src/**/*.ts",
     "prisma": "prisma",
+    "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "db:init": "npm run db:push && npm run db:seed"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
