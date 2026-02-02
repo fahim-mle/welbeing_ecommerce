@@ -14,6 +14,25 @@ export interface PaginatedAdminOrders {
   hasNextPage: boolean;
 }
 
+export interface AdminUser {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string | null;
+  role: 'USER' | 'ADMIN';
+  isActive: boolean;
+  lastLoginAt?: string | null;
+  createdAt?: string;
+}
+
+export interface PaginatedAdminUsers {
+  data: AdminUser[];
+  page: number;
+  limit: number;
+  hasNextPage: boolean;
+}
+
 export const fetchAdminProducts = async (token: string, page = 1, limit = 20): Promise<Product[]> => {
   const response = await fetch(`${API_BASE_URL}/admin/products?page=${page}&limit=${limit}`, {
     headers: getHeaders(token),
@@ -40,6 +59,39 @@ export const fetchAdminOrders = async (
     limit: result.limit ?? limit,
     hasNextPage: data.length === (result.limit ?? limit),
   };
+};
+
+export const fetchAdminUsers = async (token: string, page = 1, limit = 20): Promise<PaginatedAdminUsers> => {
+  const response = await fetch(`${API_BASE_URL}/admin/users?page=${page}&limit=${limit}`, {
+    headers: getHeaders(token),
+  });
+  if (!response.ok) throw new Error('Failed to fetch users');
+  const result = await response.json();
+  const data = Array.isArray(result.data) ? result.data : [];
+  return {
+    data,
+    page: result.page ?? page,
+    limit: result.limit ?? limit,
+    hasNextPage: data.length === (result.limit ?? limit),
+  };
+};
+
+export const updateAdminUser = async (
+  token: string,
+  id: number,
+  payload: { role?: AdminUser['role']; isActive?: boolean },
+): Promise<AdminUser> => {
+  const response = await fetch(`${API_BASE_URL}/admin/users/${id}`, {
+    method: 'PATCH',
+    headers: getHeaders(token),
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => null);
+    throw new Error(error?.message || 'Failed to update user');
+  }
+  const result = await response.json();
+  return result.data;
 };
 
 export const fetchAdminOrder = async (token: string, id: number): Promise<OrderResponse> => {
