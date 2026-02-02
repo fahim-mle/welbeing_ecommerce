@@ -1,0 +1,31 @@
+name: welbeing_ecommerce
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: welbeing_postgres
+    environment:
+      POSTGRES_USER: welbeing
+      POSTGRES_PASSWORD: welbeing
+      POSTGRES_DB: test_welbeing
+    ports:
+      - "5432:5432"
+    volumes:
+      - welbeing_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U welbeing -d test_welbeing"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7
+    container_name: welbeing_redis
+    # Don't publish 6379 on the host; many machines already have redis running.
+    # The backend can still reach this redis service on the internal docker network.
+    volumes:
+      - welbeing_redisdata:/data
+
+volumes:
+  welbeing_pgdata:
+  welbeing_redisdata:
