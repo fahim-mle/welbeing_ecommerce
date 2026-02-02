@@ -20,6 +20,7 @@ import { setupSwagger } from './swagger';
 import { AppError } from './types/shared';
 import { logger } from './lib/logger';
 import { apiLimiter, authLimiter } from './middleware/rateLimit';
+import { prisma } from './lib/prisma';
 
 const app = express();
 
@@ -89,6 +90,21 @@ const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     logger.info('Server is running', { port: PORT });
+
+    // Best-effort local-dev sanity check: if DB is empty, storefront will show 0 products.
+    // This keeps the stable branch safe by only logging guidance (no mutations).
+    void (async () => {
+      try {
+        const productCount = await prisma.product.count({ where: { isVisible: true, stockQuantity: { gt: 0 } } });
+        if (productCount === 0) {
+          logger.warn('No visible in-stock products found. Did you run db seed?', {
+            hint: 'Run: cd src/backend && npm run db:migrate && npm run db:seed',
+          });
+        }
+      } catch (error) {
+        logger.warn('Startup DB check failed', { error });
+      }
+    })();
   });
 }
 

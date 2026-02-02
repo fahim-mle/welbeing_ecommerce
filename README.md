@@ -70,14 +70,15 @@ npm install
 **Backend** (`src/backend/.env`):
 ```env
 DATABASE_URL="file:./prisma/dev.db"
-JWT_SECRET="your-secret-key-here"
+REDIS_URL="redis://localhost:6379"
 PORT=3000
 NODE_ENV=development
+JWT_SECRET="your-secret-key-here"
 ```
 
-**Frontend** (`src/frontend/.env`):
+**Frontend** (`src/frontend/.env.local`):
 ```env
-VITE_API_BASE_URL=http://localhost:3000
+VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
 ### 3. Initialize Database

@@ -2,6 +2,7 @@ import { Prisma, PrismaClient, UserRole, WellbeingTagType, PaymentProvider, Paym
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
+import { invalidateProductCaches } from '../src/services/catalogService';
 
 const prisma = new PrismaClient();
 
@@ -343,6 +344,10 @@ async function main() {
       },
     });
   }
+
+  // Best-effort cache invalidation so dev UI reflects new seed data immediately.
+  // Safe even if Redis is not running (redis lib handles errors).
+  await invalidateProductCaches();
 
   console.log('Seeding completed.');
 }
