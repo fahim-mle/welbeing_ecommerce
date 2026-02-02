@@ -69,7 +69,8 @@ npm install
 
 **Backend** (`src/backend/.env`):
 ```env
-DATABASE_URL="file:./test_welbeing_ecommerce.db"
+# Postgres (dev)
+DATABASE_URL="postgresql://welbeing:welbeing@localhost:5432/test_welbeing?schema=public"
 REDIS_URL="redis://localhost:6379"
 PORT=3000
 NODE_ENV=development
