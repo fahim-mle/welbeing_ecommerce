@@ -69,7 +69,7 @@ npm install
 
 **Backend** (`src/backend/.env`):
 ```env
-DATABASE_URL="file:./prisma/dev.db"
+DATABASE_URL="file:./test_welbeing_ecommerce.db"
 REDIS_URL="redis://localhost:6379"
 PORT=3000
 NODE_ENV=development
@@ -86,11 +86,12 @@ VITE_API_BASE_URL=http://localhost:3000/api
 ```bash
 cd src/backend
 
-# Run migrations
-npm run db:migrate
+# Initialize local DB schema (recommended)
+npm run db:init
 
-# Seed data (creates admin user, products, etc.)
-npm run db:seed
+# Alternatively, if you prefer migrations (may require cleanup of old migration history)
+# npm run db:migrate
+# npm run db:seed
 ```
 
 ### 4. Start Servers
