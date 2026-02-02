@@ -100,14 +100,30 @@ if (process.env.NODE_ENV !== 'test') {
     // This keeps the stable branch safe by only logging guidance (no mutations).
     void (async () => {
       try {
+        // If schema hasn't been initialized yet, model queries will throw (P2021).
+        // Detect this cheaply using sqlite_master before calling model APIs.
+        const tables = await prisma.$queryRaw<{ name: string }[]>`
+          SELECT name FROM sqlite_master WHERE type='table' AND name IN ('products','users')
+        `;
+        const tableNames = new Set((tables ?? []).map((t) => t.name));
+        if (!tableNames.has('products') || !tableNames.has('users')) {
+          logger.warn('Database schema not initialized. Run db init.', {
+            hint: 'cd src/backend && npm run db:init',
+          });
+          return;
+        }
+
         const productCount = await prisma.product.count({ where: { isVisible: true, stockQuantity: { gt: 0 } } });
         if (productCount === 0) {
           logger.warn('No visible in-stock products found. Did you run db seed?', {
-            hint: 'Run: cd src/backend && npm run db:migrate && npm run db:seed',
+            hint: 'cd src/backend && npm run db:seed',
           });
         }
       } catch (error) {
-        logger.warn('Startup DB check failed', { error });
+        // Keep this non-fatal and non-noisy; log a short message with an action.
+        logger.warn('Startup DB check skipped (DB not ready).', {
+          hint: 'cd src/backend && npm run db:init',
+        });
       }
     })();
   });
