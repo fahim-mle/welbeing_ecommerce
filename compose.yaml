@@ -21,10 +21,49 @@ services:
   redis:
     image: redis:7
     container_name: welbeing_redis
-    # Don't publish 6379 on the host; many machines already have redis running.
-    # The backend can still reach this redis service on the internal docker network.
     volumes:
       - welbeing_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: src/backend/Dockerfile
+    container_name: welbeing_backend
+    environment:
+      # Uses internal Docker network hostnames (not localhost)
+      DATABASE_URL: postgresql://welbeing:welbeing@postgres:5432/test_welbeing?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: change-me-in-production
+      NODE_ENV: production
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: src/frontend/Dockerfile
+      args:
+        # Must be reachable from the user's browser — keep localhost:3000
+        # since the backend container exposes port 3000 on the host.
+        VITE_API_BASE_URL: http://localhost:3000
+    container_name: welbeing_frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
 
 volumes:
   welbeing_pgdata:

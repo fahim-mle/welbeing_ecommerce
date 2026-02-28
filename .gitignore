@@ -16,3 +16,6 @@ identifier.sqlite
 .gemini
 .specify
 specs
+
+.qwen/
+gha-creds-*.json
