@@ -36,9 +36,19 @@ export const shippingAddressSchema = z
 
 export const createOrderSchema = z
   .object({
+    // Unified email field — used for order confirmation and guest order lookup.
+    // For guest checkouts this becomes the guestEmail on the order record.
+    email: z.string().email().optional(),
+    // Indicates who is placing the order so the backend can handle the email
+    // correctly alongside the JWT userId (if present).
+    user_type: z.enum(['USER', 'GUEST', 'ADMIN']).optional(),
+    // Legacy field kept for backward compatibility — prefer `email` + `user_type`.
     guest_email: z.string().email().optional(),
     items: z.array(orderItemSchema),
-    shipping_address: shippingAddressSchema.optional(),
+    // Use a loose record so Zod 4's ZodEffects+optional() chain doesn't silently
+    // drop the field when inner refines on shippingAddressSchema fail.
+    // The service's validateShippingAddress() handles field-level validation.
+    shipping_address: z.record(z.string(), z.unknown()).optional(),
     address_id: z.union([z.number(), z.string()]).optional(),
     payment_placeholder: z.string().min(1, 'payment_placeholder is required'),
     disclaimer_accepted: z.boolean(),
@@ -52,6 +62,6 @@ export const guestLookupSchema = z
     guestEmail: z.string().email().optional(),
     guest_email: z.string().email().optional(),
   })
-  .refine((data) => data.guestEmail || data.guest_email, {
+  .refine((data) => data.email || data.guest_email, {
     message: 'guestEmail is required',
   });

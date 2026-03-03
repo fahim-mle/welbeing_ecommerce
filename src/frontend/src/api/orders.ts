@@ -20,7 +20,8 @@ export interface ShippingAddressPayload {
 }
 
 export interface OrderPayload {
-  guest_email?: string;
+  email?: string;
+  user_type?: 'USER' | 'GUEST' | 'ADMIN';
   items: OrderItemPayload[];
   shipping_address?: ShippingAddressPayload;
   address_id?: number;
