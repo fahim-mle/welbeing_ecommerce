@@ -49,9 +49,15 @@ export const auth = {
     }
 
     const token = headerValue.split(' ')[1];
+    if (!token) {
+      return null;
+    }
+
     try {
       return this.verifyToken(token);
     } catch {
+      // Token verification failed - could be expired, invalid signature, etc.
+      // Return null but don't log sensitive details in production
       return null;
     }
   },

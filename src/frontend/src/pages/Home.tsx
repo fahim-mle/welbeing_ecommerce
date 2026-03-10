@@ -18,6 +18,7 @@ export const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalProducts, setTotalProducts] = useState<number>(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile sidebar
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Profile dropdown
@@ -67,8 +68,9 @@ export const Home: React.FC = () => {
           limit: 9,
         });
         setProducts(data || []);
-        if (pagination && pagination.totalPages) {
-           setTotalPages(pagination.totalPages);
+        if (pagination) {
+          if (typeof pagination.totalPages === 'number') setTotalPages(pagination.totalPages);
+          if (typeof pagination.total === 'number') setTotalProducts(pagination.total);
         }
       } catch (err) {
         console.error(err);
@@ -255,7 +257,9 @@ export const Home: React.FC = () => {
              <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-gray-900">
                     {selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : 'All Products'}
-                    <span className="text-gray-400 text-lg font-normal ml-2">({products.length})</span>
+                    <span className="text-gray-400 text-lg font-normal ml-2">
+                      ({products.length}{totalProducts ? ` of ${totalProducts}` : ''})
+                    </span>
                 </h2>
                 {/* Sort dropdown could go here */}
              </div>

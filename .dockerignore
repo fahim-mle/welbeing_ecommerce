@@ -1,0 +1,11 @@
+node_modules
+src/backend/node_modules
+src/backend/dist
+src/frontend/node_modules
+src/frontend/dist
+.git
+**/.env
+**/.env.*
+*.db
+*.sqlite
+src/backend/prisma/migrations_sqlite

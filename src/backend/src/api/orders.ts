@@ -153,6 +153,34 @@ router.post('/:id/cancel', authenticate, async (req, res) => {
 router.post('/', validateBody(createOrderSchema), async (req, res, next) => {
   const decoded = auth.decodeAuthorizationHeader(req.headers.authorization);
   const userId = decoded?.userId;
+  const hasAuthHeader = !!req.headers.authorization;
+
+  logger.info('Creating order', {
+    userId,
+    hasAuthHeader,
+    userType: req.body.user_type,
+    hasEmail: !!req.body.email,
+    hasGuestEmail: !!req.body.guest_email,
+  });
+
+  const requiresAuthenticatedUser =
+    req.body.user_type === 'USER' || req.body.user_type === 'ADMIN';
+
+  if ((hasAuthHeader || requiresAuthenticatedUser) && !userId) {
+    const requestId = (req as AuthRequest & { requestId?: string }).requestId;
+    logger.warn('Authorization header present but userId not decoded', {
+      hasAuthHeader: true,
+      requestId,
+      userType: req.body.user_type,
+    });
+    return res.status(401).json({
+      success: false,
+      error: {
+        message: 'Invalid or expired authentication token. Please log in again.',
+        code: 'INVALID_TOKEN',
+      },
+    });
+  }
 
   try {
     const order = await createOrderFromPayload(userId, req.body);

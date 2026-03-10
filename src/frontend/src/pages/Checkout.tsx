@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createAddress, fetchAddresses, type Address } from '../api/addresses';
+import { fetchAddresses, type Address } from '../api/addresses';
+import type { AddressSuggestion } from '../api/geo';
 import { createOrder, type ShippingAddressPayload } from '../api/orders';
-import { CartSummary } from '../components/CartSummary';
 import { AddressAutocomplete } from '../components/AddressAutocomplete';
+import { CartSummary } from '../components/CartSummary';
 import { useCart } from '../context/useCart';
 import { useAuth } from '../hooks/useAuth';
-import type { AddressSuggestion } from '../api/geo';
 
 export const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const { items, subtotal, clearCart } = useCart();
-  const { user, token } = useAuth();
+  const { user, token, logout } = useAuth();
   const [guestEmail, setGuestEmail] = useState(user?.email || '');
   const [paymentPlaceholder, setPaymentPlaceholder] = useState('');
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
@@ -30,7 +30,7 @@ export const Checkout: React.FC = () => {
     city: '',
     state: '',
     postalCode: '',
-    country: 'United States',
+    country: 'Australia',
     isDefault: true,
   });
 
@@ -45,6 +45,7 @@ export const Checkout: React.FC = () => {
     const loadAddresses = async () => {
       try {
         const data = await fetchAddresses(token);
+
         setSavedAddresses(data);
         if (data.length > 0) {
           const defaultAddress = data.find((address) => address.isDefault) ?? data[0];
@@ -53,11 +54,18 @@ export const Checkout: React.FC = () => {
           setSelectedAddressId('new');
         }
       } catch (err) {
-        console.error('Failed to load addresses', err);
+        if (import.meta.env.DEV) {
+          console.error('Failed to load addresses', err);
+        }
+        const errorMessage = err instanceof Error ? err.message : '';
+        if (errorMessage.includes('Unauthorized') || errorMessage.includes('401')) {
+          logout();
+          setError('Your session has expired. Please log in again.');
+        }
       }
     };
     loadAddresses();
-  }, [token]);
+  }, [token, logout]);
 
   const handleAddressChange = (field: keyof ShippingAddressPayload, value: string) => {
     setAddressForm((prev) => ({
@@ -98,10 +106,12 @@ export const Checkout: React.FC = () => {
 
     const nextErrors: Record<string, string> = {};
 
-    if (!guestEmail) {
-      nextErrors.guestEmail = 'Email is required.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
-      nextErrors.guestEmail = 'Please enter a valid email address.';
+    if (!user) {
+      if (!guestEmail) {
+        nextErrors.guestEmail = 'Email is required.';
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
+        nextErrors.guestEmail = 'Please enter a valid email address.';
+      }
     }
 
     if (!paymentPlaceholder) {
@@ -139,20 +149,35 @@ export const Checkout: React.FC = () => {
       let addressId: number | undefined;
       let shippingAddress: ShippingAddressPayload | undefined;
 
-      if (user && token) {
-        if (selectedAddressId === 'new') {
-          const createdAddress = await createAddress(addressForm, token);
-          addressId = createdAddress.id;
-        } else if (selectedAddressId) {
-          addressId = selectedAddressId;
-        }
+      if (user && token && typeof selectedAddressId === 'number') {
+        // Auth user selected a saved address — pass the id directly
+        addressId = selectedAddressId;
       } else {
+        // Guest user OR auth user entering a new address.
+        // Send the address inline so the backend creates it within the order
+        // transaction and links it to the user account when authenticated.
         shippingAddress = addressForm;
+      }
+
+      if (import.meta.env.DEV) {
+        console.log('[Checkout] Creating order with:', {
+          userId: user?.id,
+          email: guestEmail,
+          userType: user ? 'USER' : 'GUEST',
+          hasToken: !!token,
+          addressId,
+          hasShippingAddress: !!shippingAddress,
+        });
       }
 
       const order = await createOrder(
         {
-          guest_email: guestEmail,
+          // Always send the email shown in the form and the user_type so the
+          // backend can resolve guestEmail correctly without guessing from the
+          // JWT alone. For authenticated orders the backend uses JWT userId and
+          // ignores the email; for guest orders it becomes the guestEmail.
+          email: guestEmail,
+          user_type: user ? 'USER' : 'GUEST',
           items: items.map((item) => ({
             product_id: item.product.id,
             product_variant_id: item.variant?.id,
@@ -170,7 +195,19 @@ export const Checkout: React.FC = () => {
       const guestQuery = token ? '' : `?guestEmail=${encodeURIComponent(guestEmail)}`;
       navigate(`/order-confirmation/${order.id}${guestQuery}`, { state: { order } });
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Something went wrong.';
+      if (import.meta.env.DEV) {
+        console.error('[Checkout] Order creation failed:', err);
+      }
+      let message = err instanceof Error ? err.message : 'Something went wrong.';
+
+      if (message.includes('Invalid or expired authentication token') || message.includes('INVALID_TOKEN')) {
+        logout();
+        message = 'Your session has expired. You have been logged out. Please log in again to continue.';
+      } else if (message.includes('User ID or guest email is required')) {
+        logout();
+        message = 'Authentication error. You have been logged out. Please log in again or checkout as a guest.';
+      }
+
       setError(message);
     } finally {
       setIsSubmitting(false);

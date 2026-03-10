@@ -1,0 +1,70 @@
+name: welbeing_ecommerce
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: welbeing_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-welbeing}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-welbeing}
+      POSTGRES_DB: ${POSTGRES_DB:-test_welbeing}
+    ports:
+      - "5433:5432"
+    volumes:
+      - welbeing_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U welbeing -d test_welbeing"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7
+    container_name: welbeing_redis
+    volumes:
+      - welbeing_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: src/backend/Dockerfile
+    container_name: welbeing_backend
+    environment:
+      # Uses internal Docker network hostnames (not localhost)
+      DATABASE_URL: ${DATABASE_URL:-postgresql://welbeing:welbeing@postgres:5432/test_welbeing?schema=public}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: src/frontend/Dockerfile
+      args:
+        # Must be reachable from the user's browser — keep localhost:3000
+        # since the backend container exposes port 3000 on the host.
+        VITE_API_BASE_URL: http://localhost:3000
+    container_name: welbeing_frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  welbeing_pgdata:
+  welbeing_redisdata:

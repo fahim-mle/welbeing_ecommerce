@@ -66,6 +66,10 @@ export interface OrderRequestItemInput {
 }
 
 export interface OrderRequestPayload {
+  // Unified email — always sent; treated as guestEmail when user_type is 'GUEST'.
+  email?: string;
+  user_type?: 'USER' | 'GUEST' | 'ADMIN';
+  // Legacy field — superseded by email + user_type but still accepted.
   guest_email?: string;
   items?: OrderRequestItemInput[];
   shipping_address?: Record<string, any>;
@@ -96,13 +100,23 @@ const validateShippingAddress = (shippingAddress: ShippingAddressInput) => {
 
 export const createOrderFromPayload = async (userId: number | undefined, payload: OrderRequestPayload) => {
   const {
-    guest_email: guestEmail,
+    email,
+    user_type: userType,
+    guest_email: legacyGuestEmail,
     items,
     shipping_address: shippingAddress,
     address_id: addressId,
     payment_placeholder: paymentPlaceholder,
     disclaimer_accepted: disclaimerAccepted,
   } = payload ?? {};
+
+  // Resolve the guest email: for unauthenticated users, use the provided email.
+  // For authenticated users, guestEmail should be undefined.
+  if (!userId && email && userType && userType !== 'GUEST') {
+    throw new ValidationError('Guest checkout email requires user_type to be GUEST');
+  }
+
+  const guestEmail = userId ? undefined : email ?? legacyGuestEmail;
 
   if (!paymentPlaceholder) {
     throw new ValidationError('Payment placeholder is required');

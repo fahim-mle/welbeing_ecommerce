@@ -69,15 +69,17 @@ npm install
 
 **Backend** (`src/backend/.env`):
 ```env
-DATABASE_URL="file:./prisma/dev.db"
-JWT_SECRET="your-secret-key-here"
+# Postgres (dev)
+DATABASE_URL="postgresql://welbeing:welbeing@localhost:5432/test_welbeing?schema=public"
+REDIS_URL="redis://localhost:6379"
 PORT=3000
 NODE_ENV=development
+JWT_SECRET="your-secret-key-here"
 ```
 
-**Frontend** (`src/frontend/.env`):
+**Frontend** (`src/frontend/.env.local`):
 ```env
-VITE_API_BASE_URL=http://localhost:3000
+VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
 ### 3. Initialize Database
@@ -85,11 +87,12 @@ VITE_API_BASE_URL=http://localhost:3000
 ```bash
 cd src/backend
 
-# Run migrations
-npm run db:migrate
+# Initialize local DB schema (recommended)
+npm run db:init
 
-# Seed data (creates admin user, products, etc.)
-npm run db:seed
+# Alternatively, if you prefer migrations (may require cleanup of old migration history)
+# npm run db:migrate
+# npm run db:seed
 ```
 
 ### 4. Start Servers
@@ -109,6 +112,26 @@ npm run dev
 ```
 
 Frontend runs on `http://localhost:5173`
+
+### 5. Docker Deployment (Optional)
+
+For production or containerized development:
+
+```bash
+# 1. Copy environment file and customize
+cp .env.docker.example .env.docker
+# Edit .env.docker and set secure passwords and JWT secret
+
+# 2. Start all services with Docker Compose
+docker-compose up -d
+
+# 3. Access the application
+# Frontend: http://localhost:8080
+# Backend: http://localhost:3000
+# API Docs: http://localhost:3000/api-docs
+```
+
+**Security Note**: The `.env.docker.example` file contains placeholder values. Always set secure credentials in your actual `.env.docker` file, which is git-ignored. For production, use Docker secrets or a secret manager instead of `.env` files.
 
 ## API Documentation
 
@@ -190,7 +213,7 @@ npm run db:seed
 - Express.js
 - TypeScript
 - Prisma ORM
-- SQLite
+- PostgreSQL
 - JWT Authentication
 - bcryptjs
 - Swagger UI / OpenAPI

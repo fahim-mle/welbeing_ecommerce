@@ -36,9 +36,18 @@ export const shippingAddressSchema = z
 
 export const createOrderSchema = z
   .object({
+    // Unified email field — used for order confirmation and guest order lookup.
+    // For guest checkouts this becomes the guestEmail on the order record.
+    email: z.string().email().optional(),
+    // Indicates who is placing the order so the backend can handle the email
+    // correctly alongside the JWT userId (if present).
+    user_type: z.enum(['USER', 'GUEST', 'ADMIN']).optional(),
+    // Legacy field kept for backward compatibility — prefer `email` + `user_type`.
     guest_email: z.string().email().optional(),
     items: z.array(orderItemSchema),
-    shipping_address: shippingAddressSchema.optional(),
+    // Accept shipping_address with passthrough to allow both snake_case and camelCase.
+    // The service layer's validateShippingAddress() enforces required fields.
+    shipping_address: shippingAddressSchema.passthrough().optional(),
     address_id: z.union([z.number(), z.string()]).optional(),
     payment_placeholder: z.string().min(1, 'payment_placeholder is required'),
     disclaimer_accepted: z.boolean(),
