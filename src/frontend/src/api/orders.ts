@@ -99,7 +99,8 @@ export const createOrder = async (payload: OrderPayload, token?: string): Promis
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => null);
-    throw new Error(errorBody?.error || 'Failed to create order');
+    const errorMessage = errorBody?.error?.message || errorBody?.error || errorBody?.message || 'Failed to create order';
+    throw new Error(errorMessage);
   }
 
   const result = await response.json();

@@ -62,6 +62,6 @@ export const guestLookupSchema = z
     guestEmail: z.string().email().optional(),
     guest_email: z.string().email().optional(),
   })
-  .refine((data) => data.email || data.guest_email, {
+  .refine((data) => data.guestEmail || data.guest_email, {
     message: 'guestEmail is required',
   });

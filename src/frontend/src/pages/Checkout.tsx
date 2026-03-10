@@ -155,6 +155,15 @@ export const Checkout: React.FC = () => {
         shippingAddress = addressForm;
       }
 
+      console.log('[Checkout] Creating order with:', {
+        userId: user?.id,
+        email: guestEmail,
+        userType: user ? 'USER' : 'GUEST',
+        hasToken: !!token,
+        addressId,
+        hasShippingAddress: !!shippingAddress,
+      });
+
       const order = await createOrder(
         {
           // Always send the email shown in the form and the user_type so the
@@ -180,7 +189,15 @@ export const Checkout: React.FC = () => {
       const guestQuery = token ? '' : `?guestEmail=${encodeURIComponent(guestEmail)}`;
       navigate(`/order-confirmation/${order.id}${guestQuery}`, { state: { order } });
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Something went wrong.';
+      console.error('[Checkout] Order creation failed:', err);
+      let message = err instanceof Error ? err.message : 'Something went wrong.';
+
+      if (message.includes('Invalid or expired authentication token') || message.includes('INVALID_TOKEN')) {
+        message = 'Your session has expired. Please refresh the page and log in again.';
+      } else if (message.includes('User ID or guest email is required')) {
+        message = 'Authentication error. Please try logging out and logging back in, or place the order as a guest.';
+      }
+
       setError(message);
     } finally {
       setIsSubmitting(false);
