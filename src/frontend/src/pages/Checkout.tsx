@@ -11,7 +11,7 @@ import { useAuth } from '../hooks/useAuth';
 export const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const { items, subtotal, clearCart } = useCart();
-  const { user, token } = useAuth();
+  const { user, token, logout } = useAuth();
   const [guestEmail, setGuestEmail] = useState(user?.email || '');
   const [paymentPlaceholder, setPaymentPlaceholder] = useState('');
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
@@ -57,10 +57,15 @@ export const Checkout: React.FC = () => {
         if (import.meta.env.DEV) {
           console.error('Failed to load addresses', err);
         }
+        const errorMessage = err instanceof Error ? err.message : '';
+        if (errorMessage.includes('Unauthorized') || errorMessage.includes('401')) {
+          logout();
+          setError('Your session has expired. Please log in again.');
+        }
       }
     };
     loadAddresses();
-  }, [token]);
+  }, [token, logout]);
 
   const handleAddressChange = (field: keyof ShippingAddressPayload, value: string) => {
     setAddressForm((prev) => ({
@@ -196,9 +201,11 @@ export const Checkout: React.FC = () => {
       let message = err instanceof Error ? err.message : 'Something went wrong.';
 
       if (message.includes('Invalid or expired authentication token') || message.includes('INVALID_TOKEN')) {
-        message = 'Your session has expired. Please refresh the page and log in again.';
+        logout();
+        message = 'Your session has expired. You have been logged out. Please log in again to continue.';
       } else if (message.includes('User ID or guest email is required')) {
-        message = 'Authentication error. Please try logging out and logging back in, or place the order as a guest.';
+        logout();
+        message = 'Authentication error. You have been logged out. Please log in again or checkout as a guest.';
       }
 
       setError(message);
