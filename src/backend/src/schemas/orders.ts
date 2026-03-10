@@ -45,10 +45,9 @@ export const createOrderSchema = z
     // Legacy field kept for backward compatibility — prefer `email` + `user_type`.
     guest_email: z.string().email().optional(),
     items: z.array(orderItemSchema),
-    // Use a loose record so Zod 4's ZodEffects+optional() chain doesn't silently
-    // drop the field when inner refines on shippingAddressSchema fail.
-    // The service's validateShippingAddress() handles field-level validation.
-    shipping_address: z.record(z.string(), z.unknown()).optional(),
+    // Accept shipping_address with passthrough to allow both snake_case and camelCase.
+    // The service layer's validateShippingAddress() enforces required fields.
+    shipping_address: shippingAddressSchema.passthrough().optional(),
     address_id: z.union([z.number(), z.string()]).optional(),
     payment_placeholder: z.string().min(1, 'payment_placeholder is required'),
     disclaimer_accepted: z.boolean(),

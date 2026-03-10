@@ -5,9 +5,9 @@ services:
     image: postgres:16
     container_name: welbeing_postgres
     environment:
-      POSTGRES_USER: welbeing
-      POSTGRES_PASSWORD: welbeing
-      POSTGRES_DB: test_welbeing
+      POSTGRES_USER: ${POSTGRES_USER:-welbeing}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-welbeing}
+      POSTGRES_DB: ${POSTGRES_DB:-test_welbeing}
     ports:
       - "5433:5432"
     volumes:
@@ -36,11 +36,11 @@ services:
     container_name: welbeing_backend
     environment:
       # Uses internal Docker network hostnames (not localhost)
-      DATABASE_URL: postgresql://welbeing:welbeing@postgres:5432/test_welbeing?schema=public
-      REDIS_URL: redis://redis:6379
-      JWT_SECRET: change-me-in-production
-      NODE_ENV: production
-      PORT: 3000
+      DATABASE_URL: ${DATABASE_URL:-postgresql://welbeing:welbeing@postgres:5432/test_welbeing?schema=public}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3000}
     ports:
       - "3000:3000"
     depends_on:

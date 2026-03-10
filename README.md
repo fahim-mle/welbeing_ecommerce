@@ -113,6 +113,26 @@ npm run dev
 
 Frontend runs on `http://localhost:5173`
 
+### 5. Docker Deployment (Optional)
+
+For production or containerized development:
+
+```bash
+# 1. Copy environment file and customize
+cp .env.docker.example .env.docker
+# Edit .env.docker and set secure passwords and JWT secret
+
+# 2. Start all services with Docker Compose
+docker-compose up -d
+
+# 3. Access the application
+# Frontend: http://localhost:8080
+# Backend: http://localhost:3000
+# API Docs: http://localhost:3000/api-docs
+```
+
+**Security Note**: The `.env.docker.example` file contains placeholder values. Always set secure credentials in your actual `.env.docker` file, which is git-ignored. For production, use Docker secrets or a secret manager instead of `.env` files.
+
 ## API Documentation
 
 ### Interactive Swagger UI
