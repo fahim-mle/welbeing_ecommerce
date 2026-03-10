@@ -110,6 +110,14 @@ export const createOrderFromPayload = async (userId: number | undefined, payload
     disclaimer_accepted: disclaimerAccepted,
   } = payload ?? {};
 
+  console.log('[DEBUG createOrderFromPayload]', {
+    userId,
+    email,
+    userType,
+    legacyGuestEmail,
+    hasItems: !!items?.length,
+  });
+
   // Resolve the guest email: for unauthenticated users, use the provided email.
   // For authenticated users, guestEmail should be undefined.
   if (!userId && email && userType && userType !== 'GUEST') {
@@ -117,6 +125,8 @@ export const createOrderFromPayload = async (userId: number | undefined, payload
   }
 
   const guestEmail = userId ? undefined : email ?? legacyGuestEmail;
+
+  console.log('[DEBUG guestEmail resolved]', { userId, guestEmail });
 
   if (!paymentPlaceholder) {
     throw new ValidationError('Payment placeholder is required');
@@ -180,7 +190,10 @@ export const createOrder = async ({
   items,
   paymentToken,
 }: CreateOrderInput) => {
+  console.log('[DEBUG createOrder]', { userId, guestEmail, hasAddress: !!(addressId || shippingAddress) });
+  
   if (!userId && !guestEmail) {
+    console.error('[ERROR] User ID or guest email is required', { userId, guestEmail });
     throw new ValidationError('User ID or guest email is required');
   }
 
