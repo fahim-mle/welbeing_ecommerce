@@ -42,4 +42,4 @@ EXPOSE 3000
 # Apply any pending migrations then start the server
 CMD ["sh", "-c", \
   "prisma migrate deploy --schema=src/backend/prisma/schema.prisma \
-  && node src/backend/dist/src/app.js"]
+  && exec node src/backend/dist/src/app.js"]

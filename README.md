@@ -193,7 +193,7 @@ npm run db:seed
 - Express.js
 - TypeScript
 - Prisma ORM
-- SQLite
+- PostgreSQL
 - JWT Authentication
 - bcryptjs
 - Swagger UI / OpenAPI

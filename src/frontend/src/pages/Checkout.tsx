@@ -45,7 +45,6 @@ export const Checkout: React.FC = () => {
     const loadAddresses = async () => {
       try {
         const data = await fetchAddresses(token);
-        console.log(data);
 
         setSavedAddresses(data);
         if (data.length > 0) {
@@ -55,7 +54,9 @@ export const Checkout: React.FC = () => {
           setSelectedAddressId('new');
         }
       } catch (err) {
-        console.error('Failed to load addresses', err);
+        if (import.meta.env.DEV) {
+          console.error('Failed to load addresses', err);
+        }
       }
     };
     loadAddresses();
@@ -69,8 +70,6 @@ export const Checkout: React.FC = () => {
   };
 
   const handleAddressSuggestionSelect = (suggestion: AddressSuggestion) => {
-    console.log(suggestion);
-
     const addr = suggestion.address || {};
     const houseNumber = addr.house_number || '';
     const road = addr.road || addr.pedestrian || addr.footway || '';
@@ -155,14 +154,16 @@ export const Checkout: React.FC = () => {
         shippingAddress = addressForm;
       }
 
-      console.log('[Checkout] Creating order with:', {
-        userId: user?.id,
-        email: guestEmail,
-        userType: user ? 'USER' : 'GUEST',
-        hasToken: !!token,
-        addressId,
-        hasShippingAddress: !!shippingAddress,
-      });
+      if (import.meta.env.DEV) {
+        console.log('[Checkout] Creating order with:', {
+          userId: user?.id,
+          email: guestEmail,
+          userType: user ? 'USER' : 'GUEST',
+          hasToken: !!token,
+          addressId,
+          hasShippingAddress: !!shippingAddress,
+        });
+      }
 
       const order = await createOrder(
         {
@@ -189,7 +190,9 @@ export const Checkout: React.FC = () => {
       const guestQuery = token ? '' : `?guestEmail=${encodeURIComponent(guestEmail)}`;
       navigate(`/order-confirmation/${order.id}${guestQuery}`, { state: { order } });
     } catch (err) {
-      console.error('[Checkout] Order creation failed:', err);
+      if (import.meta.env.DEV) {
+        console.error('[Checkout] Order creation failed:', err);
+      }
       let message = err instanceof Error ? err.message : 'Something went wrong.';
 
       if (message.includes('Invalid or expired authentication token') || message.includes('INVALID_TOKEN')) {

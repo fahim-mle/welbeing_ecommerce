@@ -164,8 +164,10 @@ router.post('/', validateBody(createOrderSchema), async (req, res, next) => {
   });
 
   if (hasAuthHeader && !userId) {
+    const requestId = (req as AuthRequest & { requestId?: string }).requestId;
     logger.warn('Authorization header present but userId not decoded', {
-      authHeader: req.headers.authorization?.substring(0, 20) + '...',
+      hasAuthHeader: true,
+      requestId,
     });
     return res.status(401).json({
       success: false,
