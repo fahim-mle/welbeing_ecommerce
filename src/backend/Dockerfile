@@ -26,6 +26,9 @@ FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 
+# Create non-root user for security
+RUN addgroup -S app && adduser -S app -G app
+
 # prisma is a devDependency of the backend workspace so npm does NOT hoist it
 # to the root node_modules — it stays in src/backend/node_modules/.bin/.
 # Include both locations in PATH so the binary is found regardless.
@@ -36,6 +39,11 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/src/backend/node_modules ./src/backend/node_modules
 COPY --from=builder /app/src/backend/dist ./src/backend/dist
 COPY --from=builder /app/src/backend/prisma ./src/backend/prisma
+
+# Change ownership to non-root user
+RUN chown -R app:app /app
+
+USER app
 
 EXPOSE 3000
 

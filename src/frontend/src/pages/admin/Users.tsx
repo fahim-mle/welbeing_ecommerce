@@ -17,6 +17,8 @@ export const AdminUsers: React.FC = () => {
   useEffect(() => {
     const run = async () => {
       if (!token) {
+        setUsers([]);
+        setHasNextPage(false);
         setError('Not authenticated.');
         setLoading(false);
         return;
@@ -29,6 +31,8 @@ export const AdminUsers: React.FC = () => {
         setUsers(res.data);
         setHasNextPage(res.hasNextPage);
       } catch (e) {
+        setUsers([]);
+        setHasNextPage(false);
         setError(e instanceof Error ? e.message : 'Failed to load users');
       } finally {
         setLoading(false);

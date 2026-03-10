@@ -110,9 +110,13 @@ export const createOrderFromPayload = async (userId: number | undefined, payload
     disclaimer_accepted: disclaimerAccepted,
   } = payload ?? {};
 
-  // Resolve the guest email: prefer the new `email` field when user_type is
-  // 'GUEST', fall back to the legacy `guest_email` field for old clients.
-  const guestEmail = (userType === 'GUEST' ? email : undefined) ?? legacyGuestEmail;
+  // Resolve the guest email: for unauthenticated users, use the provided email.
+  // For authenticated users, guestEmail should be undefined.
+  if (!userId && email && userType && userType !== 'GUEST') {
+    throw new ValidationError('Guest checkout email requires user_type to be GUEST');
+  }
+
+  const guestEmail = userId ? undefined : email ?? legacyGuestEmail;
 
   if (!paymentPlaceholder) {
     throw new ValidationError('Payment placeholder is required');

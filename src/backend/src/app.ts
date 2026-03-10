@@ -101,11 +101,13 @@ if (process.env.NODE_ENV !== 'test') {
     void (async () => {
       try {
         // If schema hasn't been initialized yet, model queries will throw (P2021).
-        // Detect this cheaply using sqlite_master before calling model APIs.
-        const tables = await prisma.$queryRaw<{ name: string }[]>`
-          SELECT name FROM sqlite_master WHERE type='table' AND name IN ('products','users')
+        // Detect this cheaply using information_schema before calling model APIs.
+        const tables = await prisma.$queryRaw<{ table_name: string }[]>`
+          SELECT table_name FROM information_schema.tables 
+          WHERE table_schema = current_schema() 
+          AND table_name IN ('products', 'users')
         `;
-        const tableNames = new Set((tables ?? []).map((t) => t.name));
+        const tableNames = new Set((tables ?? []).map((t) => t.table_name));
         if (!tableNames.has('products') || !tableNames.has('users')) {
           logger.warn('Database schema not initialized. Run db init.', {
             hint: 'cd src/backend && npm run db:init',

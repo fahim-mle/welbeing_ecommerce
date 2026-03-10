@@ -1,5 +1,3 @@
-import path from 'path';
-
 // Ensure tests always use a dedicated Postgres schema with a stable connection string.
 // This avoids coupling tests to local dev data.
 //
