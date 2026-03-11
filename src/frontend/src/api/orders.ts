@@ -94,6 +94,7 @@ export const createOrder = async (payload: OrderPayload, token?: string): Promis
   const response = await fetch(`${API_BASE_URL}/orders`, {
     method: 'POST',
     headers,
+    credentials: 'include',
     body: JSON.stringify(payload),
   });
 
@@ -119,6 +120,7 @@ export const fetchMyOrders = async (token: string, page = 1, limit = 6): Promise
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -141,6 +143,7 @@ export const cancelOrder = async (orderId: number, token: string): Promise<Order
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -166,6 +169,7 @@ export const fetchOrder = async (
   const query = guestEmail ? `?guestEmail=${encodeURIComponent(guestEmail)}` : '';
   const response = await fetch(`${API_BASE_URL}/orders/${id}${query}`, {
     headers,
+    credentials: 'include',
   });
 
   if (!response.ok) {
