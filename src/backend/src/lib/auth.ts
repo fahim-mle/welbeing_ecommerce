@@ -1,5 +1,7 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { Request } from 'express';
+import { COOKIE_NAMES } from './cookie';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-do-not-use-in-prod';
 const SALT_ROUNDS = 10;
@@ -61,4 +63,20 @@ export const auth = {
       return null;
     }
   },
+};
+
+/**
+ * Extract the access token from the httpOnly cookie first,
+ * falling back to the Authorization header for backward compatibility.
+ */
+export const extractAccessToken = (req: Request): string | undefined => {
+  const cookieToken = req.cookies?.[COOKIE_NAMES.ACCESS_TOKEN];
+  if (cookieToken) return cookieToken;
+
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    return authHeader.split(' ')[1];
+  }
+
+  return undefined;
 };
