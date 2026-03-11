@@ -3,8 +3,8 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # VITE_API_BASE_URL is baked into the JS bundle at build time.
-# Override this arg if the backend is reachable at a different URL.
-ARG VITE_API_BASE_URL=http://localhost:3000
+# Relative path /api is proxied through Nginx to the backend service.
+ARG VITE_API_BASE_URL=/api
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 # Copy all workspace manifests so npm ci can resolve the full lockfile
