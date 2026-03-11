@@ -31,6 +31,7 @@ export const authApi = {
     const res = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
     if (!res.ok) {
@@ -44,6 +45,7 @@ export const authApi = {
     const res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
     if (!res.ok) {
@@ -58,6 +60,7 @@ export const authApi = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      credentials: 'include',
     });
     if (!res.ok) {
       const error = await res.json().catch(() => null);
@@ -77,6 +80,7 @@ export const authApi = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
     if (!res.ok) {
@@ -94,6 +98,7 @@ export const authApi = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify({ currentPassword, password }),
     });
     if (!res.ok) {
@@ -103,7 +108,9 @@ export const authApi = {
   },
 
   async verifyEmail(token: string): Promise<void> {
-    const res = await fetch(`${API_BASE_URL}/auth/verify-email/${token}`);
+    const res = await fetch(`${API_BASE_URL}/auth/verify-email/${token}`, {
+      credentials: 'include',
+    });
     if (!res.ok) {
       const error = await res.json().catch(() => null);
       throw new Error(error?.message || 'Email verification failed');
@@ -114,6 +121,7 @@ export const authApi = {
     const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ email }),
     });
     if (!res.ok) {
@@ -126,6 +134,7 @@ export const authApi = {
     const res = await fetch(`${API_BASE_URL}/auth/reset-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ token, password }),
     });
     if (!res.ok) {
@@ -138,6 +147,7 @@ export const authApi = {
     const res = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ refreshToken }),
     });
     if (!res.ok) {

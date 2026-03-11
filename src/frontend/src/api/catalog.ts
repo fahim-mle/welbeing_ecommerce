@@ -78,28 +78,36 @@ export const fetchProducts = async (filters: CatalogFilters = {}): Promise<Pagin
   if (filters.page) params.append('page', String(filters.page));
   if (filters.limit) params.append('limit', String(filters.limit));
 
-  const response = await fetch(`${API_BASE_URL}/products?${params.toString()}`);
+  const response = await fetch(`${API_BASE_URL}/products?${params.toString()}`, {
+    credentials: 'include',
+  });
   if (!response.ok) throw new Error('Failed to fetch products');
   const result = await response.json();
   return { data: result.data, pagination: result.pagination };
 };
 
 export const fetchProductById = async (id: number): Promise<Product> => {
-  const response = await fetch(`${API_BASE_URL}/products/${id}`);
+  const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+    credentials: 'include',
+  });
   if (!response.ok) throw new Error('Failed to fetch product');
   const result = await response.json();
   return result.data;
 };
 
 export const fetchCategories = async (): Promise<Category[]> => {
-  const response = await fetch(`${API_BASE_URL}/categories`);
+  const response = await fetch(`${API_BASE_URL}/categories`, {
+    credentials: 'include',
+  });
   if (!response.ok) throw new Error('Failed to fetch categories');
   const result = await response.json();
   return result.data;
 };
 
 export const fetchTags = async (): Promise<WellbeingTag[]> => {
-  const response = await fetch(`${API_BASE_URL}/tags`);
+  const response = await fetch(`${API_BASE_URL}/tags`, {
+    credentials: 'include',
+  });
   if (!response.ok) throw new Error('Failed to fetch tags');
   const result = await response.json();
   return result.data;

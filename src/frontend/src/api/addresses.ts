@@ -19,6 +19,7 @@ export const fetchAddresses = async (token: string): Promise<Address[]> => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    credentials: 'include',
   });
 
   if (!response.ok) {
@@ -37,6 +38,7 @@ export const createAddress = async (payload: Omit<Address, 'id'>, token: string)
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
+    credentials: 'include',
     body: JSON.stringify(payload),
   });
 

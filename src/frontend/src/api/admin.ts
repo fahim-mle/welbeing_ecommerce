@@ -36,6 +36,7 @@ export interface PaginatedAdminUsers {
 export const fetchAdminProducts = async (token: string, page = 1, limit = 20): Promise<Product[]> => {
   const response = await fetch(`${API_BASE_URL}/admin/products?page=${page}&limit=${limit}`, {
     headers: getHeaders(token),
+    credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch admin products');
   const result = await response.json();
@@ -49,6 +50,7 @@ export const fetchAdminOrders = async (
 ): Promise<PaginatedAdminOrders> => {
   const response = await fetch(`${API_BASE_URL}/admin/orders?page=${page}&limit=${limit}`, {
     headers: getHeaders(token),
+    credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch admin orders');
   const result = await response.json();
@@ -64,6 +66,7 @@ export const fetchAdminOrders = async (
 export const fetchAdminUsers = async (token: string, page = 1, limit = 20): Promise<PaginatedAdminUsers> => {
   const response = await fetch(`${API_BASE_URL}/admin/users?page=${page}&limit=${limit}`, {
     headers: getHeaders(token),
+    credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch users');
   const result = await response.json();
@@ -84,6 +87,7 @@ export const updateAdminUser = async (
   const response = await fetch(`${API_BASE_URL}/admin/users/${id}`, {
     method: 'PATCH',
     headers: getHeaders(token),
+    credentials: 'include',
     body: JSON.stringify(payload),
   });
   if (!response.ok) {
@@ -97,6 +101,7 @@ export const updateAdminUser = async (
 export const fetchAdminOrder = async (token: string, id: number): Promise<OrderResponse> => {
   const response = await fetch(`${API_BASE_URL}/admin/orders/${id}`, {
     headers: getHeaders(token),
+    credentials: 'include',
   });
   if (!response.ok) {
     const error = await response.json().catch(() => null);
@@ -110,6 +115,7 @@ export const updateOrderStatus = async (token: string, id: number, status: strin
     const response = await fetch(`${API_BASE_URL}/admin/orders/${id}/status`, {
         method: 'PATCH',
         headers: getHeaders(token),
+        credentials: 'include',
         body: JSON.stringify({ status })
     });
     if (!response.ok) throw new Error('Failed to update order status');
@@ -123,6 +129,7 @@ export const createProduct = async (token: string, productData: AdminProductPayl
     const response = await fetch(`${API_BASE_URL}/admin/products`, {
         method: 'POST',
         headers: getHeaders(token),
+        credentials: 'include',
         body: JSON.stringify(productData)
     });
     if (!response.ok) throw new Error('Failed to create product');
@@ -133,6 +140,7 @@ export const updateProduct = async (token: string, id: number, productData: Admi
     const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
         method: 'PUT',
         headers: getHeaders(token),
+        credentials: 'include',
         body: JSON.stringify(productData)
     });
     if (!response.ok) throw new Error('Failed to update product');
@@ -143,6 +151,7 @@ export const deleteProduct = async (token: string, id: number): Promise<void> =>
   const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
     method: 'DELETE',
     headers: getHeaders(token),
+    credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to delete product');
 };
@@ -154,6 +163,7 @@ export const createCategory = async (
   const response = await fetch(`${API_BASE_URL}/admin/catalog/categories`, {
     method: 'POST',
     headers: getHeaders(token),
+    credentials: 'include',
     body: JSON.stringify(payload),
   });
   if (!response.ok) {
@@ -172,6 +182,7 @@ export const updateCategory = async (
   const response = await fetch(`${API_BASE_URL}/admin/catalog/categories/${id}`, {
     method: 'PUT',
     headers: getHeaders(token),
+    credentials: 'include',
     body: JSON.stringify(payload),
   });
   if (!response.ok) {
@@ -186,6 +197,7 @@ export const deleteCategory = async (token: string, id: number): Promise<void> =
   const response = await fetch(`${API_BASE_URL}/admin/catalog/categories/${id}`, {
     method: 'DELETE',
     headers: getHeaders(token),
+    credentials: 'include',
   });
   if (!response.ok) {
     const error = await response.json().catch(() => null);
@@ -200,6 +212,7 @@ export const createTag = async (
   const response = await fetch(`${API_BASE_URL}/admin/catalog/tags`, {
     method: 'POST',
     headers: getHeaders(token),
+    credentials: 'include',
     body: JSON.stringify(payload),
   });
   if (!response.ok) {
@@ -218,6 +231,7 @@ export const updateTag = async (
   const response = await fetch(`${API_BASE_URL}/admin/catalog/tags/${id}`, {
     method: 'PUT',
     headers: getHeaders(token),
+    credentials: 'include',
     body: JSON.stringify(payload),
   });
   if (!response.ok) {
@@ -232,6 +246,7 @@ export const deleteTag = async (token: string, id: number): Promise<void> => {
   const response = await fetch(`${API_BASE_URL}/admin/catalog/tags/${id}`, {
     method: 'DELETE',
     headers: getHeaders(token),
+    credentials: 'include',
   });
   if (!response.ok) {
     const error = await response.json().catch(() => null);
