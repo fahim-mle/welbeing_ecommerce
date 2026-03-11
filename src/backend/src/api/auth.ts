@@ -6,13 +6,13 @@ import { validateBody } from '../middleware/validation';
 import {
   loginSchema,
   oauthSchema,
-  refreshTokenSchema,
   registerSchema,
   resetPasswordRequestSchema,
   resetPasswordSchema,
   verifyEmailRequestSchema,
 } from '../schemas/auth';
 import { emailService } from '../lib/email';
+import { accessTokenCookie, refreshTokenCookie, COOKIE_NAMES } from '../lib/cookie';
 
 const router = Router();
 
@@ -35,6 +35,18 @@ const maskEmail = (value: unknown) => {
 
 const createAccessToken = (user: { id: number; email: string; role: string }) => {
   return auth.generateToken({ userId: user.id, email: user.email, role: user.role }, '15m');
+};
+
+/** Write both auth cookies onto the response. */
+const setAuthCookies = (res: Response, accessToken: string, refreshToken: string) => {
+  res.cookie(COOKIE_NAMES.ACCESS_TOKEN, accessToken, accessTokenCookie());
+  res.cookie(COOKIE_NAMES.REFRESH_TOKEN, refreshToken, refreshTokenCookie());
+};
+
+/** Clear both auth cookies (used on logout and invalid-token paths). */
+const clearAuthCookies = (res: Response) => {
+  res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN, { path: '/' });
+  res.clearCookie(COOKIE_NAMES.REFRESH_TOKEN, { path: '/' });
 };
 
 // POST /api/auth/register
@@ -64,14 +76,9 @@ router.post('/register', validateBody(registerSchema), async (req: Request, res:
     const verification = await userService.createEmailVerificationToken(user.id);
     await emailService.sendVerificationEmail(user.email, verification.token);
 
+    setAuthCookies(res, accessToken, refreshToken.token);
     res.status(201).json({
-      token: accessToken,
-      refreshToken: refreshToken.token,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
+      user: { id: user.id, email: user.email, role: user.role },
     });
   } catch (error) {
     const requestId = (req as Request & { requestId?: string }).requestId;
@@ -101,15 +108,9 @@ router.post('/login', validateBody(loginSchema), async (req: Request, res: Respo
     const accessToken = createAccessToken({ id: user.id, email: user.email, role: user.role });
     const refreshToken = await userService.createRefreshToken(user.id);
 
+    setAuthCookies(res, accessToken, refreshToken.token);
     res.json({
-      token: accessToken,
-      refreshToken: refreshToken.token,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        isVerified: identity.isVerified,
-      },
+      user: { id: user.id, email: user.email, role: user.role, isVerified: identity.isVerified },
     });
   } catch (error) {
     const requestId = (req as Request & { requestId?: string }).requestId;
@@ -119,25 +120,29 @@ router.post('/login', validateBody(loginSchema), async (req: Request, res: Respo
 });
 
 // POST /api/auth/refresh-token
-router.post('/refresh-token', validateBody(refreshTokenSchema), async (req: Request, res: Response) => {
+// Reads the refresh token from the httpOnly cookie — no body required.
+router.post('/refresh-token', async (req: Request, res: Response) => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.cookies?.[COOKIE_NAMES.REFRESH_TOKEN];
+    if (!refreshToken) {
+      return res.status(401).json({ message: 'Missing refresh token' });
+    }
+
     const rotated = await userService.rotateRefreshToken(refreshToken);
     if (!rotated) {
+      clearAuthCookies(res);
       return res.status(401).json({ message: 'Invalid refresh token' });
     }
 
     const user = await userService.findUserById(rotated.userId);
     if (!user) {
+      clearAuthCookies(res);
       return res.status(401).json({ message: 'Invalid refresh token' });
     }
 
     const accessToken = createAccessToken({ id: user.id, email: user.email, role: user.role });
-
-    res.json({
-      token: accessToken,
-      refreshToken: rotated.token,
-    });
+    setAuthCookies(res, accessToken, rotated.token);
+    res.json({ user: { id: user.id, email: user.email, role: user.role } });
   } catch (error) {
     const requestId = (req as Request & { requestId?: string }).requestId;
     logger.error('Refresh token failed', { requestId, error });
@@ -146,14 +151,20 @@ router.post('/refresh-token', validateBody(refreshTokenSchema), async (req: Requ
 });
 
 // POST /api/auth/logout
-router.post('/logout', validateBody(refreshTokenSchema), async (req: Request, res: Response) => {
+// Reads the refresh token from the httpOnly cookie to revoke it server-side.
+router.post('/logout', async (req: Request, res: Response) => {
   try {
-    const { refreshToken } = req.body;
-    await userService.revokeRefreshToken(refreshToken);
+    const refreshToken = req.cookies?.[COOKIE_NAMES.REFRESH_TOKEN];
+    if (refreshToken) {
+      await userService.revokeRefreshToken(refreshToken);
+    }
+    clearAuthCookies(res);
     res.json({ success: true });
   } catch (error) {
     const requestId = (req as Request & { requestId?: string }).requestId;
     logger.error('Logout failed', { requestId, error });
+    // Clear cookies even on error so the client is not left in a broken state.
+    clearAuthCookies(res);
     res.status(500).json({ message: 'Logout failed' });
   }
 });
@@ -270,19 +281,40 @@ router.post('/oauth/:provider', validateBody(oauthSchema), async (req: Request, 
     const accessToken = createAccessToken({ id: user.id, email: user.email, role: user.role });
     const refreshToken = await userService.createRefreshToken(user.id);
 
+    setAuthCookies(res, accessToken, refreshToken.token);
     res.json({
-      token: accessToken,
-      refreshToken: refreshToken.token,
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
+      user: { id: user.id, email: user.email, role: user.role },
     });
   } catch (error) {
     const requestId = (req as Request & { requestId?: string }).requestId;
     logger.error('Social login failed', { requestId, error });
     res.status(500).json({ message: 'Social login failed' });
+  }
+});
+
+// GET /api/auth/me
+// Cookie-based session bootstrap: verifies the access_token cookie and returns
+// the current user. Called on page load so the frontend can restore auth state
+// without touching localStorage.
+router.get('/me', async (req: Request, res: Response) => {
+  try {
+    const accessToken = req.cookies?.[COOKIE_NAMES.ACCESS_TOKEN];
+    if (!accessToken) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    const decoded = auth.verifyToken(accessToken);
+    const user = await userService.findUserById(decoded.userId);
+    if (!user) {
+      clearAuthCookies(res);
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    res.json({
+      user: { id: user.id, email: user.email, role: user.role },
+    });
+  } catch {
+    return res.status(401).json({ message: 'Invalid or expired token' });
   }
 });
 

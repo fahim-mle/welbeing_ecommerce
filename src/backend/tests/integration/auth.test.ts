@@ -18,7 +18,7 @@ describe('Auth API', () => {
   });
 
   describe('POST /api/auth/register', () => {
-    it('should register a new user', async () => {
+    it('should register a new user and set auth cookies', async () => {
       const res = await request(app)
         .post('/api/auth/register')
         .send({
@@ -27,8 +27,12 @@ describe('Auth API', () => {
         });
 
       expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty('token');
+      // Tokens are now delivered as httpOnly cookies, not in the body.
+      expect(res.body).not.toHaveProperty('token');
       expect(res.body.user).toHaveProperty('email', 'newuser@example.com');
+      const cookies = res.headers['set-cookie'] as unknown as string[];
+      expect(cookies.some((c: string) => c.startsWith('access_token='))).toBe(true);
+      expect(cookies.some((c: string) => c.startsWith('refresh_token='))).toBe(true);
     });
 
     it('should fail if user already exists', async () => {
@@ -60,7 +64,7 @@ describe('Auth API', () => {
         });
     });
 
-    it('should login with correct credentials', async () => {
+    it('should login with correct credentials and set auth cookies', async () => {
       const res = await request(app)
         .post('/api/auth/login')
         .send({
@@ -69,7 +73,12 @@ describe('Auth API', () => {
         });
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('token');
+      // Tokens are now delivered as httpOnly cookies, not in the body.
+      expect(res.body).not.toHaveProperty('token');
+      expect(res.body.user).toHaveProperty('email', 'loginuser@example.com');
+      const cookies = res.headers['set-cookie'] as unknown as string[];
+      expect(cookies.some((c: string) => c.startsWith('access_token='))).toBe(true);
+      expect(cookies.some((c: string) => c.startsWith('refresh_token='))).toBe(true);
     });
 
     it('should fail with incorrect password', async () => {
