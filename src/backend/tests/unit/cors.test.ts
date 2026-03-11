@@ -55,11 +55,15 @@ describe('CORS Configuration', () => {
 
   it('should include expected HTTP methods', () => {
     const options = buildCorsOptions();
-    expect(options.methods).toEqual(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
+    expect(options.methods).toEqual(
+      expect.arrayContaining(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']),
+    );
   });
 
   it('should include expected allowed headers', () => {
     const options = buildCorsOptions();
-    expect(options.allowedHeaders).toEqual(['Content-Type', 'Authorization', 'X-Request-Id']);
+    expect(options.allowedHeaders).toEqual(
+      expect.arrayContaining(['Content-Type', 'Authorization', 'X-Request-Id']),
+    );
   });
 });

@@ -24,5 +24,7 @@ export const buildCorsOptions = (): CorsOptions => {
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
+    // Cache preflight responses for 24 h to reduce unnecessary OPTIONS round-trips.
+    maxAge: 86400,
   };
 };
