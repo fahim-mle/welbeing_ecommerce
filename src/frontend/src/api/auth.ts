@@ -21,8 +21,6 @@ export interface ProfileResponse {
 }
 
 export interface AuthResponse {
-  token: string;
-  refreshToken?: string;
   user: User;
 }
 
@@ -55,11 +53,8 @@ export const authApi = {
     return res.json();
   },
 
-  async fetchProfile(token: string): Promise<ProfileResponse> {
+  async fetchProfile(): Promise<ProfileResponse> {
     const res = await fetch(`${API_BASE_URL}/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       credentials: 'include',
     });
     if (!res.ok) {
@@ -71,14 +66,12 @@ export const authApi = {
   },
 
   async updateProfile(
-    token: string,
     data: { firstName?: string; lastName?: string; phone?: string },
   ): Promise<ProfileResponse> {
     const res = await fetch(`${API_BASE_URL}/me`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
       credentials: 'include',
       body: JSON.stringify(data),
@@ -91,12 +84,11 @@ export const authApi = {
     return result.data;
   },
 
-  async changePassword(token: string, currentPassword: string, password: string): Promise<void> {
+  async changePassword(currentPassword: string, password: string): Promise<void> {
     const res = await fetch(`${API_BASE_URL}/me/password`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
       credentials: 'include',
       body: JSON.stringify({ currentPassword, password }),
@@ -143,12 +135,10 @@ export const authApi = {
     }
   },
 
-  async refreshToken(refreshToken: string): Promise<{ token: string; refreshToken: string }> {
+  async refreshToken(): Promise<{ user: User }> {
     const res = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ refreshToken }),
     });
     if (!res.ok) {
       const error = await res.json().catch(() => null);
