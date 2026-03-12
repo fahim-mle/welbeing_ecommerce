@@ -48,10 +48,10 @@ describe('extractAccessToken', () => {
     expect(token).toBeUndefined();
   });
 
-  it('should return empty string for Bearer header with no token', () => {
+  it('should return undefined for Bearer header with no token', () => {
     const req = mockRequest(undefined, 'Bearer ');
     const token = extractAccessToken(req);
-    expect(token).toBe('');
+    expect(token).toBeUndefined();
   });
 
   it('should return undefined when authorization header is not Bearer', () => {

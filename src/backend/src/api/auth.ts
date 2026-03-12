@@ -314,6 +314,7 @@ router.get('/me', async (req: Request, res: Response) => {
       user: { id: user.id, email: user.email, role: user.role },
     });
   } catch {
+    clearAuthCookies(res);
     return res.status(401).json({ message: 'Invalid or expired token' });
   }
 });

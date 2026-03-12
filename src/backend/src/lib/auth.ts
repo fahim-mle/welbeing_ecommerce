@@ -75,7 +75,8 @@ export const extractAccessToken = (req: Request): string | undefined => {
 
   const authHeader = req.headers.authorization;
   if (authHeader?.startsWith('Bearer ')) {
-    return authHeader.split(' ')[1];
+    const token = authHeader.split(' ')[1];
+    if (token) return token;
   }
 
   return undefined;
