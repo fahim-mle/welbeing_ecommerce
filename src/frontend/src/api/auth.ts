@@ -148,15 +148,17 @@ export const authApi = {
   },
 
   async fetchMe(): Promise<{ user: User } | null> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/me`, {
-        credentials: 'include',
-      });
-      if (!res.ok) return null;
-      return res.json();
-    } catch {
+    const res = await fetch(`${API_BASE_URL}/auth/me`, {
+      credentials: 'include',
+    });
+    if (res.status === 401 || res.status === 403) {
       return null;
     }
+    if (!res.ok) {
+      const error = await res.json().catch(() => null);
+      throw new Error(error?.message || 'Failed to fetch current session');
+    }
+    return res.json();
   },
 
   async logout(): Promise<void> {

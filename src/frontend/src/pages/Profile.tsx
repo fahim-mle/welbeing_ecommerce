@@ -31,7 +31,7 @@ export const Profile = () => {
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
     const loadProfile = async () => {
       try {
         const profile = await authApi.fetchProfile();
@@ -55,7 +55,7 @@ export const Profile = () => {
     };
 
     loadProfile();
-  }, [user, updateUser]);
+  }, [user?.id, updateUser]);
 
   useEffect(() => {
     if (!user || activeTab !== 'addresses') return;
