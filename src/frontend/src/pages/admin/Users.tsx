@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fetchAdminUsers, type AdminUser, updateAdminUser } from '../../api/admin';
 import { useAuth } from '../../hooks/useAuth';
 
 export const AdminUsers: React.FC = () => {
-  const { token } = useAuth();
+  const { user: currentUser } = useAuth();
 
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -12,11 +12,9 @@ export const AdminUsers: React.FC = () => {
   const [hasNextPage, setHasNextPage] = useState(false);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
 
-  const canFetch = useMemo(() => Boolean(token), [token]);
-
   useEffect(() => {
     const run = async () => {
-      if (!token) {
+      if (!currentUser) {
         setUsers([]);
         setHasNextPage(false);
         setError('Not authenticated.');
@@ -27,7 +25,7 @@ export const AdminUsers: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetchAdminUsers(token, page, 20);
+        const res = await fetchAdminUsers(page, 20);
         setUsers(res.data);
         setHasNextPage(res.hasNextPage);
       } catch (e) {
@@ -40,14 +38,14 @@ export const AdminUsers: React.FC = () => {
     };
 
     void run();
-  }, [token, page]);
+  }, [currentUser, page]);
 
   const onToggleActive = async (user: AdminUser) => {
-    if (!token) return;
+    if (!currentUser) return;
     setUpdatingId(user.id);
     setError(null);
     try {
-      const updated = await updateAdminUser(token, user.id, { isActive: !user.isActive });
+      const updated = await updateAdminUser(user.id, { isActive: !user.isActive });
       setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to update user');
@@ -57,11 +55,11 @@ export const AdminUsers: React.FC = () => {
   };
 
   const onChangeRole = async (user: AdminUser, role: AdminUser['role']) => {
-    if (!token) return;
+    if (!currentUser) return;
     setUpdatingId(user.id);
     setError(null);
     try {
-      const updated = await updateAdminUser(token, user.id, { role });
+      const updated = await updateAdminUser(user.id, { role });
       setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to update user');
@@ -77,7 +75,7 @@ export const AdminUsers: React.FC = () => {
         <p className="text-sm text-gray-500 mt-1">Manage customer accounts, roles, and activation status.</p>
       </div>
 
-      {!canFetch && (
+      {!currentUser && (
         <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
           Login as an admin to view users.
         </div>

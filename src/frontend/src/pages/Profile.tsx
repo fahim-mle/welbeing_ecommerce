@@ -10,7 +10,7 @@ const tabs = ['overview', 'orders', 'addresses', 'security'] as const;
 type TabKey = typeof tabs[number];
 
 export const Profile = () => {
-  const { user, token, updateUser } = useAuth();
+  const { user, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [ordersPage, setOrdersPage] = useState(1);
@@ -31,10 +31,10 @@ export const Profile = () => {
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token) return;
+    if (!user) return;
     const loadProfile = async () => {
       try {
-        const profile = await authApi.fetchProfile(token);
+        const profile = await authApi.fetchProfile();
         updateUser({
           id: profile.id,
           email: profile.email,
@@ -55,13 +55,13 @@ export const Profile = () => {
     };
 
     loadProfile();
-  }, [token, updateUser]);
+  }, [user, updateUser]);
 
   useEffect(() => {
-    if (!token || activeTab !== 'addresses') return;
+    if (!user || activeTab !== 'addresses') return;
     const loadAddresses = async () => {
       try {
-        const data = await fetchAddresses(token);
+        const data = await fetchAddresses();
         setAddresses(data);
       } catch (err) {
         console.error('Failed to load addresses', err);
@@ -69,15 +69,15 @@ export const Profile = () => {
     };
 
     loadAddresses();
-  }, [token, activeTab]);
+  }, [user, activeTab]);
 
   useEffect(() => {
-    if (!token || activeTab !== 'orders') return;
+    if (!user || activeTab !== 'orders') return;
     const loadOrders = async () => {
       setOrdersLoading(true);
       setOrdersError(null);
       try {
-        const result = await fetchMyOrders(token, ordersPage, 6);
+        const result = await fetchMyOrders(ordersPage, 6);
         setOrders(result.data);
         setOrdersHasNext(result.hasNextPage);
       } catch (err) {
@@ -89,16 +89,16 @@ export const Profile = () => {
     };
 
     loadOrders();
-  }, [token, activeTab, ordersPage]);
+  }, [user, activeTab, ordersPage]);
 
   const handleUpdateProfile = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!token) return;
+    if (!user) return;
     setProfileMessage(null);
     setProfileError(null);
 
     try {
-      const updated = await authApi.updateProfile(token, profileForm);
+      const updated = await authApi.updateProfile(profileForm);
       updateUser({
         id: updated.id,
         email: updated.email,
@@ -121,7 +121,7 @@ export const Profile = () => {
     setPasswordMessage(null);
     setPasswordError(null);
 
-    if (!token) return;
+    if (!user) return;
     if (!passwordForm.currentPassword) {
       setPasswordError('Current password is required.');
       return;
@@ -136,7 +136,7 @@ export const Profile = () => {
     }
 
     try {
-      await authApi.changePassword(token, passwordForm.currentPassword, passwordForm.password);
+      await authApi.changePassword(passwordForm.currentPassword, passwordForm.password);
       setPasswordMessage('Password updated successfully.');
       setPasswordForm({ currentPassword: '', password: '', confirm: '' });
     } catch (err) {

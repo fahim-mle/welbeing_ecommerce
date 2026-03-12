@@ -10,7 +10,7 @@ interface ProductFormProps {
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel }) => {
-  const { token } = useAuth();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -58,7 +58,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token) return;
+    if (!user) return;
     setLoading(true);
 
     const payload = {
@@ -72,9 +72,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
 
     try {
         if (initialData) {
-            await updateProduct(token, initialData.id, payload);
+            await updateProduct(initialData.id, payload);
         } else {
-            await createProduct(token, payload);
+            await createProduct(payload);
         }
         onSave();
     } catch (err) {

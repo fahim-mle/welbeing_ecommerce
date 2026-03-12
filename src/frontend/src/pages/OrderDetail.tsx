@@ -7,7 +7,7 @@ const cancellableStatuses = ['PENDING', 'PAID'];
 
 export const OrderDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { token } = useAuth();
+  const { user } = useAuth();
   const [order, setOrder] = useState<OrderResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,11 +16,11 @@ export const OrderDetail: React.FC = () => {
   const [isCancelling, setIsCancelling] = useState(false);
 
   const loadOrder = async (orderId: number) => {
-    if (!token) return;
+    if (!user) return;
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchOrder(orderId, token);
+      const data = await fetchOrder(orderId);
       setOrder(data);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load order.';
@@ -31,7 +31,7 @@ export const OrderDetail: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!token) {
+    if (!user) {
       setError('Please sign in to view your order.');
       setLoading(false);
       return;
@@ -45,16 +45,16 @@ export const OrderDetail: React.FC = () => {
     }
 
     loadOrder(parsedId);
-  }, [id, token]);
+  }, [id, user]);
 
   const handleCancel = async () => {
-    if (!token || !order) return;
+    if (!user || !order) return;
     setCancelMessage(null);
     setCancelError(null);
     setIsCancelling(true);
 
     try {
-      const updated = await cancelOrder(order.id, token);
+      const updated = await cancelOrder(order.id);
       setOrder(updated);
       setCancelMessage('Order cancelled successfully.');
     } catch (err) {
