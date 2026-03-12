@@ -32,6 +32,9 @@ export const OrderDetail: React.FC = () => {
 
   useEffect(() => {
     if (!user) {
+      setOrder(null);
+      setCancelMessage(null);
+      setCancelError(null);
       setError('Please sign in to view your order.');
       setLoading(false);
       return;

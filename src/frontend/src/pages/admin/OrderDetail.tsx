@@ -9,13 +9,27 @@ const statusOptions = ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
 
 export const AdminOrderDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [order, setOrder] = useState<OrderResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user || !id) return;
+    if (authLoading) return;
+
+    if (!id) {
+      setError('Order not found.');
+      setLoading(false);
+      return;
+    }
+
+    if (!user) {
+      setOrder(null);
+      setError('Please sign in to view this order.');
+      setLoading(false);
+      return;
+    }
+
     const orderId = Number(id);
     if (Number.isNaN(orderId)) {
       setError('Invalid order ID.');
@@ -23,17 +37,13 @@ export const AdminOrderDetail: React.FC = () => {
       return;
     }
 
+    setLoading(true);
+    setError(null);
     fetchAdminOrder(orderId)
-      .then((data) => {
-        setOrder(data);
-        setError(null);
-      })
-      .catch((err) => {
-        const message = err instanceof Error ? err.message : 'Failed to load order.';
-        setError(message);
-      })
+      .then((data) => setOrder(data))
+      .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [user, id]);
+  }, [user, authLoading, id]);
 
   const handleStatusUpdate = async (nextStatus: string) => {
     if (!user || !order) return;

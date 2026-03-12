@@ -7,7 +7,7 @@ export const OrderConfirmation: React.FC = () => {
   const location = useLocation();
   const { orderId } = useParams<{ orderId: string }>();
   const [searchParams] = useSearchParams();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const stateOrder = (location.state as { order?: OrderResponse } | null)?.order;
   const guestEmail = searchParams.get('guestEmail')?.toLowerCase();
 
@@ -18,6 +18,10 @@ export const OrderConfirmation: React.FC = () => {
   useEffect(() => {
     if (!orderId || stateOrder) {
       setLoading(false);
+      return;
+    }
+
+    if (authLoading) {
       return;
     }
 
@@ -45,7 +49,7 @@ export const OrderConfirmation: React.FC = () => {
         setError('Failed to load order details. Please try again.');
       })
       .finally(() => setLoading(false));
-  }, [orderId, stateOrder, user, guestEmail]);
+  }, [orderId, stateOrder, user, authLoading, guestEmail]);
 
   if (loading) {
     return (

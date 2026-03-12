@@ -15,7 +15,12 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
   const { user } = useAuth();
 
   const loadProducts = async () => {
-    if (!user) return;
+    if (!user) {
+      setProducts([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {

@@ -16,16 +16,23 @@ export const OrderList: React.FC = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (user) {
-      setLoading(true);
-      fetchAdminOrders(page, 10)
-        .then((result) => {
-          setOrders(result.data);
-          setHasNextPage(result.hasNextPage);
-        })
-        .catch((err) => setError(err.message))
-        .finally(() => setLoading(false));
+    if (!user) {
+      setOrders([]);
+      setHasNextPage(false);
+      setError(null);
+      setLoading(false);
+      return;
     }
+
+    setLoading(true);
+    setError(null);
+    fetchAdminOrders(page, 10)
+      .then((result) => {
+        setOrders(result.data);
+        setHasNextPage(result.hasNextPage);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
   }, [user, page]);
 
   const handleStatusChange = async (orderId: number, newStatus: string) => {
