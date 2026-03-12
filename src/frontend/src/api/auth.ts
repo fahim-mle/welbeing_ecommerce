@@ -146,4 +146,27 @@ export const authApi = {
     }
     return res.json();
   },
+
+  async fetchMe(): Promise<{ user: User } | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/me`, {
+        credentials: 'include',
+      });
+      if (!res.ok) return null;
+      return res.json();
+    } catch {
+      return null;
+    }
+  },
+
+  async logout(): Promise<void> {
+    const res = await fetch(`${API_BASE_URL}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => null);
+      throw new Error(error?.message || 'Logout failed');
+    }
+  },
 };
