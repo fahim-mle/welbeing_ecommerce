@@ -1,17 +1,26 @@
 import { Request, Response, NextFunction } from 'express';
 import { adminAuth } from '../../../src/middleware/adminAuth';
 import { auth } from '../../../src/lib/auth';
-
-jest.mock('../../../src/lib/auth');
+import { COOKIE_NAMES } from '../../../src/lib/cookie';
 
 describe('Admin Auth Middleware', () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let nextFunction: NextFunction;
 
+  const validAdminToken = auth.generateToken(
+    { userId: 1, email: 'admin@test.com', role: 'ADMIN' },
+    '1h'
+  );
+  const validUserToken = auth.generateToken(
+    { userId: 2, email: 'user@test.com', role: 'USER' },
+    '1h'
+  );
+
   beforeEach(() => {
     mockRequest = {
       headers: {},
+      cookies: {},
     };
     mockResponse = {
       status: jest.fn().mockReturnThis(),
@@ -21,10 +30,9 @@ describe('Admin Auth Middleware', () => {
   });
 
   it('should call next() if token is valid and role is ADMIN', () => {
-    mockRequest.headers = {
-        authorization: 'Bearer valid-admin-token'
+    mockRequest.cookies = {
+      [COOKIE_NAMES.ACCESS_TOKEN]: validAdminToken,
     };
-    (auth.verifyToken as jest.Mock).mockReturnValue({ role: 'ADMIN' });
 
     adminAuth(mockRequest as Request, mockResponse as Response, nextFunction);
 
@@ -40,10 +48,9 @@ describe('Admin Auth Middleware', () => {
   });
 
   it('should return 403 if role is not ADMIN', () => {
-    mockRequest.headers = {
-        authorization: 'Bearer user-token'
+    mockRequest.cookies = {
+      [COOKIE_NAMES.ACCESS_TOKEN]: validUserToken,
     };
-    (auth.verifyToken as jest.Mock).mockReturnValue({ role: 'USER' });
 
     adminAuth(mockRequest as Request, mockResponse as Response, nextFunction);
 
@@ -51,10 +58,9 @@ describe('Admin Auth Middleware', () => {
   });
 
   it('should return 401 if token is invalid', () => {
-    mockRequest.headers = {
-        authorization: 'Bearer invalid-token'
+    mockRequest.cookies = {
+      [COOKIE_NAMES.ACCESS_TOKEN]: 'invalid-token',
     };
-    (auth.verifyToken as jest.Mock).mockImplementation(() => { throw new Error('Invalid token'); });
 
     adminAuth(mockRequest as Request, mockResponse as Response, nextFunction);
 
