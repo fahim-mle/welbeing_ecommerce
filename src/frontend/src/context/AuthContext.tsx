@@ -1,63 +1,54 @@
-import { useCallback, useState, useEffect, type ReactNode } from 'react';
+import { useCallback, useState, useEffect, useRef, type ReactNode } from 'react';
 import { authApi, type AuthResponse, type User } from '../api/auth';
 import { getErrorMessage } from '../utils/error';
 import { AuthContext } from './AuthContextDefinition';
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-  const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem('refreshToken'));
-  const [user, setUser] = useState<User | null>(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        return JSON.parse(storedUser);
-      } catch {
-        return null;
-      }
-    }
+const loadStoredUser = (): User | null => {
+  try {
+    const raw = localStorage.getItem('user');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
     return null;
-  });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  }
+};
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(loadStoredUser);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const authVersionRef = useRef(0);
 
+  // On mount, verify the cookie session is still valid
   useEffect(() => {
-    if (!token && refreshToken) {
-      authApi
-        .refreshToken(refreshToken)
-        .then((data) => {
-          setToken(data.token);
-          setRefreshToken(data.refreshToken);
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('refreshToken', data.refreshToken);
-        })
-        .catch(() => {
-          setToken(null);
+    let cancelled = false;
+    const requestVersion = authVersionRef.current;
+
+    authApi.fetchMe()
+      .then((result) => {
+        if (cancelled || requestVersion !== authVersionRef.current) return;
+        if (result?.user) {
+          setUser(result.user);
+          localStorage.setItem('user', JSON.stringify(result.user));
+        } else {
           setUser(null);
-          setRefreshToken(null);
           localStorage.removeItem('user');
-          localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
-        });
-      return;
-    }
+        }
+        setIsLoading(false);
+      })
+      .catch(() => {
+        if (cancelled || requestVersion !== authVersionRef.current) return;
+        // On network/server error, keep the stored user (optimistic)
+        // but mark loading as done so the UI isn't stuck
+        setIsLoading(false);
+      });
 
-    if (!token) {
-      setUser(null);
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-    }
-  }, [token, refreshToken]);
+    return () => { cancelled = true; };
+  }, []);
 
-  const setAuthData = (data: AuthResponse) => {
-    setToken(data.token);
+  const setAuthUser = (data: AuthResponse) => {
+    authVersionRef.current += 1;
     setUser(data.user);
-    localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
-
-    if (data.refreshToken) {
-      setRefreshToken(data.refreshToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
-    }
   };
 
   const login = async (email: string, password: string) => {
@@ -65,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const data = await authApi.login(email, password);
-      setAuthData(data);
+      setAuthUser(data);
     } catch (err: unknown) {
       const message = getErrorMessage(err);
       setError(message);
@@ -80,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const data = await authApi.register(email, password);
-      setAuthData(data);
+      setAuthUser(data);
     } catch (err: unknown) {
       const message = getErrorMessage(err);
       setError(message);
@@ -90,13 +81,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const logout = () => {
-    setToken(null);
+  const logout = async () => {
+    authVersionRef.current += 1;
+    try {
+      await authApi.logout();
+    } catch {
+      // Clear local state even if the server call fails
+    }
     setUser(null);
-    setRefreshToken(null);
-    localStorage.removeItem('token');
     localStorage.removeItem('user');
-    localStorage.removeItem('refreshToken');
   };
 
   const updateUser = useCallback((nextUser: User) => {
@@ -106,7 +99,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isAuthenticated: !!token, login, register, logout, updateUser, isLoading, error }}
+      value={{ user, isAuthenticated: !!user, login, register, logout, updateUser, isLoading, error }}
     >
       {children}
     </AuthContext.Provider>

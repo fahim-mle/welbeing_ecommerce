@@ -5,7 +5,7 @@ import { createCategory, createTag, deleteCategory, deleteTag, updateCategory, u
 import { useAuth } from '../../hooks/useAuth';
 
 export const AdminCatalog: React.FC = () => {
-  const { token } = useAuth();
+  const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<WellbeingTag[]>([]);
   const [categoryForm, setCategoryForm] = useState({ name: '', description: '' });
@@ -28,11 +28,11 @@ export const AdminCatalog: React.FC = () => {
 
   const handleAddCategory = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!token) return;
+    if (!user) return;
     setErrorMessage(null);
 
     try {
-      await createCategory(token, {
+      await createCategory({
         name: categoryForm.name,
         description: categoryForm.description || undefined,
       });
@@ -45,11 +45,11 @@ export const AdminCatalog: React.FC = () => {
   };
 
   const handleUpdateCategory = async (categoryId: number) => {
-    if (!token) return;
+    if (!user) return;
     setErrorMessage(null);
 
     try {
-      await updateCategory(token, categoryId, {
+      await updateCategory(categoryId, {
         name: editingCategory.name,
         description: editingCategory.description || undefined,
       });
@@ -62,11 +62,11 @@ export const AdminCatalog: React.FC = () => {
   };
 
   const handleDeleteCategory = async (categoryId: number) => {
-    if (!token) return;
+    if (!user) return;
     setErrorMessage(null);
 
     try {
-      await deleteCategory(token, categoryId);
+      await deleteCategory(categoryId);
       await loadData();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to delete category.';
@@ -76,11 +76,11 @@ export const AdminCatalog: React.FC = () => {
 
   const handleAddTag = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!token) return;
+    if (!user) return;
     setErrorMessage(null);
 
     try {
-      await createTag(token, tagForm);
+      await createTag(tagForm);
       setTagForm({ name: '', type: 'GOAL' });
       await loadData();
     } catch (err) {
@@ -90,11 +90,11 @@ export const AdminCatalog: React.FC = () => {
   };
 
   const handleUpdateTag = async (tagId: number) => {
-    if (!token) return;
+    if (!user) return;
     setErrorMessage(null);
 
     try {
-      await updateTag(token, tagId, editingTag);
+      await updateTag(tagId, editingTag);
       setEditingTagId(null);
       await loadData();
     } catch (err) {
@@ -104,11 +104,11 @@ export const AdminCatalog: React.FC = () => {
   };
 
   const handleDeleteTag = async (tagId: number) => {
-    if (!token) return;
+    if (!user) return;
     setErrorMessage(null);
 
     try {
-      await deleteTag(token, tagId);
+      await deleteTag(tagId);
       await loadData();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to delete tag.';

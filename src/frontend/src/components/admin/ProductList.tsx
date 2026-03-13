@@ -12,14 +12,19 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
+  const { user } = useAuth();
 
   const loadProducts = async () => {
-    if (!token) return;
+    if (!user) {
+      setProducts([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchAdminProducts(token);
+      const data = await fetchAdminProducts();
       setProducts(data);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to load products';
@@ -31,13 +36,13 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
 
   useEffect(() => {
     loadProducts();
-  }, [token]);
+  }, [user]);
 
   const handleDelete = async (id: number) => {
-    if (!token) return;
+    if (!user) return;
     if (!confirm('Are you sure you want to delete this product?')) return;
     try {
-      await deleteProduct(token, id);
+      await deleteProduct(id);
       setProducts(products.filter(p => p.id !== id));
     } catch {
       alert('Failed to delete product');
@@ -45,11 +50,11 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
   };
 
   const toggleStock = async (product: Product) => {
-    if (!token) return;
+    if (!user) return;
     const newQty = product.stockQuantity > 0 ? 0 : 10;
 
     try {
-      const updated = await updateProduct(token, product.id, { stockQuantity: newQty });
+      const updated = await updateProduct(product.id, { stockQuantity: newQty });
       setProducts(products.map((p) => (p.id === product.id ? updated : p)));
     } catch {
       alert('Failed to update stock status');
@@ -57,9 +62,9 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
   };
 
   const toggleVisibility = async (product: Product) => {
-      if (!token) return;
+      if (!user) return;
       try {
-          const updated = await updateProduct(token, product.id, { isVisible: !product.isVisible });
+          const updated = await updateProduct(product.id, { isVisible: !product.isVisible });
           setProducts(products.map(p => p.id === product.id ? updated : p));
       } catch {
           alert('Failed to update visibility');

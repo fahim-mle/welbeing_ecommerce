@@ -2,10 +2,7 @@ import type { Category, Product, WellbeingTag } from './catalog';
 import { API_BASE_URL } from '../config';
 import type { OrderResponse } from './orders';
 
-const getHeaders = (token: string) => ({
-  'Content-Type': 'application/json',
-  Authorization: `Bearer ${token}`,
-});
+const jsonHeaders = { 'Content-Type': 'application/json' };
 
 export interface PaginatedAdminOrders {
   data: OrderResponse[];
@@ -33,9 +30,8 @@ export interface PaginatedAdminUsers {
   hasNextPage: boolean;
 }
 
-export const fetchAdminProducts = async (token: string, page = 1, limit = 20): Promise<Product[]> => {
+export const fetchAdminProducts = async (page = 1, limit = 20): Promise<Product[]> => {
   const response = await fetch(`${API_BASE_URL}/admin/products?page=${page}&limit=${limit}`, {
-    headers: getHeaders(token),
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch admin products');
@@ -44,12 +40,10 @@ export const fetchAdminProducts = async (token: string, page = 1, limit = 20): P
 };
 
 export const fetchAdminOrders = async (
-  token: string,
   page = 1,
   limit = 20,
 ): Promise<PaginatedAdminOrders> => {
   const response = await fetch(`${API_BASE_URL}/admin/orders?page=${page}&limit=${limit}`, {
-    headers: getHeaders(token),
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch admin orders');
@@ -63,9 +57,8 @@ export const fetchAdminOrders = async (
   };
 };
 
-export const fetchAdminUsers = async (token: string, page = 1, limit = 20): Promise<PaginatedAdminUsers> => {
+export const fetchAdminUsers = async (page = 1, limit = 20): Promise<PaginatedAdminUsers> => {
   const response = await fetch(`${API_BASE_URL}/admin/users?page=${page}&limit=${limit}`, {
-    headers: getHeaders(token),
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch users');
@@ -80,13 +73,12 @@ export const fetchAdminUsers = async (token: string, page = 1, limit = 20): Prom
 };
 
 export const updateAdminUser = async (
-  token: string,
   id: number,
   payload: { role?: AdminUser['role']; isActive?: boolean },
 ): Promise<AdminUser> => {
   const response = await fetch(`${API_BASE_URL}/admin/users/${id}`, {
     method: 'PATCH',
-    headers: getHeaders(token),
+    headers: jsonHeaders,
     credentials: 'include',
     body: JSON.stringify(payload),
   });
@@ -98,9 +90,8 @@ export const updateAdminUser = async (
   return result.data;
 };
 
-export const fetchAdminOrder = async (token: string, id: number): Promise<OrderResponse> => {
+export const fetchAdminOrder = async (id: number): Promise<OrderResponse> => {
   const response = await fetch(`${API_BASE_URL}/admin/orders/${id}`, {
-    headers: getHeaders(token),
     credentials: 'include',
   });
   if (!response.ok) {
@@ -111,10 +102,10 @@ export const fetchAdminOrder = async (token: string, id: number): Promise<OrderR
   return result.data;
 };
 
-export const updateOrderStatus = async (token: string, id: number, status: string): Promise<OrderResponse> => {
+export const updateOrderStatus = async (id: number, status: string): Promise<OrderResponse> => {
     const response = await fetch(`${API_BASE_URL}/admin/orders/${id}/status`, {
         method: 'PATCH',
-        headers: getHeaders(token),
+        headers: jsonHeaders,
         credentials: 'include',
         body: JSON.stringify({ status })
     });
@@ -125,10 +116,10 @@ export const updateOrderStatus = async (token: string, id: number, status: strin
 
 export type AdminProductPayload = Partial<Product> & Record<string, unknown>;
 
-export const createProduct = async (token: string, productData: AdminProductPayload): Promise<Product> => {
+export const createProduct = async (productData: AdminProductPayload): Promise<Product> => {
     const response = await fetch(`${API_BASE_URL}/admin/products`, {
         method: 'POST',
-        headers: getHeaders(token),
+        headers: jsonHeaders,
         credentials: 'include',
         body: JSON.stringify(productData)
     });
@@ -136,10 +127,10 @@ export const createProduct = async (token: string, productData: AdminProductPayl
     return response.json();
 };
 
-export const updateProduct = async (token: string, id: number, productData: AdminProductPayload): Promise<Product> => {
+export const updateProduct = async (id: number, productData: AdminProductPayload): Promise<Product> => {
     const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
         method: 'PUT',
-        headers: getHeaders(token),
+        headers: jsonHeaders,
         credentials: 'include',
         body: JSON.stringify(productData)
     });
@@ -147,22 +138,20 @@ export const updateProduct = async (token: string, id: number, productData: Admi
     return response.json();
 };
 
-export const deleteProduct = async (token: string, id: number): Promise<void> => {
+export const deleteProduct = async (id: number): Promise<void> => {
   const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
     method: 'DELETE',
-    headers: getHeaders(token),
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to delete product');
 };
 
 export const createCategory = async (
-  token: string,
   payload: { name: string; description?: string; parentId?: number | null },
 ): Promise<Category> => {
   const response = await fetch(`${API_BASE_URL}/admin/catalog/categories`, {
     method: 'POST',
-    headers: getHeaders(token),
+    headers: jsonHeaders,
     credentials: 'include',
     body: JSON.stringify(payload),
   });
@@ -175,13 +164,12 @@ export const createCategory = async (
 };
 
 export const updateCategory = async (
-  token: string,
   id: number,
   payload: { name?: string; description?: string; parentId?: number | null },
 ): Promise<Category> => {
   const response = await fetch(`${API_BASE_URL}/admin/catalog/categories/${id}`, {
     method: 'PUT',
-    headers: getHeaders(token),
+    headers: jsonHeaders,
     credentials: 'include',
     body: JSON.stringify(payload),
   });
@@ -193,10 +181,9 @@ export const updateCategory = async (
   return result.data;
 };
 
-export const deleteCategory = async (token: string, id: number): Promise<void> => {
+export const deleteCategory = async (id: number): Promise<void> => {
   const response = await fetch(`${API_BASE_URL}/admin/catalog/categories/${id}`, {
     method: 'DELETE',
-    headers: getHeaders(token),
     credentials: 'include',
   });
   if (!response.ok) {
@@ -206,12 +193,11 @@ export const deleteCategory = async (token: string, id: number): Promise<void> =
 };
 
 export const createTag = async (
-  token: string,
   payload: { name: string; type: WellbeingTag['type'] },
 ): Promise<WellbeingTag> => {
   const response = await fetch(`${API_BASE_URL}/admin/catalog/tags`, {
     method: 'POST',
-    headers: getHeaders(token),
+    headers: jsonHeaders,
     credentials: 'include',
     body: JSON.stringify(payload),
   });
@@ -224,13 +210,12 @@ export const createTag = async (
 };
 
 export const updateTag = async (
-  token: string,
   id: number,
   payload: { name?: string; type?: WellbeingTag['type'] },
 ): Promise<WellbeingTag> => {
   const response = await fetch(`${API_BASE_URL}/admin/catalog/tags/${id}`, {
     method: 'PUT',
-    headers: getHeaders(token),
+    headers: jsonHeaders,
     credentials: 'include',
     body: JSON.stringify(payload),
   });
@@ -242,10 +227,9 @@ export const updateTag = async (
   return result.data;
 };
 
-export const deleteTag = async (token: string, id: number): Promise<void> => {
+export const deleteTag = async (id: number): Promise<void> => {
   const response = await fetch(`${API_BASE_URL}/admin/catalog/tags/${id}`, {
     method: 'DELETE',
-    headers: getHeaders(token),
     credentials: 'include',
   });
   if (!response.ok) {

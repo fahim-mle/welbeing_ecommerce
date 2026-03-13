@@ -11,7 +11,7 @@ import { useAuth } from '../hooks/useAuth';
 export const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const { items, subtotal, clearCart } = useCart();
-  const { user, token, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [guestEmail, setGuestEmail] = useState(user?.email || '');
   const [paymentPlaceholder, setPaymentPlaceholder] = useState('');
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
@@ -41,10 +41,10 @@ export const Checkout: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!user) return;
     const loadAddresses = async () => {
       try {
-        const data = await fetchAddresses(token);
+        const data = await fetchAddresses();
 
         setSavedAddresses(data);
         if (data.length > 0) {
@@ -65,7 +65,7 @@ export const Checkout: React.FC = () => {
       }
     };
     loadAddresses();
-  }, [token, logout]);
+  }, [user, logout]);
 
   const handleAddressChange = (field: keyof ShippingAddressPayload, value: string) => {
     setAddressForm((prev) => ({
@@ -149,7 +149,7 @@ export const Checkout: React.FC = () => {
       let addressId: number | undefined;
       let shippingAddress: ShippingAddressPayload | undefined;
 
-      if (user && token && typeof selectedAddressId === 'number') {
+      if (user && typeof selectedAddressId === 'number') {
         // Auth user selected a saved address — pass the id directly
         addressId = selectedAddressId;
       } else {
@@ -164,35 +164,31 @@ export const Checkout: React.FC = () => {
           userId: user?.id,
           email: guestEmail,
           userType: user ? 'USER' : 'GUEST',
-          hasToken: !!token,
           addressId,
           hasShippingAddress: !!shippingAddress,
         });
       }
 
-      const order = await createOrder(
-        {
-          // Always send the email shown in the form and the user_type so the
-          // backend can resolve guestEmail correctly without guessing from the
-          // JWT alone. For authenticated orders the backend uses JWT userId and
-          // ignores the email; for guest orders it becomes the guestEmail.
-          email: guestEmail,
-          user_type: user ? 'USER' : 'GUEST',
-          items: items.map((item) => ({
-            product_id: item.product.id,
-            product_variant_id: item.variant?.id,
-            quantity: item.quantity,
-          })),
-          shipping_address: shippingAddress,
-          address_id: addressId,
-          payment_placeholder: paymentPlaceholder,
-          disclaimer_accepted: disclaimerAccepted,
-        },
-        token || undefined,
-      );
+      const order = await createOrder({
+        // Always send the email shown in the form and the user_type so the
+        // backend can resolve guestEmail correctly without guessing from the
+        // JWT alone. For authenticated orders the backend uses JWT userId and
+        // ignores the email; for guest orders it becomes the guestEmail.
+        email: guestEmail,
+        user_type: user ? 'USER' : 'GUEST',
+        items: items.map((item) => ({
+          product_id: item.product.id,
+          product_variant_id: item.variant?.id,
+          quantity: item.quantity,
+        })),
+        shipping_address: shippingAddress,
+        address_id: addressId,
+        payment_placeholder: paymentPlaceholder,
+        disclaimer_accepted: disclaimerAccepted,
+      });
 
       clearCart();
-      const guestQuery = token ? '' : `?guestEmail=${encodeURIComponent(guestEmail)}`;
+      const guestQuery = user ? '' : `?guestEmail=${encodeURIComponent(guestEmail)}`;
       navigate(`/order-confirmation/${order.id}${guestQuery}`, { state: { order } });
     } catch (err) {
       if (import.meta.env.DEV) {

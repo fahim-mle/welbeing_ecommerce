@@ -83,17 +83,12 @@ export interface OrderResponse {
   statusHistory?: OrderStatusHistory[];
 }
 
-export const createOrder = async (payload: OrderPayload, token?: string): Promise<OrderResponse> => {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
+export const createOrder = async (payload: OrderPayload): Promise<OrderResponse> => {
   const response = await fetch(`${API_BASE_URL}/orders`, {
     method: 'POST',
-    headers,
+    headers: {
+      'Content-Type': 'application/json',
+    },
     credentials: 'include',
     body: JSON.stringify(payload),
   });
@@ -115,11 +110,8 @@ export interface PaginatedOrders {
   hasNextPage: boolean;
 }
 
-export const fetchMyOrders = async (token: string, page = 1, limit = 6): Promise<PaginatedOrders> => {
+export const fetchMyOrders = async (page = 1, limit = 6): Promise<PaginatedOrders> => {
   const response = await fetch(`${API_BASE_URL}/orders?page=${page}&limit=${limit}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     credentials: 'include',
   });
 
@@ -137,12 +129,9 @@ export const fetchMyOrders = async (token: string, page = 1, limit = 6): Promise
   };
 };
 
-export const cancelOrder = async (orderId: number, token: string): Promise<OrderResponse> => {
+export const cancelOrder = async (orderId: number): Promise<OrderResponse> => {
   const response = await fetch(`${API_BASE_URL}/orders/${orderId}/cancel`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     credentials: 'include',
   });
 
@@ -157,18 +146,10 @@ export const cancelOrder = async (orderId: number, token: string): Promise<Order
 
 export const fetchOrder = async (
   id: number,
-  token?: string,
   guestEmail?: string,
 ): Promise<OrderResponse> => {
-  const headers: Record<string, string> = {};
-
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-
   const query = guestEmail ? `?guestEmail=${encodeURIComponent(guestEmail)}` : '';
   const response = await fetch(`${API_BASE_URL}/orders/${id}${query}`, {
-    headers,
     credentials: 'include',
   });
 

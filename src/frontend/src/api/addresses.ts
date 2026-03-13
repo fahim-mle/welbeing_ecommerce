@@ -14,11 +14,8 @@ export interface Address {
   isDefault?: boolean;
 }
 
-export const fetchAddresses = async (token: string): Promise<Address[]> => {
+export const fetchAddresses = async (): Promise<Address[]> => {
   const response = await fetch(`${API_BASE_URL}/addresses`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     credentials: 'include',
   });
 
@@ -31,12 +28,11 @@ export const fetchAddresses = async (token: string): Promise<Address[]> => {
   return result.data;
 };
 
-export const createAddress = async (payload: Omit<Address, 'id'>, token: string): Promise<Address> => {
+export const createAddress = async (payload: Omit<Address, 'id'>): Promise<Address> => {
   const response = await fetch(`${API_BASE_URL}/addresses`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
     },
     credentials: 'include',
     body: JSON.stringify(payload),

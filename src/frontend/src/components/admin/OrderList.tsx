@@ -13,25 +13,32 @@ export const OrderList: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
-    if (token) {
-      setLoading(true);
-      fetchAdminOrders(token, page, 10)
-        .then((result) => {
-          setOrders(result.data);
-          setHasNextPage(result.hasNextPage);
-        })
-        .catch((err) => setError(err.message))
-        .finally(() => setLoading(false));
+    if (!user) {
+      setOrders([]);
+      setHasNextPage(false);
+      setError(null);
+      setLoading(false);
+      return;
     }
-  }, [token, page]);
+
+    setLoading(true);
+    setError(null);
+    fetchAdminOrders(page, 10)
+      .then((result) => {
+        setOrders(result.data);
+        setHasNextPage(result.hasNextPage);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [user, page]);
 
   const handleStatusChange = async (orderId: number, newStatus: string) => {
-    if (!token) return;
+    if (!user) return;
     try {
-      const updatedOrder = await updateOrderStatus(token, orderId, newStatus);
+      const updatedOrder = await updateOrderStatus(orderId, newStatus);
       setOrders(orders.map((order) => (order.id === orderId ? updatedOrder : order)));
     } catch {
       alert('Failed to update status');

@@ -1,17 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
-import { auth, TokenPayload } from '../lib/auth';
+import { auth, extractAccessToken, TokenPayload } from '../lib/auth';
 
 export interface AuthRequest extends Request {
   user?: TokenPayload;
 }
 
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  const token = extractAccessToken(req);
+  if (!token) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
-  const token = authHeader.split(' ')[1];
   try {
     const decoded = auth.verifyToken(token);
     (req as AuthRequest).user = decoded;

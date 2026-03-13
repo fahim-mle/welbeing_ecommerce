@@ -9,13 +9,27 @@ const statusOptions = ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
 
 export const AdminOrderDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { token } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [order, setOrder] = useState<OrderResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token || !id) return;
+    if (authLoading) return;
+
+    if (!id) {
+      setError('Order not found.');
+      setLoading(false);
+      return;
+    }
+
+    if (!user) {
+      setOrder(null);
+      setError('Please sign in to view this order.');
+      setLoading(false);
+      return;
+    }
+
     const orderId = Number(id);
     if (Number.isNaN(orderId)) {
       setError('Invalid order ID.');
@@ -23,22 +37,18 @@ export const AdminOrderDetail: React.FC = () => {
       return;
     }
 
-    fetchAdminOrder(token, orderId)
-      .then((data) => {
-        setOrder(data);
-        setError(null);
-      })
-      .catch((err) => {
-        const message = err instanceof Error ? err.message : 'Failed to load order.';
-        setError(message);
-      })
+    setLoading(true);
+    setError(null);
+    fetchAdminOrder(orderId)
+      .then((data) => setOrder(data))
+      .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [token, id]);
+  }, [user, authLoading, id]);
 
   const handleStatusUpdate = async (nextStatus: string) => {
-    if (!token || !order) return;
+    if (!user || !order) return;
     try {
-      const updated = await updateOrderStatus(token, order.id, nextStatus);
+      const updated = await updateOrderStatus(order.id, nextStatus);
       setOrder(updated);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update status.';
