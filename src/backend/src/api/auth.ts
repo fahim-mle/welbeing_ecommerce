@@ -12,7 +12,7 @@ import {
   verifyEmailRequestSchema,
 } from '../schemas/auth';
 import { emailService } from '../lib/email';
-import { accessTokenCookie, refreshTokenCookie, COOKIE_NAMES } from '../lib/cookie';
+import { accessTokenCookie, baseCookieOptions, refreshTokenCookie, COOKIE_NAMES } from '../lib/cookie';
 
 const router = Router();
 
@@ -45,8 +45,8 @@ const setAuthCookies = (res: Response, accessToken: string, refreshToken: string
 
 /** Clear both auth cookies (used on logout and invalid-token paths). */
 const clearAuthCookies = (res: Response) => {
-  res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN, { path: '/' });
-  res.clearCookie(COOKIE_NAMES.REFRESH_TOKEN, { path: '/' });
+  res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN, baseCookieOptions());
+  res.clearCookie(COOKIE_NAMES.REFRESH_TOKEN, baseCookieOptions());
 };
 
 // POST /api/auth/register
