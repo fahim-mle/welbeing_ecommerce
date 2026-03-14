@@ -38,6 +38,7 @@ export const Profile = () => {
   const [showBackupCodes, setShowBackupCodes] = useState(false);
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [mfaLoading, setMfaLoading] = useState(false);
+  const [mfaError, setMfaError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -103,11 +104,16 @@ export const Profile = () => {
   useEffect(() => {
     if (!user || activeTab !== 'security') return;
     const fetchMfaStatus = async () => {
+      setMfaLoading(true);
+      setMfaError(null);
       try {
         const status = await mfaApi.getStatus();
         setMfaStatus(status);
       } catch (err) {
         console.error('Failed to fetch MFA status:', err);
+        setMfaError(err instanceof Error ? err.message : 'Failed to load MFA status');
+      } finally {
+        setMfaLoading(false);
       }
     };
 
@@ -467,7 +473,21 @@ export const Profile = () => {
                     <h2 className="text-lg font-semibold text-gray-900">Two-Factor Authentication</h2>
                   </div>
 
-                  {mfaStatus ? (
+                  {mfaError && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                      <p className="text-red-600 text-sm mb-2">{mfaError}</p>
+                      <button
+                        onClick={() => window.location.reload()}
+                        className="text-sm text-red-700 underline hover:text-red-800"
+                      >
+                        Retry
+                      </button>
+                    </div>
+                  )}
+
+                  {mfaLoading && !mfaStatus && !mfaError ? (
+                    <p className="text-sm text-gray-600">Loading MFA status...</p>
+                  ) : mfaStatus ? (
                     <div>
                       <div className="flex items-center mb-4">
                         <div className={`w-3 h-3 rounded-full mr-2 ${mfaStatus.mfaEnabled ? 'bg-green-500' : 'bg-gray-400'}`} />
@@ -501,9 +521,7 @@ export const Profile = () => {
                         </button>
                       )}
                     </div>
-                  ) : (
-                    <p className="text-sm text-gray-600">Loading MFA status...</p>
-                  )}
+                  ) : null}
                 </div>
               </div>
             )}
