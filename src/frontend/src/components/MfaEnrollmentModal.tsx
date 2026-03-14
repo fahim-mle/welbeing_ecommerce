@@ -15,9 +15,34 @@ export const MfaEnrollmentModal = ({ isOpen, onClose, onEnrollmentComplete }: Mf
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [enrolling, setEnrolling] = useState<boolean>(false);
+  const [retryTrigger, setRetryTrigger] = useState<number>(0);
 
   useEffect(() => {
+    let isMounted = true;
+
     if (isOpen) {
+      const enrollMfa = async () => {
+        if (isMounted) {
+          setEnrolling(true);
+          setError('');
+        }
+        try {
+          const response = await mfaApi.enroll();
+          if (isMounted) {
+            setQrCode(response.qrCode);
+            setSecret(response.secret);
+          }
+        } catch (err) {
+          if (isMounted) {
+            setError(err instanceof Error ? err.message : 'Failed to initialize MFA enrollment');
+          }
+        } finally {
+          if (isMounted) {
+            setEnrolling(false);
+          }
+        }
+      };
+
       enrollMfa();
     } else {
       // Reset state when modal closes
@@ -27,21 +52,11 @@ export const MfaEnrollmentModal = ({ isOpen, onClose, onEnrollmentComplete }: Mf
       setError('');
       setEnrolling(false);
     }
-  }, [isOpen]);
 
-  const enrollMfa = async () => {
-    setEnrolling(true);
-    setError('');
-    try {
-      const response = await mfaApi.enroll();
-      setQrCode(response.qrCode);
-      setSecret(response.secret);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to initialize MFA enrollment');
-    } finally {
-      setEnrolling(false);
-    }
-  };
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, retryTrigger]);
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,7 +119,7 @@ export const MfaEnrollmentModal = ({ isOpen, onClose, onEnrollmentComplete }: Mf
                 <p className="text-red-600 text-sm">{error}</p>
               </div>
               <button
-                onClick={enrollMfa}
+                onClick={() => setRetryTrigger((prev) => prev + 1)}
                 className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
               >
                 Try Again
