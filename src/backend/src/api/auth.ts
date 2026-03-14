@@ -105,7 +105,6 @@ router.post('/login', validateBody(loginSchema), async (req: Request, res: Respo
     }
 
     const user = identity.user;
-    await userService.linkGuestOrders(user.email, user.id);
 
     // Check if user has MFA enabled
     const userWithMfa = await prisma.user.findUnique({

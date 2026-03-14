@@ -79,6 +79,10 @@ router.post(
         return res.status(401).json({ message: 'Invalid TOTP code' });
       }
 
+      // Link any guest orders placed before login — deferred until MFA is
+      // fully verified so we never associate orders with an unverified identity.
+      await userService.linkGuestOrders(user.email, user.id);
+
       const accessToken = createAccessToken({ id: user.id, email: user.email, role: user.role });
       const refreshToken = await userService.createRefreshToken(user.id);
 
@@ -145,6 +149,10 @@ router.post(
         where: { id: matched.id },
         data: { usedAt: new Date() },
       });
+
+      // Link any guest orders placed before login — deferred until MFA is
+      // fully verified so we never associate orders with an unverified identity.
+      await userService.linkGuestOrders(user.email, user.id);
 
       const accessToken = createAccessToken({ id: user.id, email: user.email, role: user.role });
       const refreshToken = await userService.createRefreshToken(user.id);
