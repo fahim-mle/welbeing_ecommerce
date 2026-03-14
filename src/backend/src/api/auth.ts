@@ -3,6 +3,7 @@ import { userService } from '../services/userService';
 import { auth } from '../lib/auth';
 import { logger } from '../lib/logger';
 import { validateBody } from '../middleware/validation';
+import { prisma } from '../lib/prisma';
 import {
   loginSchema,
   oauthSchema,
@@ -105,6 +106,27 @@ router.post('/login', validateBody(loginSchema), async (req: Request, res: Respo
 
     const user = identity.user;
     await userService.linkGuestOrders(user.email, user.id);
+
+    // Check if user has MFA enabled
+    const userWithMfa = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { mfaEnabled: true },
+    });
+
+    if (userWithMfa?.mfaEnabled) {
+      // Generate temporary MFA token (5 min expiry) - no cookies set yet
+      const mfaToken = auth.generateToken(
+        { userId: user.id, email: user.email, role: user.role, mfaPending: true },
+        '5m'
+      );
+      
+      return res.status(200).json({
+        mfaRequired: true,
+        mfaToken,
+      });
+    }
+
+    // Normal flow for non-MFA users
     const accessToken = createAccessToken({ id: user.id, email: user.email, role: user.role });
     const refreshToken = await userService.createRefreshToken(user.id);
 
