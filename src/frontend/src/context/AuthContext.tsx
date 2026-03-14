@@ -118,8 +118,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await mfaApi.verifyLogin(mfaToken, token);
-      setAuthUser({ user: response.user });
+      await mfaApi.verifyLogin(mfaToken, token);
+      
+      // Fetch complete user profile to ensure all fields are populated
+      const fullUserData = await authApi.fetchMe();
+      if (fullUserData?.user) {
+        setAuthUser({ user: fullUserData.user });
+      }
+      
       setMfaRequired(false);
       setMfaToken(null);
     } catch (err: unknown) {
@@ -140,8 +146,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await mfaApi.verifyBackupCode(mfaToken, code);
-      setAuthUser({ user: response.user });
+      await mfaApi.verifyBackupCode(mfaToken, code);
+      
+      // Fetch complete user profile to ensure all fields are populated
+      const fullUserData = await authApi.fetchMe();
+      if (fullUserData?.user) {
+        setAuthUser({ user: fullUserData.user });
+      }
+      
       setMfaRequired(false);
       setMfaToken(null);
     } catch (err: unknown) {

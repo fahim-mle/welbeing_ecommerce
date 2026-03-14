@@ -20,7 +20,12 @@ export interface MfaVerifyResponse {
   user: {
     id: number;
     email: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string | null;
     role: string;
+    isActive?: boolean;
+    mfaEnabled?: boolean;
   };
 }
 
