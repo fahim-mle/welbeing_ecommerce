@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { authenticate, AuthRequest } from '../middleware/auth';
+import { requireMfaVerified } from '../middleware/mfaAuth';
 import { adminAuth } from '../middleware/adminAuth';
 import { validateBody } from '../middleware/validation';
 import {
@@ -232,7 +233,7 @@ router.use(authenticate);
 // Generates a fresh TOTP secret and QR code for the authenticated user.
 // The secret is persisted immediately (mfaEnabled stays false) so that
 // verify-enrollment can confirm the correct secret was scanned.
-router.post('/enroll', async (req: AuthRequest, res: Response) => {
+router.post('/enroll', requireMfaVerified, async (req: AuthRequest, res: Response) => {
   const userId = req.user!.userId;
   try {
     const user = await prisma.user.findUnique({
@@ -272,6 +273,7 @@ router.post('/enroll', async (req: AuthRequest, res: Response) => {
 // returns one-time plaintext backup codes (hashed copies stored in DB).
 router.post(
   '/verify-enrollment',
+  requireMfaVerified,
   validateBody(verifyEnrollmentSchema),
   async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId;
@@ -325,7 +327,7 @@ router.post(
 
 // GET /api/auth/mfa/status
 // Returns the current MFA enrollment state for the authenticated user.
-router.get('/status', async (req: AuthRequest, res: Response) => {
+router.get('/status', requireMfaVerified, async (req: AuthRequest, res: Response) => {
   const userId = req.user!.userId;
   try {
     const user = await prisma.user.findUnique({
@@ -353,7 +355,7 @@ router.get('/status', async (req: AuthRequest, res: Response) => {
  * The plaintext codes are returned once — the user must save them immediately.
  * Requires MFA to already be enabled; otherwise there is nothing to protect.
  */
-router.post('/regenerate-backup-codes', async (req: AuthRequest, res: Response) => {
+router.post('/regenerate-backup-codes', requireMfaVerified, async (req: AuthRequest, res: Response) => {
   const userId = req.user!.userId;
 
   try {
