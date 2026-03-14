@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Shield, Key } from 'lucide-react';
 import { authApi } from '../api/auth';
+import { mfaApi } from '../api/mfa';
 import { fetchAddresses, type Address } from '../api/addresses';
 import { fetchMyOrders, type OrderResponse } from '../api/orders';
 import { useAuth } from '../hooks/useAuth';
+import { MfaEnrollmentModal } from '../components/MfaEnrollmentModal';
+import { BackupCodesModal } from '../components/BackupCodesModal';
 
 const tabs = ['overview', 'orders', 'addresses', 'security'] as const;
 
@@ -29,6 +33,11 @@ export const Profile = () => {
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', password: '', confirm: '' });
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [mfaStatus, setMfaStatus] = useState<{ mfaEnabled: boolean; mfaEnrolledAt: string | null } | null>(null);
+  const [showMfaEnrollment, setShowMfaEnrollment] = useState(false);
+  const [showBackupCodes, setShowBackupCodes] = useState(false);
+  const [backupCodes, setBackupCodes] = useState<string[]>([]);
+  const [mfaLoading, setMfaLoading] = useState(false);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -91,6 +100,20 @@ export const Profile = () => {
     loadOrders();
   }, [user, activeTab, ordersPage]);
 
+  useEffect(() => {
+    if (!user || activeTab !== 'security') return;
+    const fetchMfaStatus = async () => {
+      try {
+        const status = await mfaApi.getStatus();
+        setMfaStatus(status);
+      } catch (err) {
+        console.error('Failed to fetch MFA status:', err);
+      }
+    };
+
+    fetchMfaStatus();
+  }, [user, activeTab]);
+
   const handleUpdateProfile = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!user) return;
@@ -142,6 +165,31 @@ export const Profile = () => {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update password.';
       setPasswordError(message);
+    }
+  };
+
+  const handleEnableMfa = () => {
+    setShowMfaEnrollment(true);
+  };
+
+  const handleEnrollmentComplete = (codes: string[]) => {
+    setBackupCodes(codes);
+    setShowMfaEnrollment(false);
+    setShowBackupCodes(true);
+    // Refresh MFA status
+    mfaApi.getStatus().then(setMfaStatus);
+  };
+
+  const handleRegenerateBackupCodes = async () => {
+    setMfaLoading(true);
+    try {
+      const response = await mfaApi.regenerateBackupCodes();
+      setBackupCodes(response.backupCodes);
+      setShowBackupCodes(true);
+    } catch (err) {
+      console.error('Failed to regenerate backup codes:', err);
+    } finally {
+      setMfaLoading(false);
     }
   };
 
@@ -372,48 +420,108 @@ export const Profile = () => {
 
             {activeTab === 'security' && (
               <div className="space-y-6">
-                <h2 className="text-lg font-semibold text-gray-900">Security</h2>
-                {passwordMessage && <p className="text-sm text-green-600">{passwordMessage}</p>}
-                {passwordError && <p className="text-sm text-red-600">{passwordError}</p>}
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Change Password</h2>
+                  {passwordMessage && <p className="text-sm text-green-600">{passwordMessage}</p>}
+                  {passwordError && <p className="text-sm text-red-600">{passwordError}</p>}
 
-                <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
-                  <label className="space-y-2">
-                    <span className="form-label">Current password</span>
-                    <input
-                      type="password"
-                      value={passwordForm.currentPassword}
-                      onChange={(event) =>
-                        setPasswordForm({ ...passwordForm, currentPassword: event.target.value })
-                      }
-                      className="form-input"
-                    />
-                  </label>
-                  <label className="space-y-2">
-                    <span className="form-label">New password</span>
-                    <input
-                      type="password"
-                      value={passwordForm.password}
-                      onChange={(event) => setPasswordForm({ ...passwordForm, password: event.target.value })}
-                      className="form-input"
-                    />
-                  </label>
-                  <label className="space-y-2">
-                    <span className="form-label">Confirm password</span>
-                    <input
-                      type="password"
-                      value={passwordForm.confirm}
-                      onChange={(event) => setPasswordForm({ ...passwordForm, confirm: event.target.value })}
-                      className="form-input"
-                    />
-                  </label>
-                  <button type="submit" className="btn-primary">
-                    Update password
-                  </button>
-                </form>
+                  <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
+                    <label className="space-y-2">
+                      <span className="form-label">Current password</span>
+                      <input
+                        type="password"
+                        value={passwordForm.currentPassword}
+                        onChange={(event) =>
+                          setPasswordForm({ ...passwordForm, currentPassword: event.target.value })
+                        }
+                        className="form-input"
+                      />
+                    </label>
+                    <label className="space-y-2">
+                      <span className="form-label">New password</span>
+                      <input
+                        type="password"
+                        value={passwordForm.password}
+                        onChange={(event) => setPasswordForm({ ...passwordForm, password: event.target.value })}
+                        className="form-input"
+                      />
+                    </label>
+                    <label className="space-y-2">
+                      <span className="form-label">Confirm password</span>
+                      <input
+                        type="password"
+                        value={passwordForm.confirm}
+                        onChange={(event) => setPasswordForm({ ...passwordForm, confirm: event.target.value })}
+                        className="form-input"
+                      />
+                    </label>
+                    <button type="submit" className="btn-primary">
+                      Update password
+                    </button>
+                  </form>
+                </div>
+
+                <div className="border-t border-gray-200 pt-6">
+                  <div className="flex items-center mb-4">
+                    <Shield className="w-5 h-5 text-indigo-600 mr-2" />
+                    <h2 className="text-lg font-semibold text-gray-900">Two-Factor Authentication</h2>
+                  </div>
+
+                  {mfaStatus ? (
+                    <div>
+                      <div className="flex items-center mb-4">
+                        <div className={`w-3 h-3 rounded-full mr-2 ${mfaStatus.mfaEnabled ? 'bg-green-500' : 'bg-gray-400'}`} />
+                        <span className="text-sm text-gray-700">
+                          Status: <strong>{mfaStatus.mfaEnabled ? 'Enabled' : 'Disabled'}</strong>
+                        </span>
+                      </div>
+
+                      {mfaStatus.mfaEnabled && mfaStatus.mfaEnrolledAt && (
+                        <p className="text-sm text-gray-600 mb-4">
+                          Enrolled on: {new Date(mfaStatus.mfaEnrolledAt).toLocaleDateString()}
+                        </p>
+                      )}
+
+                      {!mfaStatus.mfaEnabled ? (
+                        <button
+                          onClick={handleEnableMfa}
+                          className="btn-primary flex items-center"
+                        >
+                          <Shield className="w-4 h-4 mr-2" />
+                          Enable Two-Factor Authentication
+                        </button>
+                      ) : (
+                        <button
+                          onClick={handleRegenerateBackupCodes}
+                          disabled={mfaLoading}
+                          className="btn-secondary flex items-center"
+                        >
+                          <Key className="w-4 h-4 mr-2" />
+                          {mfaLoading ? 'Generating...' : 'Regenerate Backup Codes'}
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-600">Loading MFA status...</p>
+                  )}
+                </div>
               </div>
             )}
           </div>
         </div>
+
+        {/* MFA Modals */}
+        <MfaEnrollmentModal
+          isOpen={showMfaEnrollment}
+          onClose={() => setShowMfaEnrollment(false)}
+          onEnrollmentComplete={handleEnrollmentComplete}
+        />
+
+        <BackupCodesModal
+          isOpen={showBackupCodes}
+          backupCodes={backupCodes}
+          onClose={() => setShowBackupCodes(false)}
+        />
       </div>
     </div>
   );
