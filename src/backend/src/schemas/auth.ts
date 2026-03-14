@@ -35,3 +35,7 @@ export const oauthSchema = z.object({
   firstName: z.string().min(1).optional(),
   lastName: z.string().min(1).optional(),
 });
+
+export const verifyEnrollmentSchema = z.object({
+  token: z.string().length(6).regex(/^\d{6}$/, 'Token must be 6 digits'),
+});
