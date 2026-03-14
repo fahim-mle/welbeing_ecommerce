@@ -258,6 +258,18 @@ export const userService = {
     });
   },
 
+  /**
+   * Check whether MFA is enabled for a given user.
+   * Returns false if the user does not exist.
+   */
+  async isMfaEnabled(userId: number): Promise<boolean> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { mfaEnabled: true },
+    });
+    return user?.mfaEnabled ?? false;
+  },
+
   async linkGuestOrders(email: string, userId: number) {
     await prisma.order.updateMany({
       where: {
