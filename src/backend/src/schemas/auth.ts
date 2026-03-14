@@ -39,3 +39,13 @@ export const oauthSchema = z.object({
 export const verifyEnrollmentSchema = z.object({
   token: z.string().length(6).regex(/^\d{6}$/, 'Token must be 6 digits'),
 });
+
+export const verifyMfaLoginSchema = z.object({
+  mfaToken: z.string().min(1, 'MFA token is required'),
+  token: z.string().length(6).regex(/^\d{6}$/, 'Token must be 6 digits'),
+});
+
+export const verifyBackupCodeSchema = z.object({
+  mfaToken: z.string().min(1, 'MFA token is required'),
+  code: z.string().length(8).regex(/^[A-Z0-9]{8}$/, 'Invalid backup code format'),
+});

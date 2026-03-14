@@ -34,12 +34,12 @@ const maskEmail = (value: unknown) => {
   return `${localPart.slice(0, 2)}***@${domain}`;
 };
 
-const createAccessToken = (user: { id: number; email: string; role: string }) => {
+export const createAccessToken = (user: { id: number; email: string; role: string }) => {
   return auth.generateToken({ userId: user.id, email: user.email, role: user.role }, '15m');
 };
 
 /** Write both auth cookies onto the response. */
-const setAuthCookies = (res: Response, accessToken: string, refreshToken: string) => {
+export const setAuthCookies = (res: Response, accessToken: string, refreshToken: string) => {
   res.cookie(COOKIE_NAMES.ACCESS_TOKEN, accessToken, accessTokenCookie());
   res.cookie(COOKIE_NAMES.REFRESH_TOKEN, refreshToken, refreshTokenCookie());
 };

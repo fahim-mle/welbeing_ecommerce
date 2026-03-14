@@ -1,20 +1,158 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { validateBody } from '../middleware/validation';
-import { verifyEnrollmentSchema } from '../schemas/auth';
+import {
+  verifyEnrollmentSchema,
+  verifyMfaLoginSchema,
+  verifyBackupCodeSchema,
+} from '../schemas/auth';
 import {
   generateTotpSecret,
   generateQrCode,
   verifyTotpToken,
   generateBackupCodes,
   hashBackupCode,
+  verifyBackupCode,
 } from '../lib/mfa';
+import { auth, TokenPayload } from '../lib/auth';
+import { createAccessToken, setAuthCookies } from './auth';
+import { userService } from '../services/userService';
 import { prisma } from '../lib/prisma';
 import { logger } from '../lib/logger';
 
 const router = Router();
 
-// All MFA endpoints require an authenticated session.
+/**
+ * Decode and validate a short-lived MFA pending token.
+ * Returns the payload only when the token is valid and carries `mfaPending: true`.
+ * Any other token (expired, tampered, or a regular access token) returns null.
+ */
+const verifyMfaToken = (mfaToken: string): TokenPayload | null => {
+  try {
+    const decoded = auth.verifyToken(mfaToken);
+    if (!decoded.mfaPending) {
+      return null;
+    }
+    return decoded;
+  } catch {
+    // Covers expired, invalid signature, malformed JWT, etc.
+    return null;
+  }
+};
+
+// ─── Unauthenticated MFA login endpoints ────────────────────────────────────
+// These two endpoints intentionally sit BEFORE the router.use(authenticate)
+// call below. They accept a short-lived mfaToken (issued by POST /api/auth/login)
+// instead of a full session cookie.
+
+// POST /api/auth/mfa/verify
+// Completes the MFA login flow using a TOTP code.
+router.post(
+  '/verify',
+  validateBody(verifyMfaLoginSchema),
+  async (req: Request, res: Response) => {
+    const { mfaToken, token } = req.body as { mfaToken: string; token: string };
+
+    const payload = verifyMfaToken(mfaToken);
+    if (!payload) {
+      return res.status(401).json({ message: 'Invalid or expired MFA token' });
+    }
+
+    const { userId } = payload;
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, email: true, role: true, mfaSecret: true, mfaEnabled: true },
+      });
+
+      // Guard: user must exist and have MFA fully enrolled.
+      if (!user || !user.mfaEnabled || !user.mfaSecret) {
+        return res.status(401).json({ message: 'Invalid or expired MFA token' });
+      }
+
+      const isValid = verifyTotpToken(token, user.mfaSecret);
+      if (!isValid) {
+        logger.warn('MFA TOTP verification failed', { userId });
+        return res.status(401).json({ message: 'Invalid TOTP code' });
+      }
+
+      const accessToken = createAccessToken({ id: user.id, email: user.email, role: user.role });
+      const refreshToken = await userService.createRefreshToken(user.id);
+
+      setAuthCookies(res, accessToken, refreshToken.token);
+
+      logger.info('MFA TOTP login successful', { userId });
+      return res.status(200).json({ user: { id: user.id, email: user.email, role: user.role } });
+    } catch (error) {
+      logger.error('MFA TOTP verification error', { userId, error });
+      return res.status(500).json({ message: 'MFA verification failed' });
+    }
+  },
+);
+
+// POST /api/auth/mfa/verify-backup-code
+// Completes the MFA login flow using a one-time backup code.
+router.post(
+  '/verify-backup-code',
+  validateBody(verifyBackupCodeSchema),
+  async (req: Request, res: Response) => {
+    const { mfaToken, code } = req.body as { mfaToken: string; code: string };
+
+    const payload = verifyMfaToken(mfaToken);
+    if (!payload) {
+      return res.status(401).json({ message: 'Invalid or expired MFA token' });
+    }
+
+    const { userId } = payload;
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, email: true, role: true, mfaEnabled: true },
+      });
+
+      if (!user || !user.mfaEnabled) {
+        return res.status(401).json({ message: 'Invalid or expired MFA token' });
+      }
+
+      // Fetch only unused backup codes to limit the comparison set.
+      const backupCodes = await prisma.mfaBackupCode.findMany({
+        where: { userId, usedAt: null },
+      });
+
+      // Linear scan: compare the submitted code against each stored hash.
+      // The set is small (≤10) so this is acceptable; no timing-attack risk
+      // because verifyBackupCode uses a constant-time hash comparison.
+      const matched = backupCodes.find((bc) => verifyBackupCode(code, bc.code));
+
+      if (!matched) {
+        logger.warn('MFA backup code verification failed', { userId });
+        return res.status(401).json({ message: 'Invalid backup code' });
+      }
+
+      // Consume the code atomically so it cannot be reused.
+      await prisma.mfaBackupCode.update({
+        where: { id: matched.id },
+        data: { usedAt: new Date() },
+      });
+
+      const accessToken = createAccessToken({ id: user.id, email: user.email, role: user.role });
+      const refreshToken = await userService.createRefreshToken(user.id);
+
+      setAuthCookies(res, accessToken, refreshToken.token);
+
+      logger.info('MFA backup code login successful', { userId, backupCodeId: matched.id });
+      return res.status(200).json({ user: { id: user.id, email: user.email, role: user.role } });
+    } catch (error) {
+      logger.error('MFA backup code verification error', { userId, error });
+      return res.status(500).json({ message: 'MFA verification failed' });
+    }
+  },
+);
+
+// ─── Authenticated MFA management endpoints ──────────────────────────────────
+// All routes below this line require a valid session cookie.
 router.use(authenticate);
 
 // POST /api/auth/mfa/enroll
