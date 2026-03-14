@@ -33,10 +33,24 @@ export const BackupCodesModal = ({ isOpen, backupCodes, onClose }: BackupCodesMo
     }
   };
 
+  const escapeHtml = (str: string): string => {
+    const htmlEscapeMap: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    };
+    return str.replace(/[&<>"']/g, (char) => htmlEscapeMap[char] || char);
+  };
+
   const printCodes = () => {
     const printWindow = window.open('', '', 'width=600,height=400');
     if (printWindow) {
+      const escapedCodes = backupCodes.map(code => escapeHtml(code));
+      
       printWindow.document.write(`
+        <!DOCTYPE html>
         <html>
           <head>
             <title>MFA Backup Codes</title>
@@ -51,7 +65,7 @@ export const BackupCodesModal = ({ isOpen, backupCodes, onClose }: BackupCodesMo
           <body>
             <h1>MFA Backup Codes</h1>
             <p>Save these codes in a secure location. Each code can be used once to access your account if you lose your authenticator device.</p>
-            <ul>${backupCodes.map(code => `<li>${code}</li>`).join('')}</ul>
+            <ul>${escapedCodes.map(code => `<li>${code}</li>`).join('')}</ul>
           </body>
         </html>
       `);
