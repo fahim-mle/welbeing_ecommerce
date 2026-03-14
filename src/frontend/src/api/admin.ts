@@ -19,6 +19,7 @@ export interface AdminUser {
   phone?: string | null;
   role: 'USER' | 'ADMIN';
   isActive: boolean;
+  mfaEnabled?: boolean;
   lastLoginAt?: string | null;
   createdAt?: string;
 }
