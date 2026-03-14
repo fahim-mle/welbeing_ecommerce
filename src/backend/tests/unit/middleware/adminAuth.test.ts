@@ -73,7 +73,7 @@ describe('Admin Auth Middleware', () => {
     expect(mockResponse.status).not.toHaveBeenCalled();
   });
 
-  it('should return 403 if admin has MFA enabled and token has mfaPending: true', async () => {
+  it('should return 403 with MFA_VERIFICATION_REQUIRED if admin has MFA enabled and token has mfaPending: true', async () => {
     mockFindUnique.mockResolvedValue({ mfaEnabled: true });
     mockRequest.cookies = {
       [COOKIE_NAMES.ACCESS_TOKEN]: mfaPendingAdminToken,
@@ -82,9 +82,13 @@ describe('Admin Auth Middleware', () => {
     await adminAuth(mockRequest as Request, mockResponse as Response, nextFunction);
 
     expect(mockResponse.status).toHaveBeenCalledWith(403);
-    expect(mockResponse.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: 'MFA verification required' })
-    );
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      success: false,
+      error: {
+        message: 'MFA verification required',
+        code: 'MFA_VERIFICATION_REQUIRED',
+      },
+    });
     expect(nextFunction).not.toHaveBeenCalled();
   });
 
@@ -98,6 +102,21 @@ describe('Admin Auth Middleware', () => {
     await adminAuth(mockRequest as Request, mockResponse as Response, nextFunction);
 
     expect(nextFunction).toHaveBeenCalled();
+    expect(mockResponse.status).not.toHaveBeenCalled();
+  });
+
+  it('should forward database errors to next() rather than returning 401', async () => {
+    // Issue #5: a Prisma error must not be swallowed as a 401. It should be
+    // forwarded to the global error handler via next(err).
+    const dbError = new Error('Connection refused');
+    mockFindUnique.mockRejectedValue(dbError);
+    mockRequest.cookies = {
+      [COOKIE_NAMES.ACCESS_TOKEN]: validAdminToken,
+    };
+
+    await adminAuth(mockRequest as Request, mockResponse as Response, nextFunction);
+
+    expect(nextFunction).toHaveBeenCalledWith(dbError);
     expect(mockResponse.status).not.toHaveBeenCalled();
   });
 
