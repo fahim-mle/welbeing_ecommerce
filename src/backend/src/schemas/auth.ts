@@ -49,3 +49,7 @@ export const verifyBackupCodeSchema = z.object({
   mfaToken: z.string().min(1, 'MFA token is required'),
   code: z.string().length(8).regex(/^[A-Z0-9]{8}$/, 'Invalid backup code format'),
 });
+
+export const resetMfaSchema = z.object({
+  userId: z.number().int().positive(),
+});

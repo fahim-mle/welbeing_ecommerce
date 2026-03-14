@@ -1,10 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { authenticate, AuthRequest } from '../middleware/auth';
+import { adminAuth } from '../middleware/adminAuth';
 import { validateBody } from '../middleware/validation';
 import {
   verifyEnrollmentSchema,
   verifyMfaLoginSchema,
   verifyBackupCodeSchema,
+  resetMfaSchema,
 } from '../schemas/auth';
 import {
   generateTotpSecret,
@@ -151,6 +153,62 @@ router.post(
   },
 );
 
+// ─── Admin MFA management endpoints ──────────────────────────────────────────
+// These endpoints use adminAuth directly so they are independent of the
+// router-level authenticate middleware applied below.
+
+/**
+ * POST /api/auth/mfa/reset
+ * Resets a target user's MFA configuration entirely.
+ * Restricted to ADMIN role — intended for emergency account recovery.
+ */
+router.post(
+  '/reset',
+  adminAuth,
+  validateBody(resetMfaSchema),
+  async (req: Request, res: Response) => {
+    const { userId } = req.body as { userId: number };
+    const adminUser = (req as AuthRequest).user!;
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, email: true },
+      });
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Delete backup codes and clear MFA fields atomically.
+      await prisma.$transaction([
+        prisma.mfaBackupCode.deleteMany({ where: { userId } }),
+        prisma.user.update({
+          where: { id: userId },
+          data: {
+            mfaEnabled: false,
+            mfaSecret: null,
+            mfaEnrolledAt: null,
+          },
+        }),
+      ]);
+
+      // Audit log: record both the acting admin and the affected user.
+      logger.warn('MFA reset by admin', {
+        targetUserId: userId,
+        targetEmail: user.email,
+        adminUserId: adminUser.userId,
+        adminEmail: adminUser.email,
+      });
+
+      return res.status(200).json({ success: true, message: 'MFA reset successful' });
+    } catch (error) {
+      logger.error('MFA reset failed', { userId, error });
+      return res.status(500).json({ message: 'MFA reset failed' });
+    }
+  },
+);
+
 // ─── Authenticated MFA management endpoints ──────────────────────────────────
 // All routes below this line require a valid session cookie.
 router.use(authenticate);
@@ -271,6 +329,47 @@ router.get('/status', async (req: AuthRequest, res: Response) => {
   } catch (error) {
     logger.error('MFA status check failed', { userId, error });
     return res.status(500).json({ message: 'MFA status check failed' });
+  }
+});
+
+/**
+ * POST /api/auth/mfa/regenerate-backup-codes
+ * Replaces all existing backup codes with a fresh set of 10.
+ * The plaintext codes are returned once — the user must save them immediately.
+ * Requires MFA to already be enabled; otherwise there is nothing to protect.
+ */
+router.post('/regenerate-backup-codes', async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.userId;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { mfaEnabled: true },
+    });
+
+    if (!user?.mfaEnabled) {
+      return res.status(400).json({ message: 'MFA not enabled' });
+    }
+
+    const plaintextCodes = generateBackupCodes(10);
+
+    // Delete old codes and insert new ones atomically so there is never a
+    // window where the user has no valid backup codes.
+    await prisma.$transaction([
+      prisma.mfaBackupCode.deleteMany({ where: { userId } }),
+      prisma.mfaBackupCode.createMany({
+        data: plaintextCodes.map((code) => ({
+          userId,
+          code: hashBackupCode(code),
+        })),
+      }),
+    ]);
+
+    logger.info('MFA backup codes regenerated', { userId });
+    return res.status(200).json({ backupCodes: plaintextCodes });
+  } catch (error) {
+    logger.error('MFA backup code regeneration failed', { userId, error });
+    return res.status(500).json({ message: 'Backup code regeneration failed' });
   }
 });
 
