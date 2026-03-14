@@ -95,7 +95,12 @@ export const hashBackupCode = async (code: string): Promise<string> => {
 
 /**
  * Verify a backup code against its stored bcrypt hash.
- * bcrypt.compare is constant-time, preventing timing attacks.
+ *
+ * bcrypt.compare() is implemented with a constant-time comparison internally,
+ * preventing timing attacks. Do NOT replace this with a plain string equality
+ * check (===) or crypto.timingSafeEqual on the hash strings — bcrypt hashes
+ * are non-deterministic (each call embeds a fresh random salt), so the only
+ * correct comparison is bcrypt.compare against the original plaintext.
  */
 export const verifyBackupCode = async (code: string, hash: string): Promise<boolean> => {
   return await bcrypt.compare(code, hash);
