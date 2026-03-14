@@ -139,30 +139,17 @@ describe('MFA Utilities', () => {
       expect(codes1).toHaveLength(1);
     });
 
-    it('should generate codes that are up to 8 characters long', () => {
+    it('should generate codes that are exactly 8 characters long', () => {
       const codes = generateBackupCodes(20);
       codes.forEach((code) => {
-        // Note: Due to base64 encoding and stripping non-alphanumeric chars,
-        // codes may be shorter than 8 characters. This is a potential bug.
-        expect(code.length).toBeGreaterThan(0);
-        expect(code.length).toBeLessThanOrEqual(8);
+        expect(code.length).toBe(8);
       });
     });
 
-    it('should attempt to generate 8-character codes (edge case test)', () => {
-      // Generate many codes to check distribution
+    it('should always generate exactly 8-character codes (no short codes)', () => {
       const codes = generateBackupCodes(100);
-      const lengths = codes.map(c => c.length);
-      const avgLength = lengths.reduce((a, b) => a + b, 0) / lengths.length;
-      
-      // Most codes should be close to 8 characters
-      expect(avgLength).toBeGreaterThan(6);
-      
-      // Document the edge case: some codes may be shorter
       const shortCodes = codes.filter(c => c.length < 8);
-      if (shortCodes.length > 0) {
-        console.warn(`Found ${shortCodes.length} codes shorter than 8 chars out of 100`);
-      }
+      expect(shortCodes.length).toBe(0);
     });
 
     it('should generate uppercase alphanumeric codes', () => {

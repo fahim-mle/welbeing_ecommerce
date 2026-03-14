@@ -161,8 +161,8 @@ Super-admins can reset MFA for users who have lost access to their authenticator
 ### Backup Codes
 
 - **Count**: 10 codes per user
-- **Format**: 8 uppercase alphanumeric characters
-- **Storage**: SHA-256 hashed in database
+- **Format**: Backup codes are 8-character alphanumeric strings (A-Z, 0-9) generated using cryptographically secure random bytes.
+- **Storage**: bcrypt hashed in database
 - **Single-use**: Marked with `usedAt` timestamp after use
 
 ### Token Flow

@@ -62,21 +62,23 @@ export const verifyTotpToken = (token: string, secret: string): boolean => {
 
 /**
  * Generate N cryptographically secure backup codes.
- * Each code is 8 characters (alphanumeric, uppercase) — easy to type,
- * sufficient entropy (~37 bits after stripping non-alphanumeric chars).
+ * Each code is exactly 8 characters drawn from A-Z and 0-9 (36 chars),
+ * giving ~41 bits of entropy per code. Using direct character-set sampling
+ * (rather than base64 + strip) guarantees a fixed length on every call.
  * @param count - Number of codes to generate (default: 10)
  * @returns Array of plaintext backup codes
  */
 export const generateBackupCodes = (count: number = 10): string[] => {
   const codes: string[] = [];
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
   for (let i = 0; i < count; i++) {
-    // 6 random bytes → base64 → strip non-alphanumeric → uppercase → 8 chars.
-    const code = crypto
-      .randomBytes(6)
-      .toString('base64')
-      .replace(/[^A-Z0-9]/gi, '')
-      .toUpperCase()
-      .slice(0, 8);
+    let code = '';
+    const randomBytes = crypto.randomBytes(8);
+    for (let j = 0; j < 8; j++) {
+      // Modulo bias is negligible here: 256 % 36 = 4 biased values out of 256.
+      code += chars[randomBytes[j] % chars.length];
+    }
     codes.push(code);
   }
   return codes;
