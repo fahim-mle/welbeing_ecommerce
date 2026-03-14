@@ -76,9 +76,12 @@ model User {
   lastName    String   @map("last_name")
   phone       String?  @map("phone")
   role        UserRole @default(USER)
-  isActive    Boolean  @default(true) @map("is_active")
-  lastLoginAt DateTime? @map("last_login_at")
-  createdAt   DateTime @default(now()) @map("created_at")
+  isActive       Boolean   @default(true) @map("is_active")
+  lastLoginAt    DateTime? @map("last_login_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  mfaSecret      String?   @map("mfa_secret")
+  mfaEnabled     Boolean   @default(false) @map("mfa_enabled")
+  mfaEnrolledAt  DateTime? @map("mfa_enrolled_at")
 
   orders                   Order[]
   identities               UserIdentity[]
@@ -88,6 +91,7 @@ model User {
   refreshTokens            RefreshToken[]
   emailVerificationTokens  EmailVerificationToken[]
   passwordResetTokens      PasswordResetToken[]
+  mfaBackupCodes           MfaBackupCode[]
 
   @@map("users")
 }
@@ -389,4 +393,17 @@ model OrderItem {
   @@index([orderId])
   @@index([productId])
   @@index([productVariantId])
+}
+
+model MfaBackupCode {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
+  code      String    @unique  // Hashed backup code — never store plaintext
+  usedAt    DateTime? @map("used_at")  // null = unused, timestamp = consumed
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("mfa_backup_codes")
+  @@index([userId])
 }
