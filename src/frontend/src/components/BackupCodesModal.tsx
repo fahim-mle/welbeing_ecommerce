@@ -30,6 +30,7 @@ export const BackupCodesModal = ({ isOpen, backupCodes, onClose }: BackupCodesMo
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy to clipboard:', err);
+      alert('Failed to copy codes to clipboard. Please copy them manually.');
     }
   };
 
