@@ -58,7 +58,7 @@ router.post(
 
     const payload = verifyMfaToken(mfaToken);
     if (!payload) {
-      return res.status(401).json({ message: 'Invalid or expired MFA token' });
+      return res.status(401).json({ success: false, error: { message: 'Invalid or expired MFA token', code: 'MFA_TOKEN_INVALID' } });
     }
 
     const { userId } = payload;
@@ -71,13 +71,13 @@ router.post(
 
       // Guard: user must exist and have MFA fully enrolled.
       if (!user || !user.mfaEnabled || !user.mfaSecret) {
-        return res.status(401).json({ message: 'Invalid or expired MFA token' });
+        return res.status(401).json({ success: false, error: { message: 'Invalid or expired MFA token', code: 'MFA_TOKEN_INVALID' } });
       }
 
       const isValid = verifyTotpToken(token, user.mfaSecret);
       if (!isValid) {
         logger.warn('MFA TOTP verification failed', { userId });
-        return res.status(401).json({ message: 'Invalid TOTP code' });
+        return res.status(401).json({ success: false, error: { message: 'Invalid TOTP code', code: 'INVALID_TOTP_CODE' } });
       }
 
       // Link any guest orders placed before login — deferred until MFA is
@@ -93,7 +93,7 @@ router.post(
       return res.status(200).json({ user: { id: user.id, email: user.email, role: user.role } });
     } catch (error) {
       logger.error('MFA TOTP verification error', { userId, error });
-      return res.status(500).json({ message: 'MFA verification failed' });
+      return res.status(500).json({ success: false, error: { message: 'MFA verification failed', code: 'MFA_ENROLLMENT_FAILED' } });
     }
   },
 );
@@ -108,7 +108,7 @@ router.post(
 
     const payload = verifyMfaToken(mfaToken);
     if (!payload) {
-      return res.status(401).json({ message: 'Invalid or expired MFA token' });
+      return res.status(401).json({ success: false, error: { message: 'Invalid or expired MFA token', code: 'MFA_TOKEN_INVALID' } });
     }
 
     const { userId } = payload;
@@ -120,7 +120,7 @@ router.post(
       });
 
       if (!user || !user.mfaEnabled) {
-        return res.status(401).json({ message: 'Invalid or expired MFA token' });
+        return res.status(401).json({ success: false, error: { message: 'Invalid or expired MFA token', code: 'MFA_TOKEN_INVALID' } });
       }
 
       // Fetch only unused backup codes to limit the comparison set.
@@ -142,7 +142,7 @@ router.post(
 
       if (!matched) {
         logger.warn('MFA backup code verification failed', { userId });
-        return res.status(401).json({ message: 'Invalid backup code' });
+        return res.status(401).json({ success: false, error: { message: 'Invalid or already used backup code', code: 'INVALID_BACKUP_CODE' } });
       }
 
       // Consume the code atomically so it cannot be reused.
@@ -164,7 +164,7 @@ router.post(
       return res.status(200).json({ user: { id: user.id, email: user.email, role: user.role } });
     } catch (error) {
       logger.error('MFA backup code verification error', { userId, error });
-      return res.status(500).json({ message: 'MFA verification failed' });
+      return res.status(500).json({ success: false, error: { message: 'MFA verification failed', code: 'MFA_ENROLLMENT_FAILED' } });
     }
   },
 );
@@ -193,7 +193,7 @@ router.post(
       });
 
       if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ success: false, error: { message: 'User not found', code: 'UNAUTHORIZED' } });
       }
 
       // Delete backup codes and clear MFA fields atomically.
@@ -220,7 +220,7 @@ router.post(
       return res.status(200).json({ success: true, message: 'MFA reset successful' });
     } catch (error) {
       logger.error('MFA reset failed', { userId, error });
-      return res.status(500).json({ message: 'MFA reset failed' });
+      return res.status(500).json({ success: false, error: { message: 'MFA reset failed', code: 'MFA_ENROLLMENT_FAILED' } });
     }
   },
 );
@@ -242,11 +242,11 @@ router.post('/enroll', requireMfaVerified, async (req: AuthRequest, res: Respons
     });
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ success: false, error: { message: 'User not found', code: 'UNAUTHORIZED' } });
     }
 
     if (user.mfaEnabled) {
-      return res.status(400).json({ message: 'MFA already enabled' });
+      return res.status(400).json({ success: false, error: { message: 'MFA already enabled', code: 'MFA_ALREADY_ENABLED' } });
     }
 
     const secret = generateTotpSecret();
@@ -264,7 +264,7 @@ router.post('/enroll', requireMfaVerified, async (req: AuthRequest, res: Respons
     return res.status(200).json({ secret, qrCode });
   } catch (error) {
     logger.error('MFA enroll failed', { userId, error });
-    return res.status(500).json({ message: 'MFA enrollment failed' });
+    return res.status(500).json({ success: false, error: { message: 'MFA enrollment failed', code: 'MFA_ENROLLMENT_FAILED' } });
   }
 });
 
@@ -286,17 +286,17 @@ router.post(
       });
 
       if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ success: false, error: { message: 'User not found', code: 'UNAUTHORIZED' } });
       }
 
       // Enrollment is only valid when a secret exists but MFA is not yet active.
       if (!user.mfaSecret || user.mfaEnabled) {
-        return res.status(400).json({ message: 'Invalid enrollment state' });
+        return res.status(400).json({ success: false, error: { message: 'Invalid enrollment state', code: 'MFA_ALREADY_ENABLED' } });
       }
 
       const isValid = verifyTotpToken(token, user.mfaSecret);
       if (!isValid) {
-        return res.status(401).json({ message: 'Invalid TOTP code' });
+        return res.status(401).json({ success: false, error: { message: 'Invalid TOTP code', code: 'INVALID_TOTP_CODE' } });
       }
 
       const plaintextCodes = generateBackupCodes(10);
@@ -320,7 +320,7 @@ router.post(
       return res.status(200).json({ success: true, backupCodes: plaintextCodes });
     } catch (error) {
       logger.error('MFA verify-enrollment failed', { userId, error });
-      return res.status(500).json({ message: 'MFA verification failed' });
+      return res.status(500).json({ success: false, error: { message: 'MFA verification failed', code: 'MFA_ENROLLMENT_FAILED' } });
     }
   },
 );
@@ -336,7 +336,7 @@ router.get('/status', requireMfaVerified, async (req: AuthRequest, res: Response
     });
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ success: false, error: { message: 'User not found', code: 'UNAUTHORIZED' } });
     }
 
     return res.status(200).json({
@@ -345,7 +345,7 @@ router.get('/status', requireMfaVerified, async (req: AuthRequest, res: Response
     });
   } catch (error) {
     logger.error('MFA status check failed', { userId, error });
-    return res.status(500).json({ message: 'MFA status check failed' });
+    return res.status(500).json({ success: false, error: { message: 'MFA status check failed', code: 'MFA_ENROLLMENT_FAILED' } });
   }
 });
 
@@ -365,7 +365,7 @@ router.post('/regenerate-backup-codes', requireMfaVerified, async (req: AuthRequ
     });
 
     if (!user?.mfaEnabled) {
-      return res.status(400).json({ message: 'MFA not enabled' });
+      return res.status(400).json({ success: false, error: { message: 'MFA not enabled', code: 'MFA_NOT_ENABLED' } });
     }
 
     const plaintextCodes = generateBackupCodes(10);
@@ -386,7 +386,7 @@ router.post('/regenerate-backup-codes', requireMfaVerified, async (req: AuthRequ
     return res.status(200).json({ backupCodes: plaintextCodes });
   } catch (error) {
     logger.error('MFA backup code regeneration failed', { userId, error });
-    return res.status(500).json({ message: 'Backup code regeneration failed' });
+    return res.status(500).json({ success: false, error: { message: 'Backup code regeneration failed', code: 'MFA_ENROLLMENT_FAILED' } });
   }
 });
 
