@@ -7,6 +7,7 @@ import {
 } from 'otplib';
 import qrcode from 'qrcode';
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
 // Shared plugin instances — NobleCryptoPlugin is pure-JS (no Node crypto dep),
 // ScureBase32Plugin handles RFC 4648 base32 encoding required by authenticator apps.
@@ -82,16 +83,20 @@ export const generateBackupCodes = (count: number = 10): string[] => {
 };
 
 /**
- * Hash a backup code for storage using SHA-256.
+ * Hash a backup code for storage using bcrypt (10 rounds).
+ * bcrypt is intentionally slow, making offline brute-force attacks infeasible
+ * even if the database is compromised. SHA-256 was previously used but is
+ * too fast for this purpose.
  * Never store plaintext backup codes.
  */
-export const hashBackupCode = (code: string): string => {
-  return crypto.createHash('sha256').update(code).digest('hex');
+export const hashBackupCode = async (code: string): Promise<string> => {
+  return await bcrypt.hash(code, 10);
 };
 
 /**
- * Verify a backup code against its stored hash.
+ * Verify a backup code against its stored bcrypt hash.
+ * bcrypt.compare is constant-time, preventing timing attacks.
  */
-export const verifyBackupCode = (code: string, hash: string): boolean => {
-  return hashBackupCode(code) === hash;
+export const verifyBackupCode = async (code: string, hash: string): Promise<boolean> => {
+  return await bcrypt.compare(code, hash);
 };

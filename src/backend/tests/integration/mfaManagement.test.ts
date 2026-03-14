@@ -61,20 +61,20 @@ describe('MFA Management Endpoints', () => {
       },
     });
 
-    // Seed 10 backup codes for the regular user
+    // Seed 10 backup codes for the regular user — bcrypt is async.
+    const regularHashes = await Promise.all(
+      Array.from({ length: 10 }, (_, i) => hashBackupCode(`SEED000${i}`))
+    );
     await prisma.mfaBackupCode.createMany({
-      data: Array.from({ length: 10 }, (_, i) => ({
-        userId: regularUser.id,
-        code: hashBackupCode(`SEED000${i}`),
-      })),
+      data: regularHashes.map((codeHash) => ({ userId: regularUser.id, codeHash })),
     });
 
     // Seed backup codes for the target user
+    const targetHashes = await Promise.all(
+      Array.from({ length: 5 }, (_, i) => hashBackupCode(`TARG000${i}`))
+    );
     await prisma.mfaBackupCode.createMany({
-      data: Array.from({ length: 5 }, (_, i) => ({
-        userId: targetUser.id,
-        code: hashBackupCode(`TARG000${i}`),
-      })),
+      data: targetHashes.map((codeHash) => ({ userId: targetUser.id, codeHash })),
     });
 
     userToken = auth.generateToken({
@@ -187,7 +187,7 @@ describe('MFA Management Endpoints', () => {
       expect(after).toHaveLength(10);
     });
 
-    it('should store new codes as hashes (64-char hex)', async () => {
+    it('should store new codes as bcrypt hashes (starting with $2b$)', async () => {
       await request(app)
         .post('/api/auth/mfa/regenerate-backup-codes')
         .set('Cookie', [`access_token=${userToken}`]);
@@ -196,8 +196,9 @@ describe('MFA Management Endpoints', () => {
         where: { userId: regularUser.id },
       });
 
+      // bcrypt hashes always start with $2b$ (or $2a$) and are 60 chars long.
       stored.forEach((row) => {
-        expect(row.code).toMatch(/^[a-f0-9]{64}$/);
+        expect(row.codeHash).toMatch(/^\$2[ab]\$\d{2}\$.{53}$/);
       });
     });
   });
@@ -216,11 +217,11 @@ describe('MFA Management Endpoints', () => {
           mfaEnrolledAt: new Date(),
         },
       });
+      const hashes = await Promise.all(
+        Array.from({ length: 5 }, (_, i) => hashBackupCode(`TARG000${i}`))
+      );
       await prisma.mfaBackupCode.createMany({
-        data: Array.from({ length: 5 }, (_, i) => ({
-          userId: targetUser.id,
-          code: hashBackupCode(`TARG000${i}`),
-        })),
+        data: hashes.map((codeHash) => ({ userId: targetUser.id, codeHash })),
       });
     });
 

@@ -181,58 +181,55 @@ describe('MFA Utilities', () => {
   });
 
   describe('hashBackupCode', () => {
-    it('should return a non-empty string', () => {
-      const hash = hashBackupCode('TESTCODE');
+    it('should return a non-empty string', async () => {
+      const hash = await hashBackupCode('TESTCODE');
       expect(hash).toBeTruthy();
       expect(typeof hash).toBe('string');
       expect(hash.length).toBeGreaterThan(0);
     });
 
-    it('should return a hex string (64 chars for SHA-256)', () => {
-      const hash = hashBackupCode('TESTCODE');
-      const hexRegex = /^[a-f0-9]{64}$/;
-      expect(hexRegex.test(hash)).toBe(true);
-      expect(hash.length).toBe(64);
+    it('should return a bcrypt hash (starts with $2b$ and is 60 chars)', async () => {
+      const hash = await hashBackupCode('TESTCODE');
+      // bcrypt output format: $2b$<cost>$<22-char salt><31-char hash> = 60 chars total
+      expect(hash).toMatch(/^\$2[ab]\$\d{2}\$.{53}$/);
+      expect(hash.length).toBe(60);
     });
 
-    it('should return the same hash for the same input', () => {
+    it('should return different hashes for the same input (bcrypt uses random salt)', async () => {
+      // Unlike SHA-256, bcrypt embeds a random salt so identical inputs produce
+      // different hashes — this is the key property that prevents rainbow tables.
       const code = 'TESTCODE';
-      const hash1 = hashBackupCode(code);
-      const hash2 = hashBackupCode(code);
-      const hash3 = hashBackupCode(code);
-      expect(hash1).toBe(hash2);
-      expect(hash2).toBe(hash3);
+      const hash1 = await hashBackupCode(code);
+      const hash2 = await hashBackupCode(code);
+      expect(hash1).not.toBe(hash2);
     });
 
-    it('should return different hashes for different inputs', () => {
-      const hash1 = hashBackupCode('CODE1234');
-      const hash2 = hashBackupCode('CODE5678');
-      const hash3 = hashBackupCode('ABCD9999');
+    it('should return different hashes for different inputs', async () => {
+      const hash1 = await hashBackupCode('CODE1234');
+      const hash2 = await hashBackupCode('CODE5678');
       expect(hash1).not.toBe(hash2);
-      expect(hash2).not.toBe(hash3);
-      expect(hash1).not.toBe(hash3);
     });
   });
 
   describe('verifyBackupCode', () => {
-    it('should return true when code matches hash', () => {
+    it('should return true when code matches hash', async () => {
       const code = 'TESTCODE';
-      const hash = hashBackupCode(code);
-      const result = verifyBackupCode(code, hash);
+      const hash = await hashBackupCode(code);
+      const result = await verifyBackupCode(code, hash);
       expect(result).toBe(true);
     });
 
-    it('should return false when code does not match hash', () => {
+    it('should return false when code does not match hash', async () => {
       const code = 'TESTCODE';
-      const hash = hashBackupCode('WRONGCODE');
-      const result = verifyBackupCode(code, hash);
+      const hash = await hashBackupCode('WRONGCODE');
+      const result = await verifyBackupCode(code, hash);
       expect(result).toBe(false);
     });
 
-    it('should be case-sensitive', () => {
+    it('should be case-sensitive', async () => {
       const code = 'TESTCODE';
-      const hash = hashBackupCode(code);
-      const result = verifyBackupCode('testcode', hash);
+      const hash = await hashBackupCode(code);
+      const result = await verifyBackupCode('testcode', hash);
       expect(result).toBe(false);
     });
   });

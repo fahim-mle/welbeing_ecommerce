@@ -398,7 +398,11 @@ model OrderItem {
 model MfaBackupCode {
   id        Int       @id @default(autoincrement())
   userId    Int       @map("user_id")
-  code      String    @unique  // Hashed backup code — never store plaintext
+  // bcrypt hash of the backup code — never store plaintext.
+  // No unique index: bcrypt hashes include a random salt so two identical
+  // codes produce different hashes; a unique constraint would be meaningless
+  // and would prevent per-code salting.
+  codeHash  String    @map("code_hash")
   usedAt    DateTime? @map("used_at")  // null = unused, timestamp = consumed
   createdAt DateTime  @default(now()) @map("created_at")
 

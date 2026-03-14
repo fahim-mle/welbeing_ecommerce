@@ -33,12 +33,17 @@ describe('MFA Verification Login Flow', () => {
       },
     });
 
-    // Seed 10 backup codes (plaintext stored separately for test assertions)
+    // Seed backup codes — hash with bcrypt before storing.
+    const [hashA, hashC, hashE] = await Promise.all([
+      hashBackupCode('AAAABBBB'),
+      hashBackupCode('CCCCDDDD'),
+      hashBackupCode('EEEEFFFF'),
+    ]);
     await prisma.mfaBackupCode.createMany({
       data: [
-        { userId: testUser.id, code: hashBackupCode('AAAABBBB') },
-        { userId: testUser.id, code: hashBackupCode('CCCCDDDD') },
-        { userId: testUser.id, code: hashBackupCode('EEEEFFFF') },
+        { userId: testUser.id, codeHash: hashA },
+        { userId: testUser.id, codeHash: hashC },
+        { userId: testUser.id, codeHash: hashE },
       ],
     });
 
@@ -224,8 +229,10 @@ describe('MFA Verification Login Flow', () => {
 
       expect(res.status).toBe(200);
 
+      // We can't query by hash (bcrypt hashes are non-deterministic), so find
+      // the consumed code by checking which unused code was marked used.
       const usedCode = await prisma.mfaBackupCode.findFirst({
-        where: { userId: testUser.id, code: hashBackupCode('CCCCDDDD') },
+        where: { userId: testUser.id, usedAt: { not: null } },
       });
 
       expect(usedCode?.usedAt).not.toBeNull();

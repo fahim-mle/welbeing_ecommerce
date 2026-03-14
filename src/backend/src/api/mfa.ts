@@ -124,9 +124,16 @@ router.post(
       });
 
       // Linear scan: compare the submitted code against each stored hash.
-      // The set is small (≤10) so this is acceptable; no timing-attack risk
-      // because verifyBackupCode uses a constant-time hash comparison.
-      const matched = backupCodes.find((bc) => verifyBackupCode(code, bc.code));
+      // The set is small (≤10) so this is acceptable. bcrypt.compare is
+      // constant-time, preventing timing attacks. We await each comparison
+      // sequentially to avoid leaking timing information via Promise.race.
+      let matched: (typeof backupCodes)[number] | undefined;
+      for (const bc of backupCodes) {
+        if (await verifyBackupCode(code, bc.codeHash)) {
+          matched = bc;
+          break;
+        }
+      }
 
       if (!matched) {
         logger.warn('MFA backup code verification failed', { userId });
@@ -284,6 +291,9 @@ router.post(
 
       const plaintextCodes = generateBackupCodes(10);
 
+      // Hash all codes before the transaction — bcrypt is async.
+      const hashedCodes = await Promise.all(plaintextCodes.map((c) => hashBackupCode(c)));
+
       // Activate MFA and store hashed backup codes atomically.
       await prisma.$transaction([
         prisma.user.update({
@@ -291,10 +301,7 @@ router.post(
           data: { mfaEnabled: true, mfaEnrolledAt: new Date() },
         }),
         prisma.mfaBackupCode.createMany({
-          data: plaintextCodes.map((code) => ({
-            userId,
-            code: hashBackupCode(code),
-          })),
+          data: hashedCodes.map((codeHash) => ({ userId, codeHash })),
         }),
       ]);
 
@@ -353,15 +360,15 @@ router.post('/regenerate-backup-codes', async (req: AuthRequest, res: Response) 
 
     const plaintextCodes = generateBackupCodes(10);
 
+    // Hash all codes before the transaction — bcrypt is async.
+    const hashedCodes = await Promise.all(plaintextCodes.map((c) => hashBackupCode(c)));
+
     // Delete old codes and insert new ones atomically so there is never a
     // window where the user has no valid backup codes.
     await prisma.$transaction([
       prisma.mfaBackupCode.deleteMany({ where: { userId } }),
       prisma.mfaBackupCode.createMany({
-        data: plaintextCodes.map((code) => ({
-          userId,
-          code: hashBackupCode(code),
-        })),
+        data: hashedCodes.map((codeHash) => ({ userId, codeHash })),
       }),
     ]);
 
