@@ -24,6 +24,11 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface MfaRequiredResponse {
+  mfaRequired: true;
+  mfaToken: string;
+}
+
 export const authApi = {
   async register(email: string, password: string): Promise<AuthResponse> {
     const res = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -39,7 +44,7 @@ export const authApi = {
     return res.json();
   },
 
-  async login(email: string, password: string): Promise<AuthResponse> {
+  async login(email: string, password: string): Promise<AuthResponse | MfaRequiredResponse> {
     const res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
