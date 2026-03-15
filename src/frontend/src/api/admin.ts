@@ -31,13 +31,34 @@ export interface PaginatedAdminUsers {
   hasNextPage: boolean;
 }
 
-export const fetchAdminProducts = async (page = 1, limit = 20): Promise<Product[]> => {
-  const response = await fetch(`${API_BASE_URL}/admin/products?page=${page}&limit=${limit}`, {
+export interface PaginatedAdminProducts {
+  data: Product[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export const fetchAdminProducts = async (
+  page = 1,
+  limit = 20,
+  search?: string,
+): Promise<PaginatedAdminProducts> => {
+  const params = new URLSearchParams();
+  params.append('page', page.toString());
+  params.append('limit', limit.toString());
+  if (search) {
+    params.append('search', search);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/admin/products?${params.toString()}`, {
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch admin products');
   const result = await response.json();
-  return result.data?.products ?? result.data ?? result;
+  return result;
 };
 
 export const fetchAdminOrders = async (
