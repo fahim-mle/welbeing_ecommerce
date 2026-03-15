@@ -20,6 +20,7 @@ import adminCatalogRouter from './api/admin/catalog';
 import adminUsersRouter from './api/admin/users';
 import adminAnalyticsRouter from './api/admin/analytics';
 import authRouter from './api/auth';
+import mfaRouter from './api/mfa';
 import usersRouter from './api/users';
 import addressesRouter from './api/addresses';
 import { setupSwagger } from './swagger';
@@ -49,6 +50,9 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// MFA sub-router must be mounted before the auth router so that
+// /api/auth/mfa/* is matched before the catch-all /api/auth/* handler.
+app.use('/api/auth/mfa', authLimiter, mfaRouter);
 app.use('/api/auth', authLimiter, authRouter);
 app.use('/api', apiLimiter, usersRouter);
 app.use('/api/addresses', apiLimiter, addressesRouter);

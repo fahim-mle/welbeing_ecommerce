@@ -6,7 +6,15 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.+(ts|tsx|js)', '**/?(*.)+(spec|test).+(ts|tsx|js)'],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
+    // Transpile ESM-only packages in node_modules that Jest cannot load as CommonJS.
+    // otplib and its @scure/base dependency ship as pure ESM ("type": "module").
+    '^.+\\.js$': ['ts-jest', { diagnostics: false }],
   },
+  // By default Jest ignores all of node_modules. Override to allow transpilation
+  // of the ESM packages pulled in transitively by otplib.
+  transformIgnorePatterns: [
+    '/node_modules/(?!(otplib|@otplib|@scure|@noble)/)',
+  ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   // Ensure prisma schema exists in an isolated DB before any tests run.
   globalSetup: '<rootDir>/tests/globalSetup.js',

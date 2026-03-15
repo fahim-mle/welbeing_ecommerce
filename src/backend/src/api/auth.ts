@@ -33,12 +33,12 @@ const maskEmail = (value: unknown) => {
   return `${localPart.slice(0, 2)}***@${domain}`;
 };
 
-const createAccessToken = (user: { id: number; email: string; role: string }) => {
+export const createAccessToken = (user: { id: number; email: string; role: string }) => {
   return auth.generateToken({ userId: user.id, email: user.email, role: user.role }, '15m');
 };
 
 /** Write both auth cookies onto the response. */
-const setAuthCookies = (res: Response, accessToken: string, refreshToken: string) => {
+export const setAuthCookies = (res: Response, accessToken: string, refreshToken: string) => {
   res.cookie(COOKIE_NAMES.ACCESS_TOKEN, accessToken, accessTokenCookie());
   res.cookie(COOKIE_NAMES.REFRESH_TOKEN, refreshToken, refreshTokenCookie());
 };
@@ -104,7 +104,25 @@ router.post('/login', validateBody(loginSchema), async (req: Request, res: Respo
     }
 
     const user = identity.user;
-    await userService.linkGuestOrders(user.email, user.id);
+
+    // Check if user has MFA enabled — delegated to service layer to keep
+    // the controller free of direct data-access calls.
+    const mfaEnabled = await userService.isMfaEnabled(user.id);
+
+    if (mfaEnabled) {
+      // Generate temporary MFA token (5 min expiry) - no cookies set yet
+      const mfaToken = auth.generateToken(
+        { userId: user.id, email: user.email, role: user.role, mfaPending: true },
+        '5m'
+      );
+      
+      return res.status(200).json({
+        mfaRequired: true,
+        mfaToken,
+      });
+    }
+
+    // Normal flow for non-MFA users
     const accessToken = createAccessToken({ id: user.id, email: user.email, role: user.role });
     const refreshToken = await userService.createRefreshToken(user.id);
 

@@ -1,23 +1,105 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, error, isLoading } = useAuth();
+  const [mfaCode, setMfaCode] = useState('');
+  const [useBackupCode, setUseBackupCode] = useState(false);
+  const { login, error, isLoading, mfaRequired, verifyMfa, verifyBackupCode, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     try {
-      await login(email, password);
-      navigate('/');
+      if (mfaRequired) {
+        // MFA verification step
+        if (useBackupCode) {
+          await verifyBackupCode(mfaCode);
+        } else {
+          await verifyMfa(mfaCode);
+        }
+      } else {
+        // Normal login
+        await login(email, password);
+      }
     } catch {
       // Error handled by context/hook
     }
   };
 
+  // Navigate on successful authentication
+  useEffect(() => {
+    if (isAuthenticated && !mfaRequired) {
+      navigate('/');
+    }
+  }, [isAuthenticated, mfaRequired, navigate]);
+
+  // Reset MFA state on unmount
+  useEffect(() => {
+    return () => {
+      setMfaCode('');
+      setUseBackupCode(false);
+    };
+  }, []);
+
+  // MFA Verification Form
+  if (mfaRequired) {
+    return (
+      <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Two-Factor Authentication</h2>
+        <p className="text-gray-600 mb-4 text-center">
+          {useBackupCode 
+            ? 'Enter one of your backup codes' 
+            : 'Enter the 6-digit code from your authenticator app'}
+        </p>
+        
+        {error && <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{error}</div>}
+        
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="form-label" htmlFor="mfaCode">
+              {useBackupCode ? 'Backup Code' : 'Verification Code'}
+            </label>
+            <input
+              id="mfaCode"
+              type="text"
+              value={mfaCode}
+              onChange={(e) => setMfaCode(e.target.value)}
+              className="form-input text-center text-2xl tracking-widest font-mono"
+              placeholder={useBackupCode ? 'XXXXXXXX' : '000000'}
+              maxLength={useBackupCode ? 8 : 6}
+              required
+              autoFocus
+            />
+          </div>
+          
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="btn-primary w-full mb-4"
+          >
+            {isLoading ? 'Verifying...' : 'Verify'}
+          </button>
+          
+          <button
+            type="button"
+            onClick={() => {
+              setUseBackupCode(!useBackupCode);
+              setMfaCode('');
+            }}
+            className="text-sm text-blue-600 hover:underline w-full text-center"
+          >
+            {useBackupCode ? 'Use authenticator app instead' : 'Use backup code instead'}
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  // Normal Login Form
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>

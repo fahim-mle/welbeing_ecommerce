@@ -3,6 +3,18 @@ import { adminAuth } from '../../src/middleware/adminAuth';
 import { auth } from '../../src/lib/auth';
 import { COOKIE_NAMES } from '../../src/lib/cookie';
 
+// Mock prisma so adminAuth unit tests have no DB dependency
+jest.mock('../../src/lib/prisma', () => ({
+  prisma: {
+    user: {
+      findUnique: jest.fn(),
+    },
+  },
+}));
+
+import { prisma } from '../../src/lib/prisma';
+const mockFindUnique = prisma.user.findUnique as jest.Mock;
+
 const mockReq = (cookies?: Record<string, string>, authHeader?: string) => ({
   cookies,
   headers: { authorization: authHeader },
@@ -104,23 +116,29 @@ describe('authenticate middleware', () => {
 });
 
 describe('adminAuth middleware', () => {
-  it('should call next() with valid admin cookie token', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Default: admin has no MFA enabled — non-MFA path continues to work
+    mockFindUnique.mockResolvedValue({ mfaEnabled: false });
+  });
+
+  it('should call next() with valid admin cookie token', async () => {
     const req = mockReq({ [COOKIE_NAMES.ACCESS_TOKEN]: validAdminToken });
     const res = mockRes();
     const next = mockNext();
 
-    adminAuth(req, res, next);
+    await adminAuth(req, res, next);
 
     expect(next).toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
   });
 
-  it('should return 403 for non-admin token', () => {
+  it('should return 403 for non-admin token', async () => {
     const req = mockReq({ [COOKIE_NAMES.ACCESS_TOKEN]: validUserToken });
     const res = mockRes();
     const next = mockNext();
 
-    adminAuth(req, res, next);
+    await adminAuth(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith({
@@ -129,12 +147,12 @@ describe('adminAuth middleware', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should return 401 when no token present', () => {
+  it('should return 401 when no token present', async () => {
     const req = mockReq();
     const res = mockRes();
     const next = mockNext();
 
-    adminAuth(req, res, next);
+    await adminAuth(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
@@ -143,12 +161,12 @@ describe('adminAuth middleware', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should return 401 for invalid token', () => {
+  it('should return 401 for invalid token', async () => {
     const req = mockReq({ [COOKIE_NAMES.ACCESS_TOKEN]: 'bad-token' });
     const res = mockRes();
     const next = mockNext();
 
-    adminAuth(req, res, next);
+    await adminAuth(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
@@ -157,7 +175,7 @@ describe('adminAuth middleware', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should prioritize cookie over header (admin access granted)', () => {
+  it('should prioritize cookie over header (admin access granted)', async () => {
     const req = mockReq(
       { [COOKIE_NAMES.ACCESS_TOKEN]: validAdminToken },
       `Bearer ${validUserToken}`
@@ -165,18 +183,18 @@ describe('adminAuth middleware', () => {
     const res = mockRes();
     const next = mockNext();
 
-    adminAuth(req, res, next);
+    await adminAuth(req, res, next);
 
     expect(next).toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
   });
 
-  it('should set req.user with admin payload', () => {
+  it('should set req.user with admin payload', async () => {
     const req = mockReq({ [COOKIE_NAMES.ACCESS_TOKEN]: validAdminToken });
     const res = mockRes();
     const next = mockNext();
 
-    adminAuth(req, res, next);
+    await adminAuth(req, res, next);
 
     expect((req as any).user).toBeDefined();
     expect((req as any).user.userId).toBe(2);

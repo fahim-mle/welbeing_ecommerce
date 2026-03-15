@@ -10,6 +10,7 @@ export interface TokenPayload {
   userId: number;
   email: string;
   role: string;
+  mfaPending?: boolean;  // Indicates MFA verification is pending
   iat?: number;
   exp?: number;
 }
