@@ -191,7 +191,7 @@ mfa_enrolled_at TIMESTAMP NULL
 ```sql
 id         SERIAL PRIMARY KEY
 user_id    INTEGER REFERENCES users(id) ON DELETE CASCADE
-code       TEXT UNIQUE NOT NULL  -- SHA-256 hash
+code_hash  TEXT NOT NULL  -- bcrypt hash (unique constraint removed due to per-code salting)
 used_at    TIMESTAMP NULL
 created_at TIMESTAMP DEFAULT NOW()
 ```
@@ -275,7 +275,7 @@ created_at TIMESTAMP DEFAULT NOW()
 
 🔒 **httpOnly Cookies** - Tokens stored in httpOnly cookies (not accessible via JavaScript)  
 🔒 **Short-lived MFA Tokens** - 5-minute expiry for MFA verification tokens  
-🔒 **Hashed Backup Codes** - SHA-256 hashed, never stored in plaintext  
+🔒 **Hashed Backup Codes** - bcrypt hashed with per-code salting, never stored in plaintext  
 🔒 **Single-use Backup Codes** - Each code can only be used once  
 🔒 **Admin Enforcement** - Admins blocked from dashboard without MFA  
 🔒 **Audit Logging** - MFA enrollment, verification, and reset actions logged  
@@ -336,9 +336,9 @@ created_at TIMESTAMP DEFAULT NOW()
 ## Support
 
 For additional help:
-- 📖 [API Documentation](../src/backend/API_DOCS.md)
-- 🔐 [Security Best Practices](./SECURITY.md)
-- 📋 [Project README](../README.md)
+- 📖 [API Documentation](src/backend/API_DOCS.md)
+- 🔐 [Security Best Practices](SECURITY.md)
+- 📋 [Project README](README.md)
 
 ---
 
