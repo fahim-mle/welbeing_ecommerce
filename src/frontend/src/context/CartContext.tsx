@@ -7,7 +7,7 @@ export interface CartItem {
   variant?: ProductVariant;
 }
 
-interface CartContextValue {
+export interface CartContextValue {
   items: CartItem[];
   totalItems: number;
   subtotal: number;
