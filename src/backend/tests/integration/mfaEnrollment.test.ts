@@ -260,9 +260,10 @@ describe('MFA Enrollment Flow', () => {
 
       expect(backupCodes.length).toBe(10);
 
-      // Verify that codes are hashed (should be 64 char hex strings for SHA-256)
-      backupCodes.forEach((code: { code: string }) => {
-        expect(code.code).toMatch(/^[a-f0-9]{64}$/);
+      // Verify that codes are hashed (bcrypt hashes start with $2b$ and are ~60 chars)
+      backupCodes.forEach((code: { codeHash: string }) => {
+        expect(code.codeHash).toMatch(/^\$2[aby]\$/);
+        expect(code.codeHash.length).toBeGreaterThanOrEqual(59);
       });
     });
 
