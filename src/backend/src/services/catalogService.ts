@@ -2,6 +2,22 @@ import { Prisma, WellbeingTagType } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import { deleteByPattern, deleteCache, getCache, setCache } from '../lib/redis';
 
+export interface GetAdminProductsOptions {
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginatedProducts {
+  data: Awaited<ReturnType<typeof prisma.product.findMany>>;
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 const CATEGORY_CACHE_KEY = 'catalog:categories';
 const TAG_CACHE_KEY = 'catalog:tags';
 const PRODUCT_CACHE_PREFIX = 'catalog:product:';
@@ -130,6 +146,57 @@ export const getProducts = async (filters: {
   }
 
   return result;
+};
+
+/**
+ * Admin-specific product listing: includes all products regardless of visibility/stock,
+ * supports case-insensitive search across name, SKU, and description, and returns
+ * pagination metadata. Limit is capped at 100 to prevent runaway queries.
+ */
+export const getAdminProducts = async (options: GetAdminProductsOptions = {}): Promise<PaginatedProducts> => {
+  const { search } = options;
+  const page = options.page ?? 1;
+  // Cap at 100 to prevent runaway queries
+  const limit = Math.min(options.limit ?? 20, 100);
+  const skip = (page - 1) * limit;
+
+  const where: Prisma.ProductWhereInput = search
+    ? {
+        OR: [
+          { name: { contains: search, mode: 'insensitive' } },
+          { sku: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
+        ],
+      }
+    : {};
+
+  const [data, total] = await prisma.$transaction([
+    prisma.product.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        category: true,
+        images: {
+          orderBy: { displayOrder: 'asc' },
+          take: 1,
+        },
+        tags: true,
+      },
+    }),
+    prisma.product.count({ where }),
+  ]);
+
+  return {
+    data,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 export const getProductById = async (id: number) => {

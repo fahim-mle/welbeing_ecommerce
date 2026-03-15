@@ -4,25 +4,23 @@ import * as catalogService from '../../services/catalogService';
 import { logger } from '../../lib/logger';
 import { validateBody, validateQuery } from '../../middleware/validation';
 import { createProductSchema, updateProductSchema } from '../../schemas/products';
-import { paginationSchema } from '../../schemas/pagination';
+import { adminProductsQuerySchema } from '../../schemas/pagination';
 
 const router = Router();
 
 // Apply admin auth middleware to all routes in this router
 router.use(adminAuth);
 
-// GET /api/admin/products - List all products
-router.get('/', validateQuery(paginationSchema), async (req: Request, res: Response) => {
+// GET /api/admin/products - List all products with search and pagination
+router.get('/', validateQuery(adminProductsQuerySchema), async (req: Request, res: Response) => {
   try {
-    const { page, limit } = req.query as unknown as { page: number; limit: number };
-    const result = await catalogService.getProducts({ includeOutOfStock: true, page, limit });
-    const products = Array.isArray(result) ? result : result.products;
-    const total = Array.isArray(result) ? undefined : result.total;
-    res.json({ data: products, page, limit, total });
+    const { search, page, limit } = req.query as unknown as { search?: string; page: number; limit: number };
+    const result = await catalogService.getAdminProducts({ search, page, limit });
+    res.json({ success: true, ...result });
   } catch (error: any) {
     const requestId = (req as Request & { requestId?: string }).requestId;
     logger.error('Error fetching admin products', { requestId, error });
-    res.status(500).json({ message: 'Error fetching products', error: error.message });
+    res.status(500).json({ success: false, message: 'Error fetching products', error: error.message });
   }
 });
 
