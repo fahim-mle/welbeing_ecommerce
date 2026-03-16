@@ -31,6 +31,7 @@ A full-stack, production-ready e-commerce platform built with TypeScript, featur
 The Health & Wellbeing E-Commerce Platform is a modern, scalable e-commerce solution designed specifically for health and wellness products. It provides a seamless shopping experience for customers while offering powerful management tools for administrators.
 
 **Key Highlights:**
+
 - 🛡️ **Enterprise-grade Security** - JWT authentication with TOTP-based MFA
 - 🎨 **Modern UI/UX** - Responsive design with Tailwind CSS
 - 📱 **Mobile-First** - Optimized for all devices
@@ -45,6 +46,7 @@ The Health & Wellbeing E-Commerce Platform is a modern, scalable e-commerce solu
 ## ✨ Features
 
 ### Customer Features
+
 - ✅ **Product Catalog**
   - Browse products by category (Supplements, Fitness, Mental Health, etc.)
   - Filter by wellbeing tags (Sleep, Energy, Immunity, etc.)
@@ -67,6 +69,7 @@ The Health & Wellbeing E-Commerce Platform is a modern, scalable e-commerce solu
   - Password reset functionality
 
 ### Admin Features
+
 - ✅ **Product Management**
   - Create, update, and delete products
   - Manage product images
@@ -94,6 +97,7 @@ The Health & Wellbeing E-Commerce Platform is a modern, scalable e-commerce solu
   - Secure session management
 
 ### Developer Features
+
 - ✅ **API Documentation**
   - Interactive Swagger UI
   - OpenAPI 3.0 specification
@@ -117,6 +121,7 @@ The Health & Wellbeing E-Commerce Platform is a modern, scalable e-commerce solu
 ## 🛠️ Tech Stack
 
 ### Backend
+
 | Technology | Purpose | Version |
 |------------|---------|---------|
 | **Node.js** | Runtime environment | 18+ |
@@ -132,6 +137,7 @@ The Health & Wellbeing E-Commerce Platform is a modern, scalable e-commerce solu
 | **Jest** | Testing framework | 29.x |
 
 ### Frontend
+
 | Technology | Purpose | Version |
 |------------|---------|---------|
 | **React** | UI library | 19.x |
@@ -143,6 +149,7 @@ The Health & Wellbeing E-Commerce Platform is a modern, scalable e-commerce solu
 | **Vitest** | Testing framework | Latest |
 
 ### DevOps & Tools
+
 - **Docker** - Containerization
 - **Docker Compose** - Multi-container orchestration
 - **Nginx** - Reverse proxy (production)
@@ -239,12 +246,14 @@ welbeing_ecommerce/
 #### Option 1: Local Development
 
 **1. Clone the repository**
+
 ```bash
 git clone <repository-url>
 cd welbeing_ecommerce
 ```
 
 **2. Install dependencies**
+
 ```bash
 # Install all dependencies (root + backend + frontend)
 npm run install:all
@@ -257,6 +266,7 @@ cd src/frontend && npm install
 **3. Set up environment variables**
 
 **Backend** (`src/backend/.env`):
+
 ```env
 # Database
 DATABASE_URL="postgresql://welbeing:welbeing@localhost:5432/welbeing?schema=public"
@@ -276,11 +286,13 @@ REDIS_URL="redis://localhost:6379"
 ```
 
 **Frontend** (`src/frontend/.env.local`):
+
 ```env
 VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
 **4. Initialize the database**
+
 ```bash
 cd src/backend
 
@@ -295,34 +307,41 @@ npx prisma db seed
 **5. Start development servers**
 
 **Terminal 1 - Backend:**
+
 ```bash
 cd src/backend
 npm run dev
 ```
+
 Backend runs on `http://localhost:3000`
 
 **Terminal 2 - Frontend:**
+
 ```bash
 cd src/frontend
 npm run dev
 ```
+
 Frontend runs on `http://localhost:5173`
 
 **6. Access the application**
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:3000/api
-- **API Docs**: http://localhost:3000/api-docs
+
+- **Frontend**: <http://localhost:5173>
+- **Backend API**: <http://localhost:3000/api>
+- **API Docs**: <http://localhost:3000/api-docs>
 
 ---
 
 #### Option 2: Docker Deployment
 
 **1. Copy environment file**
+
 ```bash
 cp .env.docker.example .env.docker
 ```
 
 **2. Edit `.env.docker` and set secure values**
+
 ```env
 # IMPORTANT: Change these values!
 POSTGRES_PASSWORD=your-secure-password
@@ -330,21 +349,25 @@ JWT_SECRET=your-super-secret-jwt-key
 ```
 
 **3. Start all services**
+
 ```bash
 docker-compose up -d
 ```
 
 **4. Access the application**
-- **Frontend**: http://localhost:8080
-- **Backend API**: http://localhost:3000/api
-- **API Docs**: http://localhost:3000/api-docs
+
+- **Frontend**: <http://localhost:8080>
+- **Backend API**: <http://localhost:3000/api>
+- **API Docs**: <http://localhost:3000/api-docs>
 
 **5. View logs**
+
 ```bash
 docker-compose logs -f
 ```
 
 **6. Stop services**
+
 ```bash
 docker-compose down
 ```
@@ -354,11 +377,13 @@ docker-compose down
 ### Default Credentials
 
 **Admin Account:**
+
 - Email: `admin@welbeing.com`
 - Password: `admin123`
 - **Note**: Enable MFA after first login (required for admin access)
 
 **Test User Accounts:**
+
 - `user1@welbeing.com` / `user123`
 - `user2@welbeing.com` / `user123`
 - `user3@welbeing.com` / `user123`
@@ -379,21 +404,25 @@ docker-compose down
 ### API Documentation
 
 **Interactive Swagger UI:**
+
 ```
 http://localhost:3000/api-docs
 ```
 
 Features:
+
 - Browse all endpoints
 - View request/response schemas
 - Test endpoints directly from browser
 - Download OpenAPI specification
 
 **OpenAPI Specification:**
+
 - **JSON**: `http://localhost:3000/api-docs.json`
 - **YAML**: `src/backend/openapi.yaml`
 
 **Detailed Guides:**
+
 - [API_DOCS.md](./src/backend/API_DOCS.md) - All endpoints with examples
 - [MFA_SETUP.md](./docs/MFA_SETUP.md) - MFA enrollment and usage
 
@@ -421,6 +450,7 @@ npm run test:coverage
 ```
 
 **Test Coverage:**
+
 - Unit tests: 83 tests
 - Integration tests: 42 tests
 - Total: 125+ tests
@@ -454,11 +484,13 @@ npm run test:all
 ### Authentication & Authorization
 
 **JWT-based Authentication:**
+
 - Access tokens (15 min expiry) stored in httpOnly cookies
 - Refresh tokens (7 days expiry) for session renewal
 - Secure cookie configuration (httpOnly, SameSite, Secure in production)
 
 **Multi-Factor Authentication (MFA):**
+
 - TOTP-based (RFC 6238) compatible with Google Authenticator, Authy, etc.
 - **Required for all admin accounts**
 - QR code enrollment
@@ -466,29 +498,34 @@ npm run test:all
 - Admin can reset user MFA in emergencies
 
 **Role-Based Access Control:**
+
 - `USER` role - Standard customer access
 - `ADMIN` role - Full dashboard access (requires MFA)
 
 ### Security Best Practices
 
 ✅ **Password Security**
+
 - bcrypt hashing with salt rounds
 - Minimum password requirements
 - Password reset via email tokens
 
 ✅ **Session Security**
+
 - httpOnly cookies (not accessible via JavaScript)
 - CSRF protection via SameSite cookies
 - Short-lived access tokens
 - Refresh token rotation
 
 ✅ **API Security**
+
 - Rate limiting on authentication endpoints
 - Input validation with Zod schemas
 - SQL injection prevention (Prisma ORM)
 - XSS protection
 
 ✅ **MFA Security**
+
 - TOTP secrets encrypted in database
 - Backup codes hashed (SHA-256)
 - Single-use backup codes
@@ -503,6 +540,7 @@ For detailed MFA setup, see [MFA_SETUP.md](./docs/MFA_SETUP.md)
 ### Environment Variables
 
 **Backend (Production):**
+
 ```env
 DATABASE_URL=postgresql://user:password@host:5432/database
 JWT_SECRET=your-super-secret-key-min-32-chars
@@ -512,6 +550,7 @@ CORS_ORIGIN=https://yourdomain.com
 ```
 
 **Frontend (Production):**
+
 ```env
 VITE_API_BASE_URL=https://api.yourdomain.com/api
 ```
@@ -519,6 +558,7 @@ VITE_API_BASE_URL=https://api.yourdomain.com/api
 ### Build for Production
 
 **Backend:**
+
 ```bash
 cd src/backend
 npm run build
@@ -526,6 +566,7 @@ npm start
 ```
 
 **Frontend:**
+
 ```bash
 cd src/frontend
 npm run build
@@ -566,12 +607,14 @@ docker-compose -f docker-compose.prod.yml logs -f
 ### Public Endpoints
 
 **Products:**
+
 - `GET /api/products` - List products (with filters)
 - `GET /api/products/:id` - Get product details
 - `GET /api/categories` - List categories
 - `GET /api/tags` - List wellbeing tags
 
 **Authentication:**
+
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - Login (returns MFA token if enabled)
 - `POST /api/auth/logout` - Logout
@@ -580,11 +623,13 @@ docker-compose -f docker-compose.prod.yml logs -f
 - `POST /api/auth/reset-password` - Reset password with token
 
 **Orders:**
+
 - `POST /api/orders` - Create order (guest or authenticated)
 
 ### Authenticated Endpoints
 
 **User:**
+
 - `GET /api/auth/me` - Get current user
 - `GET /api/orders` - Get user's orders
 - `GET /api/orders/:id` - Get order details
@@ -592,6 +637,7 @@ docker-compose -f docker-compose.prod.yml logs -f
 - `POST /api/addresses` - Create address
 
 **MFA:**
+
 - `POST /api/auth/mfa/enroll` - Start MFA enrollment
 - `POST /api/auth/mfa/verify-enrollment` - Complete MFA enrollment
 - `GET /api/auth/mfa/status` - Get MFA status
@@ -602,17 +648,20 @@ docker-compose -f docker-compose.prod.yml logs -f
 ### Admin Endpoints (Requires ADMIN role + MFA)
 
 **Products:**
+
 - `GET /api/admin/products` - List all products
 - `POST /api/admin/products` - Create product
 - `PUT /api/admin/products/:id` - Update product
 - `DELETE /api/admin/products/:id` - Delete product
 
 **Orders:**
+
 - `GET /api/admin/orders` - List all orders
 - `GET /api/admin/orders/:id` - Get order details
 - `PATCH /api/admin/orders/:id/status` - Update order status
 
 **Users:**
+
 - `GET /api/admin/users` - List all users
 - `PATCH /api/admin/users/:id/role` - Update user role
 - `PATCH /api/admin/users/:id/status` - Activate/deactivate user
@@ -661,12 +710,14 @@ npx prisma db seed
 ### Linting
 
 **Backend:**
+
 ```bash
 cd src/backend
 npm run lint
 ```
 
 **Frontend:**
+
 ```bash
 cd src/frontend
 npm run lint
