@@ -34,39 +34,20 @@ export const paginationSchema = z
 export const adminProductsQuerySchema = z
   .object({
     search: z.string().optional(),
-    page: z.any().optional(),
-    limit: z.any().optional(),
+    page: z.preprocess(
+      (val) => (Array.isArray(val) ? undefined : typeof val === 'string' ? Number(val) : val),
+      z.number().int().min(1).optional()
+    ).optional(),
+    limit: z.preprocess(
+      (val) => (Array.isArray(val) ? undefined : typeof val === 'string' ? Number(val) : val),
+      z.number().int().min(1).max(100).optional()
+    ).optional(),
   })
-  .transform((data, ctx) => {
-    // Default to 1 / 20 when the param is absent; reject non-positive integers.
-    const parsePage = (raw: unknown): number => {
-      if (raw === undefined || raw === null || raw === '') return 1;
-      const n = Number(raw);
-      if (!Number.isInteger(n) || n < 1) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Page must be >= 1', path: ['page'] });
-        return z.NEVER;
-      }
-      return n;
-    };
-
-    const parseLimit = (raw: unknown): number => {
-      if (raw === undefined || raw === null || raw === '') return 20;
-      const n = Number(raw);
-      if (!Number.isInteger(n) || n < 1 || n > 100) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Limit must be between 1 and 100',
-          path: ['limit'],
-        });
-        return z.NEVER;
-      }
-      return n;
-    };
-
+  .transform((data) => {
     return {
       search: data.search || undefined,
-      page: parsePage(data.page),
-      limit: parseLimit(data.limit),
+      page: data.page ?? 1,
+      limit: data.limit ?? 20,
     };
   });
 
@@ -83,34 +64,16 @@ export const adminUsersQuerySchema = z
     status: z.enum(['active', 'inactive']).optional(),
     // Query params arrive as strings; transform to boolean or undefined after validation.
     mfaEnabled: z.enum(['true', 'false']).optional(),
-    page: z.any().optional(),
-    limit: z.any().optional(),
+    page: z.preprocess(
+      (val) => (Array.isArray(val) ? undefined : typeof val === 'string' ? Number(val) : val),
+      z.number().int().min(1).optional()
+    ).optional(),
+    limit: z.preprocess(
+      (val) => (Array.isArray(val) ? undefined : typeof val === 'string' ? Number(val) : val),
+      z.number().int().min(1).max(100).optional()
+    ).optional(),
   })
-  .transform((data, ctx) => {
-    const parsePage = (raw: unknown): number => {
-      if (raw === undefined || raw === null || raw === '') return 1;
-      const n = Number(raw);
-      if (!Number.isInteger(n) || n < 1) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Page must be >= 1', path: ['page'] });
-        return z.NEVER;
-      }
-      return n;
-    };
-
-    const parseLimit = (raw: unknown): number => {
-      if (raw === undefined || raw === null || raw === '') return 20;
-      const n = Number(raw);
-      if (!Number.isInteger(n) || n < 1 || n > 100) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Limit must be between 1 and 100',
-          path: ['limit'],
-        });
-        return z.NEVER;
-      }
-      return n;
-    };
-
+  .transform((data) => {
     // Transform the string 'true'/'false' to a boolean, or leave as undefined.
     const mfaEnabled =
       data.mfaEnabled === 'true' ? true : data.mfaEnabled === 'false' ? false : undefined;
@@ -120,8 +83,8 @@ export const adminUsersQuerySchema = z
       role: data.role,
       status: data.status,
       mfaEnabled,
-      page: parsePage(data.page),
-      limit: parseLimit(data.limit),
+      page: data.page ?? 1,
+      limit: data.limit ?? 20,
     };
   });
 

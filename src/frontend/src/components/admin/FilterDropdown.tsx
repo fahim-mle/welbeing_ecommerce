@@ -18,12 +18,15 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   options,
   onChange,
 }) => {
+  const selectId = `filter-${label.toLowerCase().replace(/\s+/g, '-')}`;
+
   return (
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">
+      <label htmlFor={selectId} className="text-sm font-medium text-gray-700 mb-1">
         {label}
       </label>
       <select
+        id={selectId}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"

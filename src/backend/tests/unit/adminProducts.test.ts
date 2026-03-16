@@ -32,6 +32,8 @@ import { getAdminProducts } from '../../src/services/catalogService';
 import { adminProductsQuerySchema } from '../../src/schemas/pagination';
 
 const mockTransaction = prisma.$transaction as jest.Mock;
+const mockFindMany = prisma.product.findMany as jest.Mock;
+const mockCount = prisma.product.count as jest.Mock;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -62,11 +64,17 @@ describe('catalogService.getAdminProducts', () => {
     expect(result.pagination).toEqual({ total: 50, page: 1, limit: 20, totalPages: 3 });
     expect(result.data).toHaveLength(20);
 
-    // Verify skip/take passed to findMany
-    const [findManyCall] = mockTransaction.mock.calls[0][0];
-    // $transaction receives an array of promises; inspect the args via the mock
-    // by checking the call args on the transaction itself
-    expect(mockTransaction).toHaveBeenCalledTimes(1);
+    expect(mockFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skip: 0,
+        take: 20,
+      }),
+    );
+    expect(mockCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {},
+      }),
+    );
   });
 
   it('calculates skip correctly for page 2 with limit 10', async () => {
@@ -117,11 +125,24 @@ describe('catalogService.getAdminProducts', () => {
 
     await getAdminProducts({ search: 'Protein' });
 
-    // The $transaction call receives an array; the first element is the findMany promise.
-    // We verify the transaction was called (where-clause construction is internal to Prisma).
-    expect(mockTransaction).toHaveBeenCalledTimes(1);
-    // The transaction array has 2 elements (findMany + count)
-    expect(mockTransaction.mock.calls[0][0]).toHaveLength(2);
+    expect(mockFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          OR: expect.arrayContaining([
+            expect.objectContaining({ name: expect.objectContaining({ contains: 'Protein', mode: 'insensitive' }) }),
+            expect.objectContaining({ sku: expect.objectContaining({ contains: 'Protein', mode: 'insensitive' }) }),
+            expect.objectContaining({ description: expect.objectContaining({ contains: 'Protein', mode: 'insensitive' }) }),
+          ]),
+        }),
+      }),
+    );
+    expect(mockCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          OR: expect.any(Array),
+        }),
+      }),
+    );
   });
 
   it('uses an empty where clause when no search is provided', async () => {
