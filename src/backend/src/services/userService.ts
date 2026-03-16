@@ -1,4 +1,4 @@
-import { User, UserIdentity, UserRole } from '@prisma/client';
+import { Prisma, User, UserIdentity, UserRole } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { prisma } from '../lib/prisma';
 import { auth } from '../lib/auth';
@@ -281,6 +281,84 @@ export const userService = {
         guestEmail: null,
       },
     });
+  },
+
+  /**
+   * Admin-specific user listing with search, filters, and pagination.
+   * Search is case-insensitive across email, firstName, and lastName.
+   * Limit is capped at 100 to prevent runaway queries.
+   */
+  async getAdminUsers(options: {
+    search?: string;
+    role?: UserRole;
+    status?: 'active' | 'inactive';
+    mfaEnabled?: boolean;
+    page?: number;
+    limit?: number;
+  } = {}): Promise<{
+    data: Pick<User, 'id' | 'email' | 'firstName' | 'lastName' | 'phone' | 'role' | 'isActive' | 'mfaEnabled' | 'createdAt'>[];
+    pagination: { total: number; page: number; limit: number; totalPages: number };
+  }> {
+    const { search, role, status, mfaEnabled } = options;
+    const page = options.page ?? 1;
+    // Cap at 100 to prevent runaway queries
+    const limit = Math.min(options.limit ?? 20, 100);
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.UserWhereInput = {};
+
+    // Case-insensitive search across email, firstName, and lastName
+    if (search) {
+      where.OR = [
+        { email: { contains: search, mode: 'insensitive' } },
+        { firstName: { contains: search, mode: 'insensitive' } },
+        { lastName: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    if (role) {
+      where.role = role;
+    }
+
+    // Map the human-readable status string to the boolean isActive field
+    if (status !== undefined) {
+      where.isActive = status === 'active';
+    }
+
+    if (mfaEnabled !== undefined) {
+      where.mfaEnabled = mfaEnabled;
+    }
+
+    const [total, data] = await prisma.$transaction([
+      prisma.user.count({ where }),
+      prisma.user.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          phone: true,
+          role: true,
+          isActive: true,
+          mfaEnabled: true,
+          createdAt: true,
+        },
+      }),
+    ]);
+
+    return {
+      data,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   },
 
   async listUsers(options?: { page?: number; limit?: number }) {

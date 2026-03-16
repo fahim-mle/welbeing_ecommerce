@@ -1,6 +1,6 @@
 import React, { createContext, useMemo, useState } from 'react';
 
-interface CartUIContextValue {
+export interface CartUIContextValue {
   isCartOpen: boolean;
   openCart: () => void;
   closeCart: () => void;

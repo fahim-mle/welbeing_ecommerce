@@ -1,7 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { adminAuth } from '../../middleware/adminAuth';
-import { validateBody } from '../../middleware/validation';
+import { validateBody, validateQuery } from '../../middleware/validation';
 import { updateUserSchema } from '../../schemas/adminUser';
+import { adminUsersQuerySchema, AdminUsersQuery } from '../../schemas/pagination';
 import { userService } from '../../services/userService';
 import { logger } from '../../lib/logger';
 
@@ -9,25 +10,18 @@ const router = Router();
 
 router.use(adminAuth);
 
-router.get('/', async (req: Request, res: Response) => {
+// GET /api/admin/users - List users with search, filters, and pagination
+router.get('/', validateQuery(adminUsersQuerySchema), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const page = req.query.page ? Number(req.query.page) : 1;
-    const limit = req.query.limit ? Number(req.query.limit) : 20;
+    const { search, role, status, mfaEnabled, page, limit } = req.query as unknown as AdminUsersQuery;
 
-    if (!Number.isInteger(page) || page <= 0) {
-      return res.status(400).json({ message: 'page must be a positive integer' });
-    }
+    const result = await userService.getAdminUsers({ search, role, status, mfaEnabled, page, limit });
 
-    if (!Number.isInteger(limit) || limit <= 0) {
-      return res.status(400).json({ message: 'limit must be a positive integer' });
-    }
-
-    const users = await userService.listUsers({ page, limit });
-    res.json({ data: users, page, limit });
+    res.json({ success: true, ...result });
   } catch (error) {
     const requestId = (req as Request & { requestId?: string }).requestId;
     logger.error('Failed to fetch users', { requestId, error });
-    res.status(500).json({ message: 'Failed to fetch users' });
+    next(error);
   }
 });
 

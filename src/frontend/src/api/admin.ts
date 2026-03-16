@@ -26,18 +26,49 @@ export interface AdminUser {
 
 export interface PaginatedAdminUsers {
   data: AdminUser[];
-  page: number;
-  limit: number;
-  hasNextPage: boolean;
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }
 
-export const fetchAdminProducts = async (page = 1, limit = 20): Promise<Product[]> => {
-  const response = await fetch(`${API_BASE_URL}/admin/products?page=${page}&limit=${limit}`, {
+export interface AdminUsersFilters {
+  search?: string;
+  role?: string;
+  status?: string;
+  mfaEnabled?: string;
+}
+
+export interface PaginatedAdminProducts {
+  data: Product[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export const fetchAdminProducts = async (
+  page = 1,
+  limit = 20,
+  search?: string,
+): Promise<PaginatedAdminProducts> => {
+  const params = new URLSearchParams();
+  params.append('page', page.toString());
+  params.append('limit', limit.toString());
+  if (search) {
+    params.append('search', search);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/admin/products?${params.toString()}`, {
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch admin products');
   const result = await response.json();
-  return result.data?.products ?? result.data ?? result;
+  return result;
 };
 
 export const fetchAdminOrders = async (
@@ -58,19 +89,34 @@ export const fetchAdminOrders = async (
   };
 };
 
-export const fetchAdminUsers = async (page = 1, limit = 20): Promise<PaginatedAdminUsers> => {
-  const response = await fetch(`${API_BASE_URL}/admin/users?page=${page}&limit=${limit}`, {
+export const fetchAdminUsers = async (
+  page = 1,
+  limit = 20,
+  filters?: AdminUsersFilters,
+): Promise<PaginatedAdminUsers> => {
+  const params = new URLSearchParams();
+  params.append('page', page.toString());
+  params.append('limit', limit.toString());
+
+  if (filters?.search) {
+    params.append('search', filters.search);
+  }
+  if (filters?.role && filters.role !== 'all') {
+    params.append('role', filters.role);
+  }
+  if (filters?.status && filters.status !== 'all') {
+    params.append('status', filters.status);
+  }
+  if (filters?.mfaEnabled && filters.mfaEnabled !== 'all') {
+    params.append('mfaEnabled', filters.mfaEnabled);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/admin/users?${params.toString()}`, {
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch users');
   const result = await response.json();
-  const data = Array.isArray(result.data) ? result.data : [];
-  return {
-    data,
-    page: result.page ?? page,
-    limit: result.limit ?? limit,
-    hasNextPage: data.length === (result.limit ?? limit),
-  };
+  return result;
 };
 
 export const updateAdminUser = async (
