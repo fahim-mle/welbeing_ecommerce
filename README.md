@@ -11,18 +11,18 @@ A full-stack, production-ready e-commerce platform built with TypeScript, featur
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Documentation](#documentation)
-- [Testing](#testing)
-- [Security](#security)
-- [Deployment](#deployment)
-- [API Endpoints](#api-endpoints)
-- [Contributing](#contributing)
-- [License](#license)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Tech Stack](#️-tech-stack)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Documentation](#-documentation)
+- [Testing](#-testing)
+- [Security](#-security)
+- [Deployment](#-deployment)
+- [API Endpoints](#-api-endpoints)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
@@ -123,7 +123,7 @@ The Health & Wellbeing E-Commerce Platform is a modern, scalable e-commerce solu
 ### Backend
 
 | Technology | Purpose | Version |
-|------------|---------|---------|
+| ------------ | --------- | --------- |
 | **Node.js** | Runtime environment | 18+ |
 | **Express.js** | Web framework | 4.x |
 | **TypeScript** | Type safety | 5.x |
@@ -139,7 +139,7 @@ The Health & Wellbeing E-Commerce Platform is a modern, scalable e-commerce solu
 ### Frontend
 
 | Technology | Purpose | Version |
-|------------|---------|---------|
+| ------------ | --------- | --------- |
 | **React** | UI library | 19.x |
 | **TypeScript** | Type safety | 5.x |
 | **Vite** | Build tool | 7.x |
@@ -160,7 +160,7 @@ The Health & Wellbeing E-Commerce Platform is a modern, scalable e-commerce solu
 
 ## 📁 Project Structure
 
-```
+```s
 welbeing_ecommerce/
 ├── src/
 │   ├── backend/                    # Express.js backend
@@ -245,14 +245,14 @@ welbeing_ecommerce/
 
 #### Option 1: Local Development
 
-**1. Clone the repository**
+**1. Clone the repository** -
 
 ```bash
 git clone <repository-url>
 cd welbeing_ecommerce
 ```
 
-**2. Install dependencies**
+**2. Install dependencies** -
 
 ```bash
 # Install all dependencies (root + backend + frontend)
@@ -263,7 +263,7 @@ cd src/backend && npm install
 cd src/frontend && npm install
 ```
 
-**3. Set up environment variables**
+**3. Set up environment variables** -
 
 **Backend** (`src/backend/.env`):
 
@@ -291,7 +291,7 @@ REDIS_URL="redis://localhost:6379"
 VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
-**4. Initialize the database**
+**4. Initialize the database** -
 
 ```bash
 cd src/backend
@@ -304,7 +304,7 @@ npx prisma migrate dev
 npx prisma db seed
 ```
 
-**5. Start development servers**
+**5. Start development servers** -
 
 **Terminal 1 - Backend:**
 
@@ -315,7 +315,7 @@ npm run dev
 
 Backend runs on `http://localhost:3000`
 
-**Terminal 2 - Frontend:**
+**Terminal 2 - Frontend:** -
 
 ```bash
 cd src/frontend
@@ -324,7 +324,7 @@ npm run dev
 
 Frontend runs on `http://localhost:5173`
 
-**6. Access the application**
+**6. Access the application**-
 
 - **Frontend**: <http://localhost:5173>
 - **Backend API**: <http://localhost:3000/api>
@@ -334,13 +334,13 @@ Frontend runs on `http://localhost:5173`
 
 #### Option 2: Docker Deployment
 
-**1. Copy environment file**
+**1. Copy environment file** -
 
 ```bash
 cp .env.docker.example .env.docker
 ```
 
-**2. Edit `.env.docker` and set secure values**
+**2. Edit `.env.docker` and set secure values** -
 
 ```env
 # IMPORTANT: Change these values!
@@ -348,25 +348,25 @@ POSTGRES_PASSWORD=your-secure-password
 JWT_SECRET=your-super-secret-jwt-key
 ```
 
-**3. Start all services**
+**3. Start all services** -
 
 ```bash
 docker-compose up -d
 ```
 
-**4. Access the application**
+**4. Access the application**  -
 
-- **Frontend**: <http://localhost:8080>
+- **Frontend**: <http://localhost:5173>
 - **Backend API**: <http://localhost:3000/api>
 - **API Docs**: <http://localhost:3000/api-docs>
 
-**5. View logs**
+**5. View logs** -
 
 ```bash
 docker-compose logs -f
 ```
 
-**6. Stop services**
+**6. Stop services** -
 
 ```bash
 docker-compose down
@@ -405,7 +405,7 @@ docker-compose down
 
 **Interactive Swagger UI:**
 
-```
+```api
 http://localhost:3000/api-docs
 ```
 
@@ -760,7 +760,7 @@ Contributions are welcome! Please follow these guidelines:
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-```
+```txt
 feat: add new feature
 fix: resolve bug
 docs: update documentation
@@ -792,10 +792,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - 🔐 [MFA Setup Guide](./docs/MFA_SETUP.md)
 - 🚀 [Swagger UI](http://localhost:3000/api-docs)
 - 📋 [Project Tasks](./specs/001-health-wellbeing-store/tasks.md)
-- 🐛 [Report Issues](https://github.com/your-repo/issues)
+- 🐛 [Report Issues](https://github.com/fahim-mle/welbeing_ecommerce/issues)
 
 ---
 
-**Built with ❤️ for Health & Wellbeing**
+**Built with ❤️ for Health & Wellbeing** -
 
 Last Updated: March 2026 | Version: 1.0.0
