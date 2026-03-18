@@ -5,15 +5,15 @@ services:
     image: postgres:16
     container_name: welbeing_postgres
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-welbeing}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-welbeing}
-      POSTGRES_DB: ${POSTGRES_DB:-test_welbeing}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5433:5432"
     volumes:
       - welbeing_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U welbeing -d test_welbeing"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -36,12 +36,13 @@ services:
     container_name: welbeing_backend
     environment:
       # Uses internal Docker network hostnames (not localhost)
-      DATABASE_URL: ${DATABASE_URL:-postgresql://welbeing:welbeing@postgres:5432/test_welbeing?schema=public}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
-      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
-      NODE_ENV: ${NODE_ENV:-production}
-      PORT: ${PORT:-3000}
-      CORS_ORIGIN: http://localhost:5173
+      # All values come from .env file - no hardcoded defaults
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+      CORS_ORIGIN: ${CORS_ORIGIN}
     expose:
       - "3000"
     depends_on:
@@ -62,7 +63,7 @@ services:
         VITE_API_BASE_URL: /api
     container_name: welbeing_frontend
     ports:
-      - "5173:80"
+      - "80:80"
     depends_on:
       - backend
     restart: unless-stopped
