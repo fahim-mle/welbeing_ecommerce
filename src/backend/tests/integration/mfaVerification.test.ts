@@ -101,7 +101,7 @@ describe('MFA Verification Login Flow', () => {
         .send({ mfaToken: expiredToken, token: '123456' });
 
       expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Invalid or expired MFA token');
+      expect(res.body.error.message).toBe('Invalid or expired MFA token');
     });
 
     it('should return 401 when a regular access token is used as mfaToken', async () => {
@@ -116,7 +116,7 @@ describe('MFA Verification Login Flow', () => {
         .send({ mfaToken: regularToken, token: '123456' });
 
       expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Invalid or expired MFA token');
+      expect(res.body.error.message).toBe('Invalid or expired MFA token');
     });
 
     it('should return 401 for a wrong TOTP code', async () => {
@@ -125,7 +125,7 @@ describe('MFA Verification Login Flow', () => {
         .send({ mfaToken: validMfaToken, token: '000000' });
 
       expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Invalid TOTP code');
+      expect(res.body.error.message).toBe('Invalid TOTP code');
     });
 
     it('should return 200 with user data and set auth cookies for a valid TOTP code', async () => {
@@ -192,7 +192,7 @@ describe('MFA Verification Login Flow', () => {
         .send({ mfaToken: 'not.a.valid.jwt', code: 'AAAABBBB' });
 
       expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Invalid or expired MFA token');
+      expect(res.body.error.message).toBe('Invalid or expired MFA token');
     });
 
     it('should return 401 for a wrong backup code', async () => {
@@ -201,7 +201,7 @@ describe('MFA Verification Login Flow', () => {
         .send({ mfaToken: validMfaToken, code: 'ZZZZZZZZ' });
 
       expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Invalid backup code');
+      expect(res.body.error.message).toBe('Invalid or already used backup code');
     });
 
     it('should return 200 with user data and set auth cookies for a valid backup code', async () => {
@@ -246,7 +246,7 @@ describe('MFA Verification Login Flow', () => {
         .send({ mfaToken: validMfaToken, code: 'CCCCDDDD' });
 
       expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Invalid backup code');
+      expect(res.body.error.message).toBe('Invalid or already used backup code');
     });
   });
 });

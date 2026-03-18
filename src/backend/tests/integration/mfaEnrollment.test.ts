@@ -109,7 +109,7 @@ describe('MFA Enrollment Flow', () => {
         .set('Cookie', [`access_token=${accessToken}`]);
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toBe('MFA already enabled');
+      expect(res.body.error.message).toBe('MFA already enabled');
 
       // Reset for next tests
       await prisma.user.update({
@@ -150,7 +150,7 @@ describe('MFA Enrollment Flow', () => {
         .send({ token: '123456' });
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toBe('Invalid enrollment state');
+      expect(res.body.error.message).toBe('Invalid enrollment state');
     });
 
     it('should return 400 if MFA already enabled', async () => {
@@ -166,7 +166,7 @@ describe('MFA Enrollment Flow', () => {
         .send({ token: '123456' });
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toBe('Invalid enrollment state');
+      expect(res.body.error.message).toBe('Invalid enrollment state');
     });
 
     it('should return 401 for invalid TOTP token', async () => {
@@ -181,7 +181,7 @@ describe('MFA Enrollment Flow', () => {
         .send({ token: '000000' });
 
       expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Invalid TOTP code');
+      expect(res.body.error.message).toBe('Invalid TOTP code');
     });
 
     it('should return 200 with backupCodes for valid TOTP token', async () => {

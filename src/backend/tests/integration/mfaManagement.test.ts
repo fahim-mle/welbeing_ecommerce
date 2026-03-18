@@ -121,7 +121,7 @@ describe('MFA Management Endpoints', () => {
         .set('Cookie', [`access_token=${userToken}`]);
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toBe('MFA not enabled');
+      expect(res.body.error.message).toBe('MFA not enabled');
 
       // Restore
       await prisma.user.update({
@@ -267,7 +267,7 @@ describe('MFA Management Endpoints', () => {
         .send({ userId: 999999 });
 
       expect(res.status).toBe(404);
-      expect(res.body.message).toBe('User not found');
+      expect(res.body.error.message).toBe('User not found');
     });
 
     it('should return 200 with success message for a valid admin request', async () => {
