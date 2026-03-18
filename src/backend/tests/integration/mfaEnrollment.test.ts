@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '../../src/app';
 import { prisma } from '../../src/lib/prisma';
 import { auth } from '../../src/lib/auth';
-import { generate, NobleCryptoPlugin, ScureBase32Plugin } from 'otplib';
+import { generateSync, NobleCryptoPlugin, ScureBase32Plugin } from 'otplib';
 import { hashBackupCode } from '../../src/lib/mfa';
 
 // Helper to avoid rate limiting
@@ -109,7 +109,7 @@ describe('MFA Enrollment Flow', () => {
         .set('Cookie', [`access_token=${accessToken}`]);
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toBe('MFA already enabled');
+      expect(res.body.error.message).toBe('MFA already enabled');
 
       // Reset for next tests
       await prisma.user.update({
@@ -150,7 +150,7 @@ describe('MFA Enrollment Flow', () => {
         .send({ token: '123456' });
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toBe('Invalid enrollment state');
+      expect(res.body.error.message).toBe('Invalid enrollment state');
     });
 
     it('should return 400 if MFA already enabled', async () => {
@@ -166,7 +166,7 @@ describe('MFA Enrollment Flow', () => {
         .send({ token: '123456' });
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toBe('Invalid enrollment state');
+      expect(res.body.error.message).toBe('Invalid enrollment state');
     });
 
     it('should return 401 for invalid TOTP token', async () => {
@@ -181,7 +181,7 @@ describe('MFA Enrollment Flow', () => {
         .send({ token: '000000' });
 
       expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Invalid TOTP code');
+      expect(res.body.error.message).toBe('Invalid TOTP code');
     });
 
     it('should return 200 with backupCodes for valid TOTP token', async () => {
@@ -190,7 +190,7 @@ describe('MFA Enrollment Flow', () => {
         .post('/api/auth/mfa/enroll')
         .set('Cookie', [`access_token=${accessToken}`]);
 
-      const validToken = generate({
+      const validToken = generateSync({
         secret: enrollRes.body.secret,
         crypto,
         base32,
@@ -213,7 +213,7 @@ describe('MFA Enrollment Flow', () => {
         .post('/api/auth/mfa/enroll')
         .set('Cookie', [`access_token=${accessToken}`]);
 
-      const validToken = generate({
+      const validToken = generateSync({
         secret: enrollRes.body.secret,
         crypto,
         base32,
@@ -241,7 +241,7 @@ describe('MFA Enrollment Flow', () => {
         .post('/api/auth/mfa/enroll')
         .set('Cookie', [`access_token=${accessToken}`]);
 
-      const validToken = generate({
+      const validToken = generateSync({
         secret: enrollRes.body.secret,
         crypto,
         base32,
@@ -273,7 +273,7 @@ describe('MFA Enrollment Flow', () => {
         .post('/api/auth/mfa/enroll')
         .set('Cookie', [`access_token=${accessToken}`]);
 
-      const validToken = generate({
+      const validToken = generateSync({
         secret: enrollRes.body.secret,
         crypto,
         base32,
@@ -325,7 +325,7 @@ describe('MFA Enrollment Flow', () => {
         .post('/api/auth/mfa/enroll')
         .set('Cookie', [`access_token=${accessToken}`]);
 
-      const validToken = generate({
+      const validToken = generateSync({
         secret: enrollRes.body.secret,
         crypto,
         base32,
