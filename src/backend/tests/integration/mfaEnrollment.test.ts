@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '../../src/app';
 import { prisma } from '../../src/lib/prisma';
 import { auth } from '../../src/lib/auth';
-import { generate, NobleCryptoPlugin, ScureBase32Plugin } from 'otplib';
+import { generateSync, NobleCryptoPlugin, ScureBase32Plugin } from 'otplib';
 import { hashBackupCode } from '../../src/lib/mfa';
 
 // Helper to avoid rate limiting
@@ -190,7 +190,7 @@ describe('MFA Enrollment Flow', () => {
         .post('/api/auth/mfa/enroll')
         .set('Cookie', [`access_token=${accessToken}`]);
 
-      const validToken = generate({
+      const validToken = generateSync({
         secret: enrollRes.body.secret,
         crypto,
         base32,
@@ -213,7 +213,7 @@ describe('MFA Enrollment Flow', () => {
         .post('/api/auth/mfa/enroll')
         .set('Cookie', [`access_token=${accessToken}`]);
 
-      const validToken = generate({
+      const validToken = generateSync({
         secret: enrollRes.body.secret,
         crypto,
         base32,
@@ -241,7 +241,7 @@ describe('MFA Enrollment Flow', () => {
         .post('/api/auth/mfa/enroll')
         .set('Cookie', [`access_token=${accessToken}`]);
 
-      const validToken = generate({
+      const validToken = generateSync({
         secret: enrollRes.body.secret,
         crypto,
         base32,
@@ -273,7 +273,7 @@ describe('MFA Enrollment Flow', () => {
         .post('/api/auth/mfa/enroll')
         .set('Cookie', [`access_token=${accessToken}`]);
 
-      const validToken = generate({
+      const validToken = generateSync({
         secret: enrollRes.body.secret,
         crypto,
         base32,
@@ -325,7 +325,7 @@ describe('MFA Enrollment Flow', () => {
         .post('/api/auth/mfa/enroll')
         .set('Cookie', [`access_token=${accessToken}`]);
 
-      const validToken = generate({
+      const validToken = generateSync({
         secret: enrollRes.body.secret,
         crypto,
         base32,
