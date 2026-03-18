@@ -32,6 +32,9 @@ import { prisma } from './lib/prisma';
 
 const app = express();
 
+// Trust proxy headers from nginx reverse proxy
+app.set('trust proxy', true);
+
 app.use(helmet());
 app.use(cors(buildCorsOptions()));
 app.use(cookieParser());
