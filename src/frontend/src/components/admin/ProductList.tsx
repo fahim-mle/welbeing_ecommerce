@@ -26,7 +26,7 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebouncedValue(searchTerm, 300);
 
-  const loadProducts = useCallback(async () => {
+  const loadProducts = useCallback(async (page?: number) => {
     if (!user) {
       setProducts([]);
       setError(null);
@@ -36,7 +36,8 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
     setLoading(true);
     setError(null);
     try {
-      const result = await fetchAdminProducts(currentPage, limit, debouncedSearch || undefined);
+      const pageToFetch = page !== undefined ? page : currentPage;
+      const result = await fetchAdminProducts(pageToFetch, limit, debouncedSearch || undefined);
       setProducts(result.data);
       setTotal(result.pagination.total);
       setTotalPages(result.pagination.totalPages);
@@ -49,13 +50,14 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
   }, [user, currentPage, debouncedSearch, limit]);
 
   useEffect(() => {
-    loadProducts();
-  }, [loadProducts]);
+    loadProducts(currentPage);
+  }, [loadProducts, currentPage]);
 
   // Reset to page 1 when search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch]);
+    loadProducts(1);
+  }, [debouncedSearch, loadProducts]);
 
   const handleDelete = async (id: number) => {
     if (!user) return;
@@ -136,7 +138,7 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
         <div className="bg-red-50 border border-red-200 rounded-md p-4">
           <p className="text-sm text-red-800">{error}</p>
           <button
-            onClick={loadProducts}
+            onClick={() => loadProducts()}
             className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
           >
             Try again
@@ -145,7 +147,7 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
       )}
 
       {/* Empty State */}
-      {!loading && !error && products.length === 0 && (
+      {!loading && !error && total === 0 && (
         <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
           <Search className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">No products found</h3>
@@ -166,7 +168,7 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
       )}
 
       {/* Products List */}
-      {!loading && !error && products.length > 0 && (
+      {!loading && !error && total > 0 && (
         <>
           <div className="bg-white shadow overflow-hidden sm:rounded-md">
             <ul className="divide-y divide-gray-200">

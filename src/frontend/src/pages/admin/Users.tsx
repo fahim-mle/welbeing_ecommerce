@@ -151,10 +151,6 @@ export const AdminUsers: React.FC = () => {
         </div>
       )}
 
-      {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">{error}</div>
-      )}
-
       {success && (
         <div className="rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800">{success}</div>
       )}

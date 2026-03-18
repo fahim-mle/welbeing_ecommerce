@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { cancelOrder, createOrderFromPayload, findOrderById, findOrdersByUserId } from '../services/orderService';
 import { authenticate, AuthRequest } from '../middleware/auth';
-import { auth } from '../lib/auth';
+import { auth, extractAccessToken } from '../lib/auth';
 import { logger } from '../lib/logger';
 import { emailService } from '../lib/email';
 import { validateBody, validateQuery } from '../middleware/validation';
@@ -39,8 +39,26 @@ router.get('/', authenticate, validateQuery(paginationSchema), async (req, res) 
 // GET /api/orders/:id
 router.get('/:id', async (req, res) => {
   const orderId = Number(req.params.id);
-  const authPayload = auth.decodeAuthorizationHeader(req.headers.authorization);
-  const userId = authPayload?.userId;
+  const token = extractAccessToken(req);
+  
+  // Authenticate first - return 401 if token is missing or invalid
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Authentication required', code: 'UNAUTHORIZED' },
+    });
+  }
+
+  let userId: number;
+  try {
+    const authPayload = auth.verifyToken(token);
+    userId = authPayload.userId;
+  } catch {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Invalid or expired token', code: 'UNAUTHORIZED' },
+    });
+  }
 
   if (Number.isNaN(orderId)) {
     return res.status(400).json({
@@ -58,7 +76,7 @@ router.get('/:id', async (req, res) => {
       });
     }
 
-    if (!userId || order.userId !== userId) {
+    if (order.userId !== userId) {
       return res.status(403).json({
         success: false,
         error: { message: 'Unauthorized', code: 'UNAUTHORIZED' },
@@ -151,13 +169,23 @@ router.post('/:id/cancel', authenticate, async (req, res) => {
 });
 
 router.post('/', validateBody(createOrderSchema), async (req, res, next) => {
-  const decoded = auth.decodeAuthorizationHeader(req.headers.authorization);
-  const userId = decoded?.userId;
-  const hasAuthHeader = !!req.headers.authorization;
+  const token = extractAccessToken(req);
+  let userId: number | undefined;
+  
+  if (token) {
+    try {
+      const decoded = auth.verifyToken(token);
+      userId = decoded.userId;
+    } catch {
+      userId = undefined;
+    }
+  }
+  
+  const hasAuthToken = !!token;
 
   logger.info('Creating order', {
     userId,
-    hasAuthHeader,
+    hasAuthToken,
     userType: req.body.user_type,
     hasEmail: !!req.body.email,
     hasGuestEmail: !!req.body.guest_email,
@@ -166,10 +194,10 @@ router.post('/', validateBody(createOrderSchema), async (req, res, next) => {
   const requiresAuthenticatedUser =
     req.body.user_type === 'USER' || req.body.user_type === 'ADMIN';
 
-  if ((hasAuthHeader || requiresAuthenticatedUser) && !userId) {
+  if ((hasAuthToken || requiresAuthenticatedUser) && !userId) {
     const requestId = (req as AuthRequest & { requestId?: string }).requestId;
-    logger.warn('Authorization header present but userId not decoded', {
-      hasAuthHeader: true,
+    logger.warn('Authorization token present but userId not decoded', {
+      hasAuthToken,
       requestId,
       userType: req.body.user_type,
     });

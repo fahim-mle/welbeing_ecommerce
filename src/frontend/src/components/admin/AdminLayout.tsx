@@ -18,7 +18,7 @@ export const AdminLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+    setIsMobileMenuOpen((prev) => !prev);
   };
 
   const closeMobileMenu = () => {
@@ -90,9 +90,13 @@ export const AdminLayout: React.FC = () => {
           </Link>
           <button
             type="button"
-            onClick={() => {
+            onClick={async () => {
               closeMobileMenu();
-              logout();
+              try {
+                await logout();
+              } catch (error) {
+                console.error('Logout failed:', error);
+              }
             }}
             className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors"
           >

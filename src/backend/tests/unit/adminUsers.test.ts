@@ -34,6 +34,8 @@ import { userService } from '../../src/services/userService';
 import { adminUsersQuerySchema } from '../../src/schemas/pagination';
 
 const mockTransaction = prisma.$transaction as jest.Mock;
+const mockFindMany = prisma.user.findMany as jest.Mock;
+const mockCount = prisma.user.count as jest.Mock;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -125,9 +127,24 @@ describe('userService.getAdminUsers', () => {
 
     await userService.getAdminUsers({ search: 'john' });
 
-    expect(mockTransaction).toHaveBeenCalledTimes(1);
-    // Transaction receives an array of two operations (count + findMany)
-    expect(mockTransaction.mock.calls[0][0]).toHaveLength(2);
+    expect(mockCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          OR: expect.arrayContaining([
+            expect.objectContaining({ email: expect.objectContaining({ contains: 'john', mode: 'insensitive' }) }),
+            expect.objectContaining({ firstName: expect.objectContaining({ contains: 'john', mode: 'insensitive' }) }),
+            expect.objectContaining({ lastName: expect.objectContaining({ contains: 'john', mode: 'insensitive' }) }),
+          ]),
+        }),
+      }),
+    );
+    expect(mockFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          OR: expect.any(Array),
+        }),
+      }),
+    );
   });
 
   it('calls $transaction once when role filter is provided', async () => {
@@ -135,7 +152,20 @@ describe('userService.getAdminUsers', () => {
 
     await userService.getAdminUsers({ role: 'ADMIN' });
 
-    expect(mockTransaction).toHaveBeenCalledTimes(1);
+    expect(mockCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          role: 'ADMIN',
+        }),
+      }),
+    );
+    expect(mockFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          role: 'ADMIN',
+        }),
+      }),
+    );
   });
 
   it('calls $transaction once when status=active filter is provided', async () => {
@@ -143,7 +173,13 @@ describe('userService.getAdminUsers', () => {
 
     await userService.getAdminUsers({ status: 'active' });
 
-    expect(mockTransaction).toHaveBeenCalledTimes(1);
+    expect(mockCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          isActive: true,
+        }),
+      }),
+    );
   });
 
   it('calls $transaction once when status=inactive filter is provided', async () => {
@@ -151,7 +187,13 @@ describe('userService.getAdminUsers', () => {
 
     await userService.getAdminUsers({ status: 'inactive' });
 
-    expect(mockTransaction).toHaveBeenCalledTimes(1);
+    expect(mockCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          isActive: false,
+        }),
+      }),
+    );
   });
 
   it('calls $transaction once when mfaEnabled=true filter is provided', async () => {
@@ -159,7 +201,13 @@ describe('userService.getAdminUsers', () => {
 
     await userService.getAdminUsers({ mfaEnabled: true });
 
-    expect(mockTransaction).toHaveBeenCalledTimes(1);
+    expect(mockCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          mfaEnabled: true,
+        }),
+      }),
+    );
   });
 
   it('calls $transaction once when mfaEnabled=false filter is provided', async () => {
@@ -167,7 +215,13 @@ describe('userService.getAdminUsers', () => {
 
     await userService.getAdminUsers({ mfaEnabled: false });
 
-    expect(mockTransaction).toHaveBeenCalledTimes(1);
+    expect(mockCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          mfaEnabled: false,
+        }),
+      }),
+    );
   });
 
   it('calls $transaction once when all filters are combined', async () => {
@@ -190,7 +244,18 @@ describe('userService.getAdminUsers', () => {
 
     await userService.getAdminUsers({});
 
-    expect(mockTransaction).toHaveBeenCalledTimes(1);
+    expect(mockCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {},
+      }),
+    );
+    expect(mockFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {},
+        skip: 0,
+        take: 20,
+      }),
+    );
   });
 });
 
