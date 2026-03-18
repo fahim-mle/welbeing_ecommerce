@@ -40,15 +40,24 @@ router.get('/', authenticate, validateQuery(paginationSchema), async (req, res) 
 router.get('/:id', async (req, res) => {
   const orderId = Number(req.params.id);
   const token = extractAccessToken(req);
-  let userId: number | undefined;
   
-  if (token) {
-    try {
-      const authPayload = auth.verifyToken(token);
-      userId = authPayload.userId;
-    } catch {
-      userId = undefined;
-    }
+  // Authenticate first - return 401 if token is missing or invalid
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Authentication required', code: 'UNAUTHORIZED' },
+    });
+  }
+
+  let userId: number;
+  try {
+    const authPayload = auth.verifyToken(token);
+    userId = authPayload.userId;
+  } catch {
+    return res.status(401).json({
+      success: false,
+      error: { message: 'Invalid or expired token', code: 'UNAUTHORIZED' },
+    });
   }
 
   if (Number.isNaN(orderId)) {
@@ -67,7 +76,7 @@ router.get('/:id', async (req, res) => {
       });
     }
 
-    if (!userId || order.userId !== userId) {
+    if (order.userId !== userId) {
       return res.status(403).json({
         success: false,
         error: { message: 'Unauthorized', code: 'UNAUTHORIZED' },
@@ -188,7 +197,7 @@ router.post('/', validateBody(createOrderSchema), async (req, res, next) => {
   if ((hasAuthToken || requiresAuthenticatedUser) && !userId) {
     const requestId = (req as AuthRequest & { requestId?: string }).requestId;
     logger.warn('Authorization token present but userId not decoded', {
-      hasAuthToken: true,
+      hasAuthToken,
       requestId,
       userType: req.body.user_type,
     });
