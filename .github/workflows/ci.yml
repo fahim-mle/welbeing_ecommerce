@@ -107,3 +107,43 @@ jobs:
       - name: Test Frontend Image
         run: |
           docker run --rm welbeing-frontend:${{ github.sha }} nginx -v
+
+  deploy:
+    name: Deploy to Hetzner VPS
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend, build-docker]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/001-health-wellbeing-store'
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.HETZNER_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.HETZNER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no root@${{ secrets.HETZNER_HOST }} 'bash -s' < scripts/deploy.sh
+
+      - name: Verify Deployment
+        run: |
+          echo "Waiting for deployment to stabilize..."
+          sleep 15
+          
+          # Test the health endpoint
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://welbeing.mindinroot.com/api/health)
+          if [ "$RESPONSE" = "200" ]; then
+            echo "✅ Deployment verified - Health check passed"
+          else
+            echo "❌ Deployment verification failed - Health check returned $RESPONSE"
+            exit 1
+          fi
+
+      - name: Deployment Summary
+        if: success()
+        run: |
+          echo "🎉 Deployment completed successfully!"
+          echo "🌐 Site: http://welbeing.mindinroot.com"
+          echo "📊 API Health: http://welbeing.mindinroot.com/api/health"
