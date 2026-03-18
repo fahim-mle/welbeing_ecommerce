@@ -21,7 +21,7 @@ docker compose up -d --build
 
 # Wait for services to be healthy
 echo "⏳ Waiting for services to be healthy..."
-sleep 10
+sleep 20
 
 # Check if backend is running
 if docker compose ps backend | grep -q "Up"; then
@@ -43,13 +43,23 @@ fi
 
 # Test health endpoint
 echo "🏥 Testing health endpoint..."
-sleep 5
-if curl -f http://localhost:3000/api/health > /dev/null 2>&1; then
-    echo "✅ Health check passed"
-else
-    echo "❌ Health check failed"
-    exit 1
-fi
+MAX_RETRIES=10
+RETRY_COUNT=0
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    if curl -f http://localhost:3000/api/health > /dev/null 2>&1; then
+        echo "✅ Health check passed"
+        break
+    fi
+    RETRY_COUNT=$((RETRY_COUNT + 1))
+    if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+        echo "⏳ Health check attempt $RETRY_COUNT/$MAX_RETRIES failed, retrying in 3 seconds..."
+        sleep 3
+    else
+        echo "❌ Health check failed after $MAX_RETRIES attempts"
+        docker compose logs backend --tail 20
+        exit 1
+    fi
+done
 
 echo "🎉 Deployment completed successfully!"
 echo "🌐 Site is live at: http://welbeing.mindinroot.com"
