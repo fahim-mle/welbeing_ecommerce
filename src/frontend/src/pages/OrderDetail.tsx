@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { cancelOrder, fetchOrder, type OrderResponse } from '../api/orders';
 import { useAuth } from '../hooks/useAuth';
@@ -15,7 +15,7 @@ export const OrderDetail: React.FC = () => {
   const [cancelError, setCancelError] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
-  const loadOrder = async (orderId: number) => {
+  const loadOrder = useCallback(async (orderId: number) => {
     if (!user) return;
     setLoading(true);
     setError(null);
@@ -28,7 +28,7 @@ export const OrderDetail: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (!user) {
@@ -48,7 +48,7 @@ export const OrderDetail: React.FC = () => {
     }
 
     loadOrder(parsedId);
-  }, [id, user]);
+  }, [id, user, loadOrder]);
 
   const handleCancel = async () => {
     if (!user || !order) return;
