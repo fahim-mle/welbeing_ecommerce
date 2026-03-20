@@ -4,6 +4,8 @@ import { AuthProvider } from './context/AuthContext';
 import { CartUIProvider } from './context/CartUIContext';
 import { CartDrawer } from './components/cart/CartDrawer';
 import { FloatingCartButton } from './components/cart/FloatingCartButton';
+import { PageLoader } from './components/PageLoader';
+import { useAuth } from './hooks/useAuth';
 import { Cart } from './pages/Cart';
 import { Checkout } from './pages/Checkout';
 import { ForgotPassword } from './pages/ForgotPassword';
@@ -25,15 +27,14 @@ import { Login, Register } from './pages/Auth';
 import { Home } from './pages/Home';
 import { Profile } from './pages/Profile';
 
-function App() {
+function AppContent() {
+  const { isLoading } = useAuth();
+  if (isLoading) return <PageLoader />;
   return (
-    <AuthProvider>
-      <CartProvider>
-        <CartUIProvider>
-          <Router>
-            <CartDrawer />
-            <FloatingCartButton />
-            <Routes>
+    <>
+      <CartDrawer />
+      <FloatingCartButton />
+      <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -59,6 +60,17 @@ function App() {
               </Route>
             </Route>
             </Routes>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <CartUIProvider>
+          <Router>
+            <AppContent />
           </Router>
         </CartUIProvider>
       </CartProvider>

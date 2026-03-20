@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { fetchAdminOrder, updateOrderStatus } from '../../api/admin';
 import type { OrderResponse } from '../../api/orders';
+import { PageLoader } from '../../components/PageLoader';
 import { useAuth } from '../../hooks/useAuth';
 
 const statusOptions = ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
@@ -56,9 +57,7 @@ export const AdminOrderDetail: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return <div className="p-8">Loading order...</div>;
-  }
+  if (loading) return <PageLoader />;
 
   if (!order) {
     return (

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { cancelOrder, fetchOrder, type OrderResponse } from '../api/orders';
 import { useAuth } from '../hooks/useAuth';
+import { PageLoader } from '../components/PageLoader';
 
 const cancellableStatuses = ['PENDING', 'PAID'];
 
@@ -68,13 +69,7 @@ export const OrderDetail: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-indigo-600">Loading order...</div>
-      </div>
-    );
-  }
+  if (loading) return <PageLoader />;
 
   if (!order) {
     return (

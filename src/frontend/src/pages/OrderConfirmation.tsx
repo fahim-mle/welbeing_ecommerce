@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { fetchOrder, type OrderResponse } from '../api/orders';
 import { useAuth } from '../hooks/useAuth';
+import { PageLoader } from '../components/PageLoader';
 
 export const OrderConfirmation: React.FC = () => {
   const location = useLocation();
@@ -51,13 +52,7 @@ export const OrderConfirmation: React.FC = () => {
       .finally(() => setLoading(false));
   }, [orderId, stateOrder, user, authLoading, guestEmail]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-indigo-600">Loading order details...</div>
-      </div>
-    );
-  }
+  if (loading) return <PageLoader />;
 
   if (!order) {
     return (
