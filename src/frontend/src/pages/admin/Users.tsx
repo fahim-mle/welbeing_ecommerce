@@ -3,6 +3,7 @@ import { fetchAdminUsers, type AdminUser, updateAdminUser } from '../../api/admi
 import { useAuth } from '../../hooks/useAuth';
 import { mfaApi } from '../../api/mfa';
 import { Search, X, Shield, ShieldOff } from 'lucide-react';
+import { Spinner } from '../../components/Spinner';
 import { Pagination } from '../../components/admin/Pagination';
 import { FilterDropdown } from '../../components/admin/FilterDropdown';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
@@ -230,9 +231,8 @@ export const AdminUsers: React.FC = () => {
 
       {/* Loading State */}
       {loading && (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-          <p className="mt-2 text-sm text-gray-500">Loading users...</p>
+        <div className="flex justify-center py-12">
+          <Spinner />
         </div>
       )}
 

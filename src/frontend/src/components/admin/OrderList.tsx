@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { fetchAdminOrders, updateOrderStatus } from '../../api/admin';
 import type { OrderResponse } from '../../api/orders';
 import { useAuth } from '../../hooks/useAuth';
+import { Spinner } from '../Spinner';
 
 const statusOptions = ['ALL', 'PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
 
@@ -65,7 +66,7 @@ export const OrderList: React.FC = () => {
     }
   };
 
-  if (loading) return <div>Loading orders...</div>;
+  if (loading) return <div className="flex justify-center py-12"><Spinner /></div>;
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (

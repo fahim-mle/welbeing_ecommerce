@@ -1,0 +1,82 @@
+name: welbeing_ecommerce_dev
+
+# Local development — no SSL required, uses dev-friendly ports.
+# Usage: docker compose -f compose.dev.yaml up
+#
+# Backend:  http://localhost:3000
+# Frontend: http://localhost:5173
+#
+# Override any default by creating a root-level .env file (gitignored).
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: welbeing_postgres_dev
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-welbeing}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-welbeing}
+      POSTGRES_DB: ${POSTGRES_DB:-test_welbeing}
+    ports:
+      - "5433:5432"
+    volumes:
+      - welbeing_pgdata_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-welbeing} -d ${POSTGRES_DB:-test_welbeing}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7
+    container_name: welbeing_redis_dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - welbeing_redisdata_dev:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: src/backend/Dockerfile
+    container_name: welbeing_backend_dev
+    environment:
+      # Internal Docker network hostnames
+      DATABASE_URL: ${DATABASE_URL:-postgresql://welbeing:welbeing@postgres:5432/test_welbeing?schema=public}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-prod}
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${PORT:-3000}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: src/frontend/Dockerfile
+      args:
+        # Relative path — proxied through nginx to the backend container
+        VITE_API_BASE_URL: /api
+    container_name: welbeing_frontend_dev
+    ports:
+      - "5173:80"
+    volumes:
+      - ./src/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  welbeing_pgdata_dev:
+  welbeing_redisdata_dev:

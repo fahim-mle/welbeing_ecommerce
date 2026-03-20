@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { deleteProduct, fetchAdminProducts, updateProduct } from '../../api/admin';
 import type { Product } from '../../api/catalog';
 import { useAuth } from '../../hooks/useAuth';
+import { Spinner } from '../Spinner';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { Pagination } from './Pagination';
 
@@ -127,9 +128,8 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
 
       {/* Loading State */}
       {loading && (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-          <p className="mt-2 text-sm text-gray-500">Loading products...</p>
+        <div className="flex justify-center py-12">
+          <Spinner />
         </div>
       )}
 

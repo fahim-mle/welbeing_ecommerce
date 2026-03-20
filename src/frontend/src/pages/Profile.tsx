@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, Key } from 'lucide-react';
+import { Spinner } from '../components/Spinner';
 import { authApi } from '../api/auth';
 import { mfaApi } from '../api/mfa';
 import { fetchAddresses, type Address } from '../api/addresses';
@@ -356,7 +357,7 @@ export const Profile = () => {
                   </div>
                 </div>
 
-                {ordersLoading && <p className="text-sm text-gray-500">Loading orders...</p>}
+                {ordersLoading && <div className="flex justify-center py-6"><Spinner size="sm" /></div>}
                 {ordersError && <p className="text-sm text-red-600">{ordersError}</p>}
                 {!ordersLoading && !ordersError && orders.length === 0 && (
                   <p className="text-sm text-gray-500">No orders found yet.</p>
@@ -486,7 +487,7 @@ export const Profile = () => {
                   )}
 
                   {mfaLoading && !mfaStatus && !mfaError ? (
-                    <p className="text-sm text-gray-600">Loading MFA status...</p>
+                    <div className="flex justify-center py-6"><Spinner size="sm" /></div>
                   ) : mfaStatus ? (
                     <div>
                       <div className="flex items-center mb-4">

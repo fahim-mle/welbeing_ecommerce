@@ -15,6 +15,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { fetchProductById, fetchProducts, type Product, type ProductVariant } from '../api/catalog';
+import { PageLoader } from '../components/PageLoader';
 import { ProductCard } from '../components/ProductCard';
 import { useCart } from '../context/useCart';
 
@@ -71,7 +72,7 @@ export const ProductDetail: React.FC = () => {
     loadRelated();
   }, [product]);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading) return <PageLoader />;
   if (!product) return <div className="min-h-screen flex items-center justify-center">Product not found.</div>;
 
   const images = product.images.length > 0 ? product.images : [{ id: 0, url: 'https://placehold.co/600x400?text=No+Image', displayOrder: 0 }];
