@@ -1,5 +1,4 @@
 import { API_BASE_URL } from '../config';
-import { apiFetch } from '../utils/apiFetch';
 
 export interface AddressSuggestion {
   placeId: number;
