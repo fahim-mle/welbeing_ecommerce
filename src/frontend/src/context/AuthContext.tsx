@@ -21,6 +21,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [mfaToken, setMfaToken] = useState<string | null>(null);
   const authVersionRef = useRef(0);
 
+  // Force-logout when apiFetch detects that the refresh token is also expired
+  useEffect(() => {
+    const handleExpired = () => {
+      authVersionRef.current += 1;
+      setUser(null);
+      setMfaRequired(false);
+      setMfaToken(null);
+      localStorage.removeItem('user');
+    };
+    window.addEventListener('auth:expired', handleExpired);
+    return () => window.removeEventListener('auth:expired', handleExpired);
+  }, []);
+
   // On mount, verify the cookie session is still valid
   useEffect(() => {
     let cancelled = false;

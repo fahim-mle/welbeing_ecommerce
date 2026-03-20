@@ -108,7 +108,7 @@ describe('MFA Verification Login Flow', () => {
       // A normal access token lacks mfaPending:true
       const regularToken = auth.generateToken(
         { userId: testUser.id, email: testUser.email, role: testUser.role },
-        '15m',
+        '1h',
       );
 
       const res = await request(app)

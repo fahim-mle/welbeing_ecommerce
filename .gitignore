@@ -20,3 +20,5 @@ specs
 
 .qwen/
 gha-creds-*.json
+
+*.tsbuildinfo
