@@ -34,7 +34,7 @@ const maskEmail = (value: unknown) => {
 };
 
 export const createAccessToken = (user: { id: number; email: string; role: string }) => {
-  return auth.generateToken({ userId: user.id, email: user.email, role: user.role }, '15m');
+  return auth.generateToken({ userId: user.id, email: user.email, role: user.role }, '1h');
 };
 
 /** Write both auth cookies onto the response. */

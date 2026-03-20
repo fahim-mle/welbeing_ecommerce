@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../config';
+import { apiFetch } from '../utils/apiFetch';
 
 export interface ProductVariant {
   id: number;
@@ -78,7 +79,7 @@ export const fetchProducts = async (filters: CatalogFilters = {}): Promise<Pagin
   if (filters.page) params.append('page', String(filters.page));
   if (filters.limit) params.append('limit', String(filters.limit));
 
-  const response = await fetch(`${API_BASE_URL}/products?${params.toString()}`, {
+  const response = await apiFetch(`${API_BASE_URL}/products?${params.toString()}`, {
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch products');
@@ -87,7 +88,7 @@ export const fetchProducts = async (filters: CatalogFilters = {}): Promise<Pagin
 };
 
 export const fetchProductById = async (id: number): Promise<Product> => {
-  const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+  const response = await apiFetch(`${API_BASE_URL}/products/${id}`, {
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch product');
@@ -96,7 +97,7 @@ export const fetchProductById = async (id: number): Promise<Product> => {
 };
 
 export const fetchCategories = async (): Promise<Category[]> => {
-  const response = await fetch(`${API_BASE_URL}/categories`, {
+  const response = await apiFetch(`${API_BASE_URL}/categories`, {
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch categories');
@@ -105,7 +106,7 @@ export const fetchCategories = async (): Promise<Category[]> => {
 };
 
 export const fetchTags = async (): Promise<WellbeingTag[]> => {
-  const response = await fetch(`${API_BASE_URL}/tags`, {
+  const response = await apiFetch(`${API_BASE_URL}/tags`, {
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch tags');

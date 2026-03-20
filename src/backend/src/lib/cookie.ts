@@ -15,10 +15,10 @@ export const baseCookieOptions = (): CookieOptions => ({
   path: '/',
 });
 
-/** Short-lived access token cookie (15 min). */
+/** Short-lived access token cookie (1 hour). */
 export const accessTokenCookie = (): CookieOptions => ({
   ...baseCookieOptions(),
-  maxAge: 15 * 60 * 1000,
+  maxAge: 60 * 60 * 1000,
 });
 
 /** Long-lived refresh token cookie (7 days). */

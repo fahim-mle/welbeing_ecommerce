@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../config';
+import { apiFetch } from '../utils/apiFetch';
 
 export interface Address {
   id: number;
@@ -15,7 +16,7 @@ export interface Address {
 }
 
 export const fetchAddresses = async (): Promise<Address[]> => {
-  const response = await fetch(`${API_BASE_URL}/addresses`, {
+  const response = await apiFetch(`${API_BASE_URL}/addresses`, {
     credentials: 'include',
   });
 
@@ -29,7 +30,7 @@ export const fetchAddresses = async (): Promise<Address[]> => {
 };
 
 export const createAddress = async (payload: Omit<Address, 'id'>): Promise<Address> => {
-  const response = await fetch(`${API_BASE_URL}/addresses`, {
+  const response = await apiFetch(`${API_BASE_URL}/addresses`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

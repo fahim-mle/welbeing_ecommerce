@@ -1,5 +1,6 @@
 import type { Category, Product, WellbeingTag } from './catalog';
 import { API_BASE_URL } from '../config';
+import { apiFetch } from '../utils/apiFetch';
 import type { OrderResponse } from './orders';
 
 const jsonHeaders = { 'Content-Type': 'application/json' };
@@ -63,7 +64,7 @@ export const fetchAdminProducts = async (
     params.append('search', search);
   }
 
-  const response = await fetch(`${API_BASE_URL}/admin/products?${params.toString()}`, {
+  const response = await apiFetch(`${API_BASE_URL}/admin/products?${params.toString()}`, {
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch admin products');
@@ -75,7 +76,7 @@ export const fetchAdminOrders = async (
   page = 1,
   limit = 20,
 ): Promise<PaginatedAdminOrders> => {
-  const response = await fetch(`${API_BASE_URL}/admin/orders?page=${page}&limit=${limit}`, {
+  const response = await apiFetch(`${API_BASE_URL}/admin/orders?page=${page}&limit=${limit}`, {
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch admin orders');
@@ -111,7 +112,7 @@ export const fetchAdminUsers = async (
     params.append('mfaEnabled', filters.mfaEnabled);
   }
 
-  const response = await fetch(`${API_BASE_URL}/admin/users?${params.toString()}`, {
+  const response = await apiFetch(`${API_BASE_URL}/admin/users?${params.toString()}`, {
     credentials: 'include',
   });
   if (!response.ok) throw new Error('Failed to fetch users');
@@ -123,7 +124,7 @@ export const updateAdminUser = async (
   id: number,
   payload: { role?: AdminUser['role']; isActive?: boolean },
 ): Promise<AdminUser> => {
-  const response = await fetch(`${API_BASE_URL}/admin/users/${id}`, {
+  const response = await apiFetch(`${API_BASE_URL}/admin/users/${id}`, {
     method: 'PATCH',
     headers: jsonHeaders,
     credentials: 'include',
@@ -138,7 +139,7 @@ export const updateAdminUser = async (
 };
 
 export const fetchAdminOrder = async (id: number): Promise<OrderResponse> => {
-  const response = await fetch(`${API_BASE_URL}/admin/orders/${id}`, {
+  const response = await apiFetch(`${API_BASE_URL}/admin/orders/${id}`, {
     credentials: 'include',
   });
   if (!response.ok) {
@@ -150,7 +151,7 @@ export const fetchAdminOrder = async (id: number): Promise<OrderResponse> => {
 };
 
 export const updateOrderStatus = async (id: number, status: string): Promise<OrderResponse> => {
-    const response = await fetch(`${API_BASE_URL}/admin/orders/${id}/status`, {
+    const response = await apiFetch(`${API_BASE_URL}/admin/orders/${id}/status`, {
         method: 'PATCH',
         headers: jsonHeaders,
         credentials: 'include',
@@ -164,7 +165,7 @@ export const updateOrderStatus = async (id: number, status: string): Promise<Ord
 export type AdminProductPayload = Partial<Product> & Record<string, unknown>;
 
 export const createProduct = async (productData: AdminProductPayload): Promise<Product> => {
-    const response = await fetch(`${API_BASE_URL}/admin/products`, {
+    const response = await apiFetch(`${API_BASE_URL}/admin/products`, {
         method: 'POST',
         headers: jsonHeaders,
         credentials: 'include',
@@ -175,7 +176,7 @@ export const createProduct = async (productData: AdminProductPayload): Promise<P
 };
 
 export const updateProduct = async (id: number, productData: AdminProductPayload): Promise<Product> => {
-    const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
+    const response = await apiFetch(`${API_BASE_URL}/admin/products/${id}`, {
         method: 'PUT',
         headers: jsonHeaders,
         credentials: 'include',
@@ -186,7 +187,7 @@ export const updateProduct = async (id: number, productData: AdminProductPayload
 };
 
 export const deleteProduct = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
+  const response = await apiFetch(`${API_BASE_URL}/admin/products/${id}`, {
     method: 'DELETE',
     credentials: 'include',
   });
@@ -196,7 +197,7 @@ export const deleteProduct = async (id: number): Promise<void> => {
 export const createCategory = async (
   payload: { name: string; description?: string; parentId?: number | null },
 ): Promise<Category> => {
-  const response = await fetch(`${API_BASE_URL}/admin/catalog/categories`, {
+  const response = await apiFetch(`${API_BASE_URL}/admin/catalog/categories`, {
     method: 'POST',
     headers: jsonHeaders,
     credentials: 'include',
@@ -214,7 +215,7 @@ export const updateCategory = async (
   id: number,
   payload: { name?: string; description?: string; parentId?: number | null },
 ): Promise<Category> => {
-  const response = await fetch(`${API_BASE_URL}/admin/catalog/categories/${id}`, {
+  const response = await apiFetch(`${API_BASE_URL}/admin/catalog/categories/${id}`, {
     method: 'PUT',
     headers: jsonHeaders,
     credentials: 'include',
@@ -229,7 +230,7 @@ export const updateCategory = async (
 };
 
 export const deleteCategory = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/admin/catalog/categories/${id}`, {
+  const response = await apiFetch(`${API_BASE_URL}/admin/catalog/categories/${id}`, {
     method: 'DELETE',
     credentials: 'include',
   });
@@ -242,7 +243,7 @@ export const deleteCategory = async (id: number): Promise<void> => {
 export const createTag = async (
   payload: { name: string; type: WellbeingTag['type'] },
 ): Promise<WellbeingTag> => {
-  const response = await fetch(`${API_BASE_URL}/admin/catalog/tags`, {
+  const response = await apiFetch(`${API_BASE_URL}/admin/catalog/tags`, {
     method: 'POST',
     headers: jsonHeaders,
     credentials: 'include',
@@ -260,7 +261,7 @@ export const updateTag = async (
   id: number,
   payload: { name?: string; type?: WellbeingTag['type'] },
 ): Promise<WellbeingTag> => {
-  const response = await fetch(`${API_BASE_URL}/admin/catalog/tags/${id}`, {
+  const response = await apiFetch(`${API_BASE_URL}/admin/catalog/tags/${id}`, {
     method: 'PUT',
     headers: jsonHeaders,
     credentials: 'include',
@@ -275,7 +276,7 @@ export const updateTag = async (
 };
 
 export const deleteTag = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/admin/catalog/tags/${id}`, {
+  const response = await apiFetch(`${API_BASE_URL}/admin/catalog/tags/${id}`, {
     method: 'DELETE',
     credentials: 'include',
   });

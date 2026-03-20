@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../config';
+import { apiFetch } from '../utils/apiFetch';
 
 // Response types
 export interface MfaEnrollResponse {
@@ -44,7 +45,7 @@ const jsonHeaders = { 'Content-Type': 'application/json' };
 export const mfaApi = {
   // Enroll in MFA (generate TOTP secret + QR code)
   async enroll(): Promise<MfaEnrollResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/mfa/enroll`, {
+    const res = await apiFetch(`${API_BASE_URL}/auth/mfa/enroll`, {
       method: 'POST',
       credentials: 'include',
     });
@@ -57,7 +58,7 @@ export const mfaApi = {
 
   // Verify TOTP code during enrollment
   async verifyEnrollment(token: string): Promise<MfaVerifyEnrollmentResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/mfa/verify-enrollment`, {
+    const res = await apiFetch(`${API_BASE_URL}/auth/mfa/verify-enrollment`, {
       method: 'POST',
       headers: jsonHeaders,
       credentials: 'include',
@@ -72,7 +73,7 @@ export const mfaApi = {
 
   // Get MFA status
   async getStatus(): Promise<MfaStatusResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/mfa/status`, {
+    const res = await apiFetch(`${API_BASE_URL}/auth/mfa/status`, {
       method: 'GET',
       credentials: 'include',
     });
@@ -85,7 +86,7 @@ export const mfaApi = {
 
   // Verify TOTP code during login
   async verifyLogin(mfaToken: string, token: string): Promise<MfaVerifyResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/mfa/verify`, {
+    const res = await apiFetch(`${API_BASE_URL}/auth/mfa/verify`, {
       method: 'POST',
       headers: jsonHeaders,
       credentials: 'include',
@@ -100,7 +101,7 @@ export const mfaApi = {
 
   // Verify backup code during login
   async verifyBackupCode(mfaToken: string, code: string): Promise<MfaVerifyResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/mfa/verify-backup-code`, {
+    const res = await apiFetch(`${API_BASE_URL}/auth/mfa/verify-backup-code`, {
       method: 'POST',
       headers: jsonHeaders,
       credentials: 'include',
@@ -115,7 +116,7 @@ export const mfaApi = {
 
   // Regenerate backup codes
   async regenerateBackupCodes(): Promise<RegenerateBackupCodesResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/mfa/regenerate-backup-codes`, {
+    const res = await apiFetch(`${API_BASE_URL}/auth/mfa/regenerate-backup-codes`, {
       method: 'POST',
       credentials: 'include',
     });
@@ -128,7 +129,7 @@ export const mfaApi = {
 
   // Reset user's MFA (admin only)
   async resetMfa(userId: number): Promise<ResetMfaResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/mfa/reset`, {
+    const res = await apiFetch(`${API_BASE_URL}/auth/mfa/reset`, {
       method: 'POST',
       headers: jsonHeaders,
       credentials: 'include',
