@@ -58,9 +58,9 @@ describe('Cookie Configuration', () => {
   });
 
   describe('accessTokenCookie', () => {
-    it('should have maxAge of 15 minutes', () => {
+    it('should have maxAge of 1 hour', () => {
       const options = accessTokenCookie();
-      expect(options.maxAge).toBe(15 * 60 * 1000);
+      expect(options.maxAge).toBe(60 * 60 * 1000);
     });
 
     it('should inherit base cookie options', () => {
