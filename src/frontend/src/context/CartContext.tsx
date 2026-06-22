@@ -1,5 +1,7 @@
-import React, { createContext, useMemo, useState } from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { type Product, type ProductVariant } from '../api/catalog';
+
+const CART_STORAGE_KEY = 'welbeing_cart';
 
 export interface CartItem {
   product: Product;
@@ -19,8 +21,55 @@ export interface CartContextValue {
 
 export const CartContext = createContext<CartContextValue | undefined>(undefined);
 
+const isBrowser = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+
+const isCartItem = (item: unknown): item is CartItem => {
+  if (!item || typeof item !== 'object') return false;
+  const candidate = item as Partial<CartItem>;
+  return Boolean(
+    candidate.product
+      && typeof candidate.product === 'object'
+      && typeof candidate.product.id === 'number'
+      && typeof candidate.product.name === 'string'
+      && typeof candidate.quantity === 'number'
+      && Number.isFinite(candidate.quantity)
+      && candidate.quantity > 0,
+  );
+};
+
+const loadStoredCart = (): CartItem[] => {
+  if (!isBrowser()) return [];
+
+  try {
+    const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.filter(isCartItem);
+  } catch {
+    return [];
+  }
+};
+
+const persistCart = (items: CartItem[]) => {
+  if (!isBrowser()) return;
+
+  try {
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    // Storage can fail in private browsing or quota-exceeded states.
+    // Cart should keep working in memory even if persistence is unavailable.
+  }
+};
+
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(loadStoredCart);
+
+  useEffect(() => {
+    persistCart(items);
+  }, [items]);
 
   const addItem = (product: Product, quantity = 1, variant?: ProductVariant) => {
     setItems((prev) => {
