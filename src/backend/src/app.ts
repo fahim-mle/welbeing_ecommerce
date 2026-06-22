@@ -19,6 +19,7 @@ import adminOrdersRouter from './api/admin/orders';
 import adminCatalogRouter from './api/admin/catalog';
 import adminUsersRouter from './api/admin/users';
 import adminAnalyticsRouter from './api/admin/analytics';
+import adminUploadsRouter from './api/admin/uploads';
 import authRouter from './api/auth';
 import mfaRouter from './api/mfa';
 import usersRouter from './api/users';
@@ -39,6 +40,7 @@ app.use(helmet());
 app.use(cors(buildCorsOptions()));
 app.use(cookieParser());
 app.use(morgan('dev'));
+app.use('/uploads', express.static(path.resolve(process.cwd(), process.env.UPLOAD_DIR || 'uploads')));
 app.use(express.json());
 app.use((req, res, next) => {
   const requestId = req.headers['x-request-id']?.toString() ?? randomUUID();
@@ -66,6 +68,7 @@ app.use('/api/admin/orders', apiLimiter, adminOrdersRouter);
 app.use('/api/admin/catalog', apiLimiter, adminCatalogRouter);
 app.use('/api/admin/users', apiLimiter, adminUsersRouter);
 app.use('/api/admin/analytics', apiLimiter, adminAnalyticsRouter);
+app.use('/api/admin/uploads', apiLimiter, adminUploadsRouter);
 app.use('/api', apiLimiter, metadataRouter); // /api/categories, /api/tags
 
 app.get('/', (req, res) => {
