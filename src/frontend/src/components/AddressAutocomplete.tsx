@@ -59,7 +59,7 @@ export const AddressAutocomplete: React.FC<Props> = ({
     <div ref={rootRef} className="relative">
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <MapPin className="h-4 w-4 text-gray-400" aria-hidden="true" />
+          <MapPin className="h-4 w-4 text-text-muted" aria-hidden="true" />
         </div>
         <input
           type="text"
@@ -74,7 +74,7 @@ export const AddressAutocomplete: React.FC<Props> = ({
         {value && (
           <button
             type="button"
-            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-muted hover:text-text-secondary"
             onClick={() => {
               onChange('');
               setResults([]);
@@ -88,18 +88,18 @@ export const AddressAutocomplete: React.FC<Props> = ({
       </div>
 
       {open && (
-        <div className="absolute z-50 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+        <div className="absolute z-50 mt-2 w-full bg-surface border border-border-default rounded-xl shadow-lg overflow-hidden">
           {loading ? (
-            <div className="p-3 text-sm text-gray-500">Searching…</div>
+            <div className="p-3 text-sm text-text-secondary">Searching…</div>
           ) : results.length === 0 ? (
-            <div className="p-3 text-sm text-gray-500">No matches</div>
+            <div className="p-3 text-sm text-text-secondary">No matches</div>
           ) : (
             <ul className="max-h-64 overflow-auto">
               {results.map((r) => (
                 <li key={String(r.placeId)}>
                   <button
                     type="button"
-                    className="w-full text-left px-4 py-3 text-sm hover:bg-gray-50"
+                    className="w-full text-left px-4 py-3 text-sm hover:bg-surface-alt"
                     onClick={() => {
                       onSelect(r);
                       setOpen(false);

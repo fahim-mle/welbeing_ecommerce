@@ -11,7 +11,7 @@ export const FloatingCartButton: React.FC = () => {
     <button
       type="button"
       onClick={openCart}
-      className="fixed bottom-6 right-6 z-[55] rounded-full bg-indigo-600 text-white shadow-lg shadow-indigo-300 px-4 py-3 flex items-center gap-2 hover:bg-indigo-700"
+      className="fixed bottom-6 right-6 z-[55] rounded-full bg-primary-600 text-white shadow-lg shadow-primary-300 px-4 py-3 flex items-center gap-2 hover:bg-primary-700"
       aria-label={`Open cart (${totalItems} items)`}
     >
       <ShoppingBag className="h-5 w-5" aria-hidden="true" />

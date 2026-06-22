@@ -13,11 +13,11 @@ export const ResetPassword = () => {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center space-y-4">
-          <h2 className="text-2xl font-bold text-gray-900">Invalid reset link</h2>
-          <p className="text-gray-600">Please request a new password reset link.</p>
-          <Link to="/forgot-password" className="text-indigo-600 hover:underline">
+      <div className="min-h-screen bg-surface-alt flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-surface rounded-2xl shadow-sm border border-border-default p-8 text-center space-y-4">
+          <h2 className="text-2xl font-bold text-text-primary">Invalid reset link</h2>
+          <p className="text-text-secondary">Please request a new password reset link.</p>
+          <Link to="/forgot-password" className="text-primary-600 hover:underline">
             Request a new link
           </Link>
         </div>
@@ -52,17 +52,17 @@ export const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Set a new password</h2>
+    <div className="min-h-screen bg-surface-alt flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-surface rounded-2xl shadow-sm border border-border-default p-8">
+        <h2 className="text-2xl font-bold text-text-primary mb-6 text-center">Set a new password</h2>
         {status === 'success' ? (
-          <div className="text-center text-green-600">
+          <div className="text-center text-success-600">
             Password updated! Redirecting to login...
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             {errorMessage && (
-              <div className="bg-red-100 text-red-700 p-3 rounded">{errorMessage}</div>
+              <div className="bg-danger-100 text-danger-700 p-3 rounded">{errorMessage}</div>
             )}
             <label className="space-y-2">
               <span className="form-label">New password</span>
@@ -90,7 +90,7 @@ export const ResetPassword = () => {
           </form>
         )}
         <div className="mt-4 text-center">
-          <Link to="/login" className="text-sm text-gray-600 hover:underline">
+          <Link to="/login" className="text-sm text-text-secondary hover:underline">
             Back to login
           </Link>
         </div>

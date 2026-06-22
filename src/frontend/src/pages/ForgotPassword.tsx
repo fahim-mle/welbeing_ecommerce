@@ -24,13 +24,13 @@ export const ForgotPassword = () => {
 
   if (status === 'success') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center space-y-4">
-          <h2 className="text-2xl font-bold text-gray-900">Check your inbox</h2>
-          <p className="text-gray-600">
+      <div className="min-h-screen bg-surface-alt flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-surface rounded-2xl shadow-sm border border-border-default p-8 text-center space-y-4">
+          <h2 className="text-2xl font-bold text-text-primary">Check your inbox</h2>
+          <p className="text-text-secondary">
             If an account exists for <span className="font-semibold">{email}</span>, we sent a password reset link.
           </p>
-          <Link to="/login" className="text-indigo-600 hover:underline">
+          <Link to="/login" className="text-primary-600 hover:underline">
             Back to login
           </Link>
         </div>
@@ -39,11 +39,11 @@ export const ForgotPassword = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Forgot password</h2>
+    <div className="min-h-screen bg-surface-alt flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-surface rounded-2xl shadow-sm border border-border-default p-8">
+        <h2 className="text-2xl font-bold text-text-primary mb-6 text-center">Forgot password</h2>
         {errorMessage && (
-          <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{errorMessage}</div>
+          <div className="bg-danger-100 text-danger-700 p-3 mb-4 rounded">{errorMessage}</div>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <label className="space-y-2">
@@ -61,7 +61,7 @@ export const ForgotPassword = () => {
           </button>
         </form>
         <div className="mt-4 text-center">
-          <Link to="/login" className="text-sm text-gray-600 hover:underline">
+          <Link to="/login" className="text-sm text-text-secondary hover:underline">
             Back to login
           </Link>
         </div>

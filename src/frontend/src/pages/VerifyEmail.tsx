@@ -28,12 +28,12 @@ export const VerifyEmail = () => {
   }, [token]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">Email Verification</h2>
-        {status === 'verifying' && <p className="text-gray-600">Verifying your email...</p>}
+    <div className="min-h-screen bg-surface-alt flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-surface rounded-2xl shadow-sm border border-border-default p-8 text-center space-y-4">
+        <h2 className="text-2xl font-bold text-text-primary">Email Verification</h2>
+        {status === 'verifying' && <p className="text-text-secondary">Verifying your email...</p>}
         {status !== 'verifying' && (
-          <p className={status === 'success' ? 'text-green-600' : 'text-red-600'}>{message}</p>
+          <p className={status === 'success' ? 'text-success-600' : 'text-danger-600'}>{message}</p>
         )}
         <Link
           to="/login"

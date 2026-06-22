@@ -22,14 +22,14 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
 
   return (
     <div className="flex flex-col">
-      <label htmlFor={selectId} className="text-sm font-medium text-gray-700 mb-1">
+      <label htmlFor={selectId} className="text-sm font-medium text-text-primary mb-1">
         {label}
       </label>
       <select
         id={selectId}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+        className="block w-full rounded-md border-border-default shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 border"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>

@@ -62,23 +62,23 @@ export const AdminOrderDetail: React.FC = () => {
   if (!order) {
     return (
       <div className="p-8">
-        <p className="text-red-600">{error || 'Order not found.'}</p>
+        <p className="text-danger-600">{error || 'Order not found.'}</p>
       </div>
     );
   }
 
   return (
     <div className="p-8 space-y-6">
-      <Link to="/admin/orders" className="flex items-center text-sm text-gray-500 hover:text-gray-900">
+      <Link to="/admin/orders" className="flex items-center text-sm text-text-secondary hover:text-text-primary">
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back to orders
       </Link>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+      <div className="bg-surface rounded-2xl shadow-sm border border-border-default p-6 space-y-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Order #{order.id}</h1>
-            <p className="text-sm text-gray-500">Placed on {new Date(order.createdAt).toLocaleString()}</p>
+            <h1 className="text-2xl font-bold text-text-primary">Order #{order.id}</h1>
+            <p className="text-sm text-text-secondary">Placed on {new Date(order.createdAt).toLocaleString()}</p>
           </div>
           <select
             value={order.status}
@@ -95,75 +95,75 @@ export const AdminOrderDetail: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h2 className="text-sm font-semibold text-gray-900 mb-2">Customer</h2>
-            <p className="text-sm text-gray-600">{order.user?.email || order.guestEmail}</p>
+            <h2 className="text-sm font-semibold text-text-primary mb-2">Customer</h2>
+            <p className="text-sm text-text-secondary">{order.user?.email || order.guestEmail}</p>
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-gray-900 mb-2">Payment Status</h2>
-            <p className="text-sm text-gray-600">{order.paymentStatus ?? 'PENDING'}</p>
+            <h2 className="text-sm font-semibold text-text-primary mb-2">Payment Status</h2>
+            <p className="text-sm text-text-secondary">{order.paymentStatus ?? 'PENDING'}</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">Items</h2>
+        <div className="bg-surface rounded-2xl shadow-sm border border-border-default p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-text-primary">Items</h2>
           {order.items.map((item) => (
-            <div key={item.id} className="flex items-start justify-between border-b border-gray-100 pb-3 last:border-b-0">
+            <div key={item.id} className="flex items-start justify-between border-b border-border-default pb-3 last:border-b-0">
               <div>
-                <p className="text-sm font-semibold text-gray-900">{item.product.name}</p>
+                <p className="text-sm font-semibold text-text-primary">{item.product.name}</p>
                 {item.productVariant?.sku && (
-                  <p className="text-xs text-gray-500">Variant: {item.productVariant.sku}</p>
+                  <p className="text-xs text-text-secondary">Variant: {item.productVariant.sku}</p>
                 )}
-                <p className="text-xs text-gray-500">Qty {item.quantity}</p>
+                <p className="text-xs text-text-secondary">Qty {item.quantity}</p>
               </div>
-              <p className="text-sm font-semibold text-gray-900">
+              <p className="text-sm font-semibold text-text-primary">
                 ${(Number(item.priceAtPurchase) * item.quantity).toFixed(2)}
               </p>
             </div>
           ))}
-          <div className="flex justify-between text-sm font-semibold text-gray-900 pt-4 border-t border-gray-100">
+          <div className="flex justify-between text-sm font-semibold text-text-primary pt-4 border-t border-border-default">
             <span>Total</span>
             <span>${Number(order.totalPrice).toFixed(2)}</span>
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Delivery Address</h2>
+          <div className="bg-surface rounded-2xl shadow-sm border border-border-default p-6">
+            <h2 className="text-lg font-semibold text-text-primary mb-3">Delivery Address</h2>
             {order.address ? (
-              <div className="text-sm text-gray-600">
-                <p className="font-semibold text-gray-900">{order.address.fullName}</p>
+              <div className="text-sm text-text-secondary">
+                <p className="font-semibold text-text-primary">{order.address.fullName}</p>
                 <p>{order.address.streetLine1}</p>
                 {order.address.streetLine2 && <p>{order.address.streetLine2}</p>}
                 <p>
                   {order.address.city}, {order.address.state} {order.address.postalCode}
                 </p>
                 <p>{order.address.country}</p>
-                <p className="text-xs text-gray-500 mt-2">Phone: {order.address.phone}</p>
+                <p className="text-xs text-text-secondary mt-2">Phone: {order.address.phone}</p>
               </div>
             ) : (
-              <p className="text-sm text-gray-500">{order.shippingAddress || 'No address available.'}</p>
+              <p className="text-sm text-text-secondary">{order.shippingAddress || 'No address available.'}</p>
             )}
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Status History</h2>
+          <div className="bg-surface rounded-2xl shadow-sm border border-border-default p-6">
+            <h2 className="text-lg font-semibold text-text-primary mb-3">Status History</h2>
             {order.statusHistory && order.statusHistory.length > 0 ? (
               <ul className="space-y-3">
                 {order.statusHistory.map((entry) => (
-                  <li key={entry.id} className="text-sm text-gray-600 flex justify-between">
+                  <li key={entry.id} className="text-sm text-text-secondary flex justify-between">
                     <span>
                       {entry.fromStatus} → {entry.toStatus}
                     </span>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-text-muted">
                       {new Date(entry.createdAt).toLocaleDateString()}
                     </span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-gray-500">Current status: {order.status}</p>
+              <p className="text-sm text-text-secondary">Current status: {order.status}</p>
             )}
           </div>
         </div>

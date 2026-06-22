@@ -212,9 +212,9 @@ export const Checkout: React.FC = () => {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center text-center px-4">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
-        <p className="text-gray-600 mb-6">Add a few wellbeing essentials before checking out.</p>
+      <div className="min-h-screen bg-surface-alt flex flex-col items-center justify-center text-center px-4">
+        <h1 className="text-2xl font-bold text-text-primary mb-4">Your cart is empty</h1>
+        <p className="text-text-secondary mb-6">Add a few wellbeing essentials before checking out.</p>
         <Link
           to="/"
           className="btn-primary rounded-full"
@@ -226,21 +226,21 @@ export const Checkout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-surface-alt">
+      <header className="bg-surface border-b border-border-default">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="text-sm font-medium text-gray-500 hover:text-indigo-600">
+          <Link to="/" className="text-sm font-medium text-text-secondary hover:text-primary-600">
             Continue shopping
           </Link>
-          <h1 className="text-lg font-semibold text-gray-900">{user ? 'Checkout' : 'Guest Checkout'}</h1>
+          <h1 className="text-lg font-semibold text-text-primary">{user ? 'Checkout' : 'Guest Checkout'}</h1>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid lg:grid-cols-[2fr,1fr] gap-8">
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-surface rounded-2xl shadow-sm border border-border-default p-8 space-y-6">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Shipping & Contact</h2>
-            <p className="text-sm text-gray-500">{user ? `Logged in as ${user.email}` : 'Checkout as a guest — no account required.'}</p>
+            <h2 className="text-xl font-semibold text-text-primary mb-2">Shipping & Contact</h2>
+            <p className="text-sm text-text-secondary">{user ? `Logged in as ${user.email}` : 'Checkout as a guest — no account required.'}</p>
           </div>
 
           <div className="space-y-6">
@@ -253,24 +253,24 @@ export const Checkout: React.FC = () => {
                 value={guestEmail}
                 onChange={(event) => setGuestEmail(event.target.value)}
                 disabled={!!user}
-                className={`form-input ${user ? 'bg-gray-100 text-gray-500' : ''}`}
+                className={`form-input ${user ? 'bg-surface-alt text-text-secondary' : ''}`}
                 placeholder="you@example.com"
                 autoComplete="email"
                 aria-label="Email address for guest checkout"
               />
               {fieldErrors.guestEmail && (
-                <span className="text-xs text-red-600">{fieldErrors.guestEmail}</span>
+                <span className="text-xs text-danger-600">{fieldErrors.guestEmail}</span>
               )}
             </label>
 
             {user && savedAddresses.length > 0 && (
               <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Saved addresses</h3>
+                <h3 className="text-sm font-semibold text-text-primary mb-3">Saved addresses</h3>
                 <div className="space-y-2">
                   {savedAddresses.map((address) => (
                     <label
                       key={address.id}
-                      className="flex items-start gap-3 p-3 border border-gray-200 rounded-xl hover:border-indigo-300 cursor-pointer"
+                      className="flex items-start gap-3 p-3 border border-border-default rounded-xl hover:border-primary-300 cursor-pointer"
                     >
                       <input
                         type="radio"
@@ -281,14 +281,14 @@ export const Checkout: React.FC = () => {
                         className="mt-1"
                       />
                       <div>
-                        <p className="text-sm font-semibold text-gray-900">{address.label}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-sm font-semibold text-text-primary">{address.label}</p>
+                        <p className="text-xs text-text-secondary">
                           {address.streetLine1}, {address.city}, {address.state} {address.postalCode}
                         </p>
                       </div>
                     </label>
                   ))}
-                  <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-xl hover:border-indigo-300 cursor-pointer">
+                  <label className="flex items-start gap-3 p-3 border border-border-default rounded-xl hover:border-primary-300 cursor-pointer">
                     <input
                       type="radio"
                       name="saved-address"
@@ -298,8 +298,8 @@ export const Checkout: React.FC = () => {
                       className="mt-1"
                     />
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">Use a new address</p>
-                      <p className="text-xs text-gray-500">Enter a fresh shipping address below.</p>
+                      <p className="text-sm font-semibold text-text-primary">Use a new address</p>
+                      <p className="text-xs text-text-secondary">Enter a fresh shipping address below.</p>
                     </div>
                   </label>
                 </div>
@@ -318,7 +318,7 @@ export const Checkout: React.FC = () => {
                     placeholder="Home or Office"
                   />
                   {fieldErrors.label && (
-                    <span className="text-xs text-red-600">{fieldErrors.label}</span>
+                    <span className="text-xs text-danger-600">{fieldErrors.label}</span>
                   )}
                 </label>
                 <label>
@@ -331,7 +331,7 @@ export const Checkout: React.FC = () => {
                     placeholder="Full name"
                   />
                   {fieldErrors.fullName && (
-                    <span className="text-xs text-red-600">{fieldErrors.fullName}</span>
+                    <span className="text-xs text-danger-600">{fieldErrors.fullName}</span>
                   )}
                 </label>
                 <label>
@@ -344,7 +344,7 @@ export const Checkout: React.FC = () => {
                     placeholder="Phone number"
                   />
                   {fieldErrors.phone && (
-                    <span className="text-xs text-red-600">{fieldErrors.phone}</span>
+                    <span className="text-xs text-danger-600">{fieldErrors.phone}</span>
                   )}
                 </label>
                 <label className="sm:col-span-2">
@@ -355,7 +355,7 @@ export const Checkout: React.FC = () => {
                     onSelect={handleAddressSuggestionSelect}
                     placeholder="Type to search (e.g. 10 Main St, Brisbane)"
                   />
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-text-secondary">
                     Uses OpenStreetMap suggestions. After selecting, fields below will auto-fill.
                   </span>
                 </label>
@@ -370,7 +370,7 @@ export const Checkout: React.FC = () => {
                     placeholder="Street address"
                   />
                   {fieldErrors.streetLine1 && (
-                    <span className="text-xs text-red-600">{fieldErrors.streetLine1}</span>
+                    <span className="text-xs text-danger-600">{fieldErrors.streetLine1}</span>
                   )}
                 </label>
                 <label className="sm:col-span-2">
@@ -393,7 +393,7 @@ export const Checkout: React.FC = () => {
                     placeholder="City"
                   />
                   {fieldErrors.city && (
-                    <span className="text-xs text-red-600">{fieldErrors.city}</span>
+                    <span className="text-xs text-danger-600">{fieldErrors.city}</span>
                   )}
                 </label>
                 <label>
@@ -406,7 +406,7 @@ export const Checkout: React.FC = () => {
                     placeholder="State"
                   />
                   {fieldErrors.state && (
-                    <span className="text-xs text-red-600">{fieldErrors.state}</span>
+                    <span className="text-xs text-danger-600">{fieldErrors.state}</span>
                   )}
                 </label>
                 <label>
@@ -419,7 +419,7 @@ export const Checkout: React.FC = () => {
                     placeholder="ZIP / Postal code"
                   />
                   {fieldErrors.postalCode && (
-                    <span className="text-xs text-red-600">{fieldErrors.postalCode}</span>
+                    <span className="text-xs text-danger-600">{fieldErrors.postalCode}</span>
                   )}
                 </label>
                 <label>
@@ -432,7 +432,7 @@ export const Checkout: React.FC = () => {
                     placeholder="Country"
                   />
                   {fieldErrors.country && (
-                    <span className="text-xs text-red-600">{fieldErrors.country}</span>
+                    <span className="text-xs text-danger-600">{fieldErrors.country}</span>
                   )}
                 </label>
               </div>
@@ -440,8 +440,8 @@ export const Checkout: React.FC = () => {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Payment Placeholder</h3>
-            <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 text-sm text-indigo-900">
+            <h3 className="text-lg font-semibold text-text-primary">Payment Placeholder</h3>
+            <div className="bg-primary-50 border border-primary-100 rounded-2xl p-4 text-sm text-primary-900">
               Payment is simulated for now. No real charge will be made.
             </div>
             <label>
@@ -457,32 +457,32 @@ export const Checkout: React.FC = () => {
                 aria-label="Payment information placeholder"
               />
               {fieldErrors.paymentPlaceholder && (
-                <span className="text-xs text-red-600">{fieldErrors.paymentPlaceholder}</span>
+                <span className="text-xs text-danger-600">{fieldErrors.paymentPlaceholder}</span>
               )}
             </label>
           </div>
 
-          <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4">
-            <p className="text-sm text-indigo-900 font-medium mb-2">Health Disclaimer</p>
-            <p className="text-xs text-indigo-700">
+          <div className="bg-primary-50 border border-primary-100 rounded-2xl p-4">
+            <p className="text-sm text-primary-900 font-medium mb-2">Health Disclaimer</p>
+            <p className="text-xs text-primary-700">
               Products are not intended to diagnose, treat, cure, or prevent any disease. Always consult a healthcare
               professional for medical advice.
             </p>
-            <label className="mt-4 flex items-start gap-3 text-sm text-indigo-900">
+            <label className="mt-4 flex items-start gap-3 text-sm text-primary-900">
               <input
                 type="checkbox"
                 checked={disclaimerAccepted}
                 onChange={(event) => setDisclaimerAccepted(event.target.checked)}
-                className="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                className="mt-1 h-4 w-4 text-primary-600 border-border-default rounded"
               />
               I acknowledge the health disclaimer.
             </label>
             {fieldErrors.disclaimerAccepted && (
-              <span className="text-xs text-red-600">{fieldErrors.disclaimerAccepted}</span>
+              <span className="text-xs text-danger-600">{fieldErrors.disclaimerAccepted}</span>
             )}
           </div>
 
-          {error && <div className="text-sm text-red-600">{error}</div>}
+          {error && <div className="text-sm text-danger-600">{error}</div>}
 
           <button
             type="submit"

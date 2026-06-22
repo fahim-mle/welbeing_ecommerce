@@ -14,8 +14,8 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div className="p-8 space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-2">Manage your storefront operations from a single place.</p>
+        <h1 className="text-3xl font-bold text-text-primary">Admin Dashboard</h1>
+        <p className="text-sm text-text-secondary mt-2">Manage your storefront operations from a single place.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -25,15 +25,15 @@ export const AdminDashboard: React.FC = () => {
             <Link
               key={link.label}
               to={link.path}
-              className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:border-indigo-200 transition-colors"
+              className="bg-surface rounded-2xl shadow-sm border border-border-default p-6 hover:border-primary-200 transition-colors"
             >
               <div className="flex items-start gap-4">
-                <span className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <span className="h-10 w-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center">
                   <Icon className="h-5 w-5" />
                 </span>
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">{link.label}</h2>
-                  <p className="text-sm text-gray-500 mt-1">{link.description}</p>
+                  <h2 className="text-lg font-semibold text-text-primary">{link.label}</h2>
+                  <p className="text-sm text-text-secondary mt-1">{link.description}</p>
                 </div>
               </div>
             </Link>

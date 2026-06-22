@@ -216,12 +216,12 @@ export const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface-alt">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Account</h1>
-            <p className="text-sm text-gray-500">Manage your profile and track orders.</p>
+            <h1 className="text-3xl font-bold text-text-primary">My Account</h1>
+            <p className="text-sm text-text-secondary">Manage your profile and track orders.</p>
           </div>
           <div className="flex gap-3">
             {user.role === 'ADMIN' ? (
@@ -236,8 +236,8 @@ export const Profile = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-          <div className="border-b border-gray-100 flex flex-wrap">
+        <div className="bg-surface rounded-2xl shadow-sm border border-border-default">
+          <div className="border-b border-border-default flex flex-wrap">
             {tabs.map((tab) => (
               <button
                 key={tab}
@@ -251,8 +251,8 @@ export const Profile = () => {
                 }}
                 className={`px-6 py-4 text-sm font-semibold capitalize transition-colors ${
                   activeTab === tab
-                    ? 'border-b-2 border-indigo-600 text-indigo-600'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'border-b-2 border-primary-600 text-primary-600'
+                    : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
                 {tab}
@@ -264,25 +264,25 @@ export const Profile = () => {
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">Profile Overview</h2>
+                  <h2 className="text-lg font-semibold text-text-primary">Profile Overview</h2>
                   <button
                     type="button"
                     onClick={() => setIsEditingProfile((prev) => !prev)}
-                    className="text-sm font-semibold text-indigo-600 hover:underline"
+                    className="text-sm font-semibold text-primary-600 hover:underline"
                   >
                     {isEditingProfile ? 'Cancel' : 'Edit'}
                   </button>
                 </div>
 
-                {profileMessage && <p className="text-sm text-green-600">{profileMessage}</p>}
-                {profileError && <p className="text-sm text-red-600">{profileError}</p>}
+                {profileMessage && <p className="text-sm text-success-600">{profileMessage}</p>}
+                {profileError && <p className="text-sm text-danger-600">{profileError}</p>}
 
                 {!isEditingProfile ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {profileSummary.map((item) => (
-                      <div key={item.label} className="bg-gray-50 rounded-xl p-4">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{item.label}</p>
-                        <p className="text-sm font-medium text-gray-900">{item.value}</p>
+                      <div key={item.label} className="bg-surface-alt rounded-xl p-4">
+                        <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide">{item.label}</p>
+                        <p className="text-sm font-medium text-text-primary">{item.value}</p>
                       </div>
                     ))}
                   </div>
@@ -335,22 +335,22 @@ export const Profile = () => {
             {activeTab === 'orders' && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">Order History</h2>
+                  <h2 className="text-lg font-semibold text-text-primary">Order History</h2>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setOrdersPage((prev) => Math.max(1, prev - 1))}
                       disabled={ordersPage === 1}
-                      className="px-3 py-1 text-sm border border-gray-200 rounded-lg text-gray-600 disabled:opacity-50"
+                      className="px-3 py-1 text-sm border border-border-default rounded-lg text-text-secondary disabled:opacity-50"
                     >
                       Prev
                     </button>
-                    <span className="text-sm text-gray-500">Page {ordersPage}</span>
+                    <span className="text-sm text-text-secondary">Page {ordersPage}</span>
                     <button
                       type="button"
                       onClick={() => setOrdersPage((prev) => prev + 1)}
                       disabled={!ordersHasNext}
-                      className="px-3 py-1 text-sm border border-gray-200 rounded-lg text-gray-600 disabled:opacity-50"
+                      className="px-3 py-1 text-sm border border-border-default rounded-lg text-text-secondary disabled:opacity-50"
                     >
                       Next
                     </button>
@@ -358,36 +358,36 @@ export const Profile = () => {
                 </div>
 
                 {ordersLoading && <div className="flex justify-center py-6"><Spinner size="sm" /></div>}
-                {ordersError && <p className="text-sm text-red-600">{ordersError}</p>}
+                {ordersError && <p className="text-sm text-danger-600">{ordersError}</p>}
                 {!ordersLoading && !ordersError && orders.length === 0 && (
-                  <p className="text-sm text-gray-500">No orders found yet.</p>
+                  <p className="text-sm text-text-secondary">No orders found yet.</p>
                 )}
 
                 <div className="space-y-4">
                   {orders.map((order) => (
-                    <div key={order.id} className="border border-gray-100 rounded-xl p-4">
+                    <div key={order.id} className="border border-border-default rounded-xl p-4">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <div>
-                          <p className="text-sm font-semibold text-gray-900">Order #{order.id}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-sm font-semibold text-text-primary">Order #{order.id}</p>
+                          <p className="text-xs text-text-secondary">
                             {new Date(order.createdAt).toLocaleDateString()}
                           </p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-xs font-semibold bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                          <span className="text-xs font-semibold bg-surface-alt text-text-primary px-2 py-1 rounded-full">
                             {order.status}
                           </span>
                           {order.paymentStatus && (
-                            <span className="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2 py-1 rounded-full">
+                            <span className="text-xs font-semibold bg-primary-50 text-primary-700 px-2 py-1 rounded-full">
                               {order.paymentStatus}
                             </span>
                           )}
-                          <span className="text-sm font-bold text-gray-900">${Number(order.totalPrice).toFixed(2)}</span>
+                          <span className="text-sm font-bold text-text-primary">${Number(order.totalPrice).toFixed(2)}</span>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
+                      <div className="flex items-center justify-between mt-3 text-xs text-text-secondary">
                         <span>{order.items.length} items</span>
-                        <Link to={`/orders/${order.id}`} className="text-indigo-600 hover:underline">
+                        <Link to={`/orders/${order.id}`} className="text-primary-600 hover:underline">
                           View details
                         </Link>
                       </div>
@@ -399,25 +399,25 @@ export const Profile = () => {
 
             {activeTab === 'addresses' && (
               <div className="space-y-4">
-                <h2 className="text-lg font-semibold text-gray-900">Saved Addresses</h2>
+                <h2 className="text-lg font-semibold text-text-primary">Saved Addresses</h2>
                 {addresses.length === 0 ? (
-                  <p className="text-sm text-gray-500">No saved addresses yet.</p>
+                  <p className="text-sm text-text-secondary">No saved addresses yet.</p>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {addresses.map((address) => (
-                      <div key={address.id} className="border border-gray-100 rounded-xl p-4">
+                      <div key={address.id} className="border border-border-default rounded-xl p-4">
                         {address.isDefault && (
-                          <span className="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2 py-1 rounded-full">
+                          <span className="text-xs font-semibold bg-primary-50 text-primary-700 px-2 py-1 rounded-full">
                             Default
                           </span>
                         )}
-                        <p className="text-sm font-semibold text-gray-900 mt-2">{address.label}</p>
-                        <p className="text-xs text-gray-500">{address.fullName}</p>
-                        <p className="text-xs text-gray-500">{address.streetLine1}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-sm font-semibold text-text-primary mt-2">{address.label}</p>
+                        <p className="text-xs text-text-secondary">{address.fullName}</p>
+                        <p className="text-xs text-text-secondary">{address.streetLine1}</p>
+                        <p className="text-xs text-text-secondary">
                           {address.city}, {address.state} {address.postalCode}
                         </p>
-                        <p className="text-xs text-gray-500">{address.country}</p>
+                        <p className="text-xs text-text-secondary">{address.country}</p>
                       </div>
                     ))}
                   </div>
@@ -428,9 +428,9 @@ export const Profile = () => {
             {activeTab === 'security' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Change Password</h2>
-                  {passwordMessage && <p className="text-sm text-green-600">{passwordMessage}</p>}
-                  {passwordError && <p className="text-sm text-red-600">{passwordError}</p>}
+                  <h2 className="text-lg font-semibold text-text-primary mb-4">Change Password</h2>
+                  {passwordMessage && <p className="text-sm text-success-600">{passwordMessage}</p>}
+                  {passwordError && <p className="text-sm text-danger-600">{passwordError}</p>}
 
                   <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
                     <label className="space-y-2">
@@ -468,18 +468,18 @@ export const Profile = () => {
                   </form>
                 </div>
 
-                <div className="border-t border-gray-200 pt-6">
+                <div className="border-t border-border-default pt-6">
                   <div className="flex items-center mb-4">
-                    <Shield className="w-5 h-5 text-indigo-600 mr-2" />
-                    <h2 className="text-lg font-semibold text-gray-900">Two-Factor Authentication</h2>
+                    <Shield className="w-5 h-5 text-primary-600 mr-2" />
+                    <h2 className="text-lg font-semibold text-text-primary">Two-Factor Authentication</h2>
                   </div>
 
                   {mfaError && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-                      <p className="text-red-600 text-sm mb-2">{mfaError}</p>
+                    <div className="bg-danger-50 border border-danger-100 rounded-lg p-4 mb-4">
+                      <p className="text-danger-600 text-sm mb-2">{mfaError}</p>
                       <button
                         onClick={() => window.location.reload()}
-                        className="text-sm text-red-700 underline hover:text-red-800"
+                        className="text-sm text-danger-700 underline hover:text-danger-700"
                       >
                         Retry
                       </button>
@@ -491,14 +491,14 @@ export const Profile = () => {
                   ) : mfaStatus ? (
                     <div>
                       <div className="flex items-center mb-4">
-                        <div className={`w-3 h-3 rounded-full mr-2 ${mfaStatus.mfaEnabled ? 'bg-green-500' : 'bg-gray-400'}`} />
-                        <span className="text-sm text-gray-700">
+                        <div className={`w-3 h-3 rounded-full mr-2 ${mfaStatus.mfaEnabled ? 'bg-success-500' : 'bg-text-muted'}`} />
+                        <span className="text-sm text-text-primary">
                           Status: <strong>{mfaStatus.mfaEnabled ? 'Enabled' : 'Disabled'}</strong>
                         </span>
                       </div>
 
                       {mfaStatus.mfaEnabled && mfaStatus.mfaEnrolledAt && (
-                        <p className="text-sm text-gray-600 mb-4">
+                        <p className="text-sm text-text-secondary mb-4">
                           Enrolled on: {new Date(mfaStatus.mfaEnrolledAt).toLocaleDateString()}
                         </p>
                       )}

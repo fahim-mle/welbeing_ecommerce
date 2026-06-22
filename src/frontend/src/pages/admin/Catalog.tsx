@@ -119,15 +119,15 @@ export const AdminCatalog: React.FC = () => {
   return (
     <div className="p-8 space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Catalog</h2>
-        <p className="text-sm text-gray-500">Manage categories and wellbeing tags.</p>
+        <h2 className="text-2xl font-bold text-text-primary">Catalog</h2>
+        <p className="text-sm text-text-secondary">Manage categories and wellbeing tags.</p>
       </div>
 
-      {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
+      {errorMessage && <p className="text-sm text-danger-600">{errorMessage}</p>}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">Categories</h3>
+        <div className="bg-surface rounded-2xl shadow-sm border border-border-default p-6 space-y-4">
+          <h3 className="text-lg font-semibold text-text-primary">Categories</h3>
           <form onSubmit={handleAddCategory} className="space-y-3">
             <input
               type="text"
@@ -152,7 +152,7 @@ export const AdminCatalog: React.FC = () => {
 
           <div className="space-y-3">
             {categories.map((category) => (
-              <div key={category.id} className="border border-gray-100 rounded-xl p-3">
+              <div key={category.id} className="border border-border-default rounded-xl p-3">
                 {editingCategoryId === category.id ? (
                   <div className="space-y-2">
                     <input
@@ -191,9 +191,9 @@ export const AdminCatalog: React.FC = () => {
                 ) : (
                   <div className="flex items-center justify-between gap-2">
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">{category.name}</p>
+                      <p className="text-sm font-semibold text-text-primary">{category.name}</p>
                       {category.description && (
-                        <p className="text-xs text-gray-500">{category.description}</p>
+                        <p className="text-xs text-text-secondary">{category.description}</p>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
@@ -206,14 +206,14 @@ export const AdminCatalog: React.FC = () => {
                             description: category.description ?? '',
                           });
                         }}
-                        className="text-xs text-indigo-600 hover:underline"
+                        className="text-xs text-primary-600 hover:underline"
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteCategory(category.id)}
-                        className="text-xs text-red-600 hover:underline"
+                        className="text-xs text-danger-600 hover:underline"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -225,8 +225,8 @@ export const AdminCatalog: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">Tags</h3>
+        <div className="bg-surface rounded-2xl shadow-sm border border-border-default p-6 space-y-4">
+          <h3 className="text-lg font-semibold text-text-primary">Tags</h3>
           <form onSubmit={handleAddTag} className="space-y-3">
             <input
               type="text"
@@ -253,7 +253,7 @@ export const AdminCatalog: React.FC = () => {
 
           <div className="space-y-3">
             {tags.map((tag) => (
-              <div key={tag.id} className="border border-gray-100 rounded-xl p-3">
+              <div key={tag.id} className="border border-border-default rounded-xl p-3">
                 {editingTagId === tag.id ? (
                   <div className="space-y-2">
                     <input
@@ -285,8 +285,8 @@ export const AdminCatalog: React.FC = () => {
                 ) : (
                   <div className="flex items-center justify-between gap-2">
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">{tag.name}</p>
-                      <p className="text-xs text-gray-500">{tag.type}</p>
+                      <p className="text-sm font-semibold text-text-primary">{tag.name}</p>
+                      <p className="text-xs text-text-secondary">{tag.type}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
@@ -295,14 +295,14 @@ export const AdminCatalog: React.FC = () => {
                           setEditingTagId(tag.id);
                           setEditingTag({ name: tag.name, type: tag.type });
                         }}
-                        className="text-xs text-indigo-600 hover:underline"
+                        className="text-xs text-primary-600 hover:underline"
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteTag(tag.id)}
-                        className="text-xs text-red-600 hover:underline"
+                        className="text-xs text-danger-600 hover:underline"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
