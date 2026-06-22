@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { createProduct, updateProduct } from '../../api/admin';
+import { createProduct, updateProduct, type UploadedImage } from '../../api/admin';
 import { fetchCategories, fetchTags, type Category, type Product, type WellbeingTag } from '../../api/catalog';
 import { useAuth } from '../../hooks/useAuth';
+import { ImageUploader } from './ImageUploader';
 
 interface ProductFormProps {
   initialData?: Product | null;
@@ -95,6 +96,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
       });
   };
 
+  const handleImageUploaded = (image: UploadedImage) => {
+      setFormData(prev => ({
+          ...prev,
+          imageUrls: [...prev.imageUrls.split('\n').map(u => u.trim()).filter(Boolean), image.url].join('\n'),
+      }));
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6 bg-surface p-6 rounded-xl shadow-sm border border-border-default">
        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -153,6 +161,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
                          placeholder="https://example.com/image1.jpg"
                          value={formData.imageUrls} onChange={e => setFormData({...formData, imageUrls: e.target.value})}
                      />
+                 </div>
+
+                 <div>
+                     <label className="block text-sm font-medium text-text-primary mb-2">Upload Product Image</label>
+                     <ImageUploader onUploaded={handleImageUploaded} />
                  </div>
                  
                  <div>

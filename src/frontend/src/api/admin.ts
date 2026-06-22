@@ -186,6 +186,33 @@ export const updateProduct = async (id: number, productData: AdminProductPayload
     return response.json();
 };
 
+export interface UploadedImage {
+  key: string;
+  url: string;
+  size: number;
+  mimetype: string;
+  width: number;
+  height: number;
+}
+
+export const uploadProductImage = async (file: File): Promise<UploadedImage> => {
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const response = await apiFetch(`${API_BASE_URL}/admin/uploads/images`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => null);
+    throw new Error(error?.message || 'Failed to upload product image');
+  }
+
+  return response.json();
+};
+
 export const deleteProduct = async (id: number): Promise<void> => {
   const response = await apiFetch(`${API_BASE_URL}/admin/products/${id}`, {
     method: 'DELETE',
