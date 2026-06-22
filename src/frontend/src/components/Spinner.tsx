@@ -1,20 +1,19 @@
-import { Circles } from 'react-loader-spinner';
-
 interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-const sizeMap = { sm: 32, md: 56, lg: 80 };
+const sizeClassMap: Record<NonNullable<SpinnerProps['size']>, string> = {
+  sm: 'h-8 w-8 border-2',
+  md: 'h-14 w-14 border-4',
+  lg: 'h-20 w-20 border-4',
+};
 
 export const Spinner = ({ size = 'md' }: SpinnerProps) => {
-  const px = sizeMap[size];
   return (
-    <Circles
-      height={px}
-      width={px}
-      color="#4f46e5"
-      ariaLabel="loading"
-      visible
+    <div
+      role="status"
+      aria-label="loading"
+      className={`${sizeClassMap[size]} animate-spin rounded-full border-gray-200 border-t-indigo-600`}
     />
   );
 };
