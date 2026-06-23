@@ -69,7 +69,7 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <CartUIProvider>
-          <Router>
+          <Router basename={import.meta.env.VITE_ROUTER_BASENAME || undefined}>
             <AppContent />
           </Router>
         </CartUIProvider>
