@@ -21,6 +21,7 @@ import { AdminProducts } from './pages/admin/Products';
 import { AdminCatalog } from './pages/admin/Catalog';
 import { AdminUsers } from './pages/admin/Users';
 import { AdminAnalytics } from './pages/admin/Analytics';
+import { AdminReviews } from './pages/admin/Reviews';
 import { AdminRoute } from './components/AdminRoute';
 import { AdminLayout } from './components/admin/AdminLayout';
 import { Login, Register } from './pages/Auth';
@@ -56,6 +57,7 @@ function AppContent() {
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="catalog" element={<AdminCatalog />} />
                 <Route path="users" element={<AdminUsers />} />
+                <Route path="reviews" element={<AdminReviews />} />
                 <Route path="analytics" element={<AdminAnalytics />} />
               </Route>
             </Route>

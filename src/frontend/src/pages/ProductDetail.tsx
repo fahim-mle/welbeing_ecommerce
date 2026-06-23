@@ -17,6 +17,7 @@ import { Link, useParams } from 'react-router-dom';
 import { fetchProductById, fetchProducts, type Product, type ProductVariant } from '../api/catalog';
 import { PageLoader } from '../components/PageLoader';
 import { ProductCard } from '../components/ProductCard';
+import { ProductReviews } from '../components/ProductReviews';
 import { useCart } from '../context/useCart';
 
 export const ProductDetail: React.FC = () => {
@@ -351,6 +352,8 @@ export const ProductDetail: React.FC = () => {
                          ))}
                      </div>
                  </div>
+
+                 <ProductReviews productId={product.id} />
 
                  {relatedProducts.length > 0 && (
                    <div className="mt-16">

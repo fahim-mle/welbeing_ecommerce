@@ -2,6 +2,7 @@ import type { Category, Product, WellbeingTag } from './catalog';
 import { API_BASE_URL } from '../config';
 import { apiFetch } from '../utils/apiFetch';
 import type { OrderResponse } from './orders';
+import type { Review } from './reviews';
 
 const jsonHeaders = { 'Content-Type': 'application/json' };
 
@@ -51,6 +52,35 @@ export interface PaginatedAdminProducts {
     totalPages: number;
   };
 }
+
+export interface PaginatedAdminReviews {
+  data: Review[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export const fetchAdminReviews = async (page = 1, limit = 20): Promise<PaginatedAdminReviews> => {
+  const response = await apiFetch(`${API_BASE_URL}/admin/reviews?page=${page}&limit=${limit}`, {
+    credentials: 'include',
+  });
+  if (!response.ok) throw new Error('Failed to fetch admin reviews');
+  return response.json();
+};
+
+export const deleteAdminReview = async (id: number): Promise<void> => {
+  const response = await apiFetch(`${API_BASE_URL}/reviews/${id}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => null);
+    throw new Error(error?.message || 'Failed to delete review');
+  }
+};
 
 export const fetchAdminProducts = async (
   page = 1,
