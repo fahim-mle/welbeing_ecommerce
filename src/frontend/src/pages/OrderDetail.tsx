@@ -117,9 +117,15 @@ export const OrderDetail: React.FC = () => {
           {cancelMessage && <p className="text-sm text-success-600">{cancelMessage}</p>}
           {cancelError && <p className="text-sm text-danger-600">{cancelError}</p>}
 
-          <div className="flex justify-between items-center">
-            <p className="text-sm font-semibold text-text-primary">Total</p>
-            <p className="text-lg font-bold text-text-primary">${Number(order.totalPrice).toFixed(2)}</p>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center text-sm text-text-secondary">
+              <p>GST</p>
+              <p>${Number(order.taxAmount ?? 0).toFixed(2)}</p>
+            </div>
+            <div className="flex justify-between items-center">
+              <p className="text-sm font-semibold text-text-primary">Total</p>
+              <p className="text-lg font-bold text-text-primary">${Number(order.totalPrice).toFixed(2)}</p>
+            </div>
           </div>
 
           {canCancel && (

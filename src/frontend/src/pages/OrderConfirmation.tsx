@@ -107,9 +107,15 @@ export const OrderConfirmation: React.FC = () => {
                   </div>
                 ))}
               </div>
-              <div className="flex items-center justify-between border-t border-border-default pt-4">
-                <span className="text-sm font-semibold text-text-secondary">Total</span>
-                <span className="text-lg font-bold text-text-primary">${Number(order.totalPrice).toFixed(2)}</span>
+              <div className="border-t border-border-default pt-4 space-y-2">
+                <div className="flex items-center justify-between text-sm text-text-secondary">
+                  <span>GST</span>
+                  <span>${Number(order.taxAmount ?? 0).toFixed(2)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-text-secondary">Total</span>
+                  <span className="text-lg font-bold text-text-primary">${Number(order.totalPrice).toFixed(2)}</span>
+                </div>
               </div>
             </div>
 

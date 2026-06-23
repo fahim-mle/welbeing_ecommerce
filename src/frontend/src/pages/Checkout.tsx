@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { fetchAddresses, type Address } from '../api/addresses';
 import type { AddressSuggestion } from '../api/geo';
@@ -7,6 +7,7 @@ import { AddressAutocomplete } from '../components/AddressAutocomplete';
 import { CartSummary } from '../components/CartSummary';
 import { useCart } from '../context/useCart';
 import { useAuth } from '../hooks/useAuth';
+import { calculateCheckoutTotals } from '../utils/tax';
 
 export const Checkout: React.FC = () => {
   const navigate = useNavigate();
@@ -95,6 +96,14 @@ export const Checkout: React.FC = () => {
   };
 
   const showNewAddressForm = !user || selectedAddressId === 'new' || savedAddresses.length === 0;
+  const selectedShippingCountry = useMemo(() => {
+    if (showNewAddressForm) return addressForm.country;
+    return savedAddresses.find((address) => address.id === selectedAddressId)?.country;
+  }, [addressForm.country, savedAddresses, selectedAddressId, showNewAddressForm]);
+  const checkoutTotals = useMemo(
+    () => calculateCheckoutTotals(subtotal, selectedShippingCountry),
+    [selectedShippingCountry, subtotal]
+  );
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -484,13 +493,28 @@ export const Checkout: React.FC = () => {
 
           {error && <div className="text-sm text-danger-600">{error}</div>}
 
+          <div className="rounded-2xl border border-border-default bg-surface-alt p-4 space-y-2 text-sm">
+            <div className="flex justify-between text-text-secondary">
+              <span>Subtotal</span>
+              <span>${checkoutTotals.subtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-text-secondary">
+              <span>GST {checkoutTotals.appliesGst ? '(10%)' : '(not applied)'}</span>
+              <span>${checkoutTotals.taxAmount.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between border-t border-border-default pt-2 font-semibold text-text-primary">
+              <span>Estimated total</span>
+              <span>${checkoutTotals.total.toFixed(2)}</span>
+            </div>
+          </div>
+
           <button
             type="submit"
             disabled={isSubmitting}
             className="btn-primary w-full py-3 text-base font-semibold"
             aria-label="Place order"
           >
-            {isSubmitting ? 'Processing...' : `Place Order • $${subtotal.toFixed(2)}`}
+            {isSubmitting ? 'Processing...' : `Place Order • $${checkoutTotals.total.toFixed(2)}`}
           </button>
         </form>
 

@@ -122,9 +122,15 @@ export const AdminOrderDetail: React.FC = () => {
               </p>
             </div>
           ))}
-          <div className="flex justify-between text-sm font-semibold text-text-primary pt-4 border-t border-border-default">
-            <span>Total</span>
-            <span>${Number(order.totalPrice).toFixed(2)}</span>
+          <div className="space-y-2 pt-4 border-t border-border-default">
+            <div className="flex justify-between text-sm text-text-secondary">
+              <span>GST</span>
+              <span>${Number(order.taxAmount ?? 0).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm font-semibold text-text-primary">
+              <span>Total</span>
+              <span>${Number(order.totalPrice).toFixed(2)}</span>
+            </div>
           </div>
         </div>
 

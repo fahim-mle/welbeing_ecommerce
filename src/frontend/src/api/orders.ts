@@ -74,6 +74,8 @@ export interface OrderResponse {
   status: string;
   paymentStatus?: string;
   totalPrice: string;
+  shippingFee?: string;
+  taxAmount?: string;
   shippingAddress?: string | null;
   address?: OrderAddressResponse | null;
   createdAt: string;
