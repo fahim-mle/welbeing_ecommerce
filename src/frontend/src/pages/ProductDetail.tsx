@@ -17,6 +17,7 @@ import { Link, useParams } from 'react-router-dom';
 import { fetchProductById, fetchProducts, type Product, type ProductVariant } from '../api/catalog';
 import { PageLoader } from '../components/PageLoader';
 import { ProductCard } from '../components/ProductCard';
+import { ProductReviews } from '../components/ProductReviews';
 import { useCart } from '../context/useCart';
 
 export const ProductDetail: React.FC = () => {
@@ -94,11 +95,11 @@ export const ProductDetail: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-surface font-sans">
        {/* Simple Header for Detail Page */}
-       <header className="bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+       <header className="bg-surface/90 backdrop-blur-md border-b border-border-default sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
-             <Link to="/" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors">
+             <Link to="/" className="inline-flex items-center text-sm font-medium text-text-secondary hover:text-primary-600 transition-colors">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Store
              </Link>
@@ -116,7 +117,7 @@ export const ProductDetail: React.FC = () => {
                              {images.map((img, idx) => (
                                  <button
                                      key={img.id || idx}
-                                     className={`relative h-20 bg-gray-50 rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${activeImageIndex === idx ? 'ring-2 ring-indigo-500 ring-offset-2' : 'hover:opacity-80'}`}
+                                     className={`relative h-20 bg-surface-alt rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${activeImageIndex === idx ? 'ring-2 ring-primary-500 ring-offset-2' : 'hover:opacity-80'}`}
                                      onClick={() => setActiveImageIndex(idx)}
                                      aria-label={`View product image ${idx + 1} of ${images.length}`}
                                      aria-pressed={activeImageIndex === idx}
@@ -129,7 +130,7 @@ export const ProductDetail: React.FC = () => {
                  )}
 
                 {/* Main Image */}
-                <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden bg-gray-50 shadow-sm border border-gray-100">
+                <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden bg-surface-alt shadow-sm border border-border-default">
                     <img
                         src={images[activeImageIndex].url}
                         alt={images[activeImageIndex].altText || product.name}
@@ -141,14 +142,14 @@ export const ProductDetail: React.FC = () => {
              {/* Product Info */}
              <div className="mt-12 lg:mt-0 lg:pl-8">
                 <div className="mb-8">
-                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 uppercase tracking-wide mb-4">
+                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary-50 text-primary-700 uppercase tracking-wide mb-4">
                         {product.category?.name}
                      </span>
-                      <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">{product.name}</h1>
+                      <h1 className="text-4xl font-extrabold tracking-tight text-text-primary mb-4">{product.name}</h1>
                       <div className="flex items-end gap-3">
-                        <p className="text-4xl font-light text-gray-900">${displayPrice}</p>
+                        <p className="text-4xl font-light text-text-primary">${displayPrice}</p>
                         {product.originalPrice && Number(product.originalPrice) > Number(displayPrice) && (
-                          <span className="text-sm text-gray-400 line-through">
+                          <span className="text-sm text-text-muted line-through">
                             ${product.originalPrice}
                           </span>
                         )}
@@ -157,11 +158,11 @@ export const ProductDetail: React.FC = () => {
 
                   {product.variants && product.variants.length > 0 && (
                     <div className="mb-8">
-                      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                      <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wide mb-2">
                         Variant Options
                       </label>
                       <select
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full border border-border-default rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                         value={selectedVariant?.id ?? ''}
                         onChange={(event) => {
                           const nextVariant = product.variants?.find(
@@ -178,33 +179,33 @@ export const ProductDetail: React.FC = () => {
                         ))}
                       </select>
                       {selectedVariant?.sku && (
-                        <p className="text-xs text-gray-500 mt-2">SKU: {selectedVariant.sku}</p>
+                        <p className="text-xs text-text-secondary mt-2">SKU: {selectedVariant.sku}</p>
                       )}
                     </div>
                   )}
 
                   {/* Status & Actions */}
-                  <div className="border-t border-b border-gray-100 py-6 mb-8">
+                  <div className="border-t border-b border-border-default py-6 mb-8">
                       <div className="flex items-center justify-between mb-6">
                            {availableStock > 0 ? (
-                               <span className="flex items-center text-green-700 text-sm font-medium bg-green-50 px-3 py-1 rounded-full">
+                               <span className="flex items-center text-success-700 text-sm font-medium bg-success-50 px-3 py-1 rounded-full">
                                    <Check className="h-4 w-4 mr-1.5" /> In Stock ({availableStock} available)
                                </span>
                           ) : (
-                               <span className="flex items-center text-red-700 text-sm font-medium bg-red-50 px-3 py-1 rounded-full">
+                               <span className="flex items-center text-danger-700 text-sm font-medium bg-danger-50 px-3 py-1 rounded-full">
                                    <AlertCircle className="h-4 w-4 mr-1.5" /> Out of Stock
                                </span>
                           )}
                       </div>
 
                       <div className="flex items-center justify-between mb-6">
-                        <span className="text-sm font-medium text-gray-700">Quantity</span>
+                        <span className="text-sm font-medium text-text-primary">Quantity</span>
                         <div className="flex items-center gap-3">
                           <button
                             type="button"
                             onClick={() => handleQuantityChange(quantity - 1)}
                             disabled={quantity <= 1 || availableStock <= 0}
-                            className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="w-9 h-9 rounded-full border border-border-default flex items-center justify-center text-text-secondary hover:bg-surface-alt disabled:opacity-40 disabled:cursor-not-allowed"
                             aria-label="Decrease quantity"
                           >
                             <Minus className="h-4 w-4" />
@@ -216,13 +217,13 @@ export const ProductDetail: React.FC = () => {
                             value={quantity}
                             onChange={(event) => handleQuantityChange(Number(event.target.value))}
                             disabled={availableStock <= 0}
-                            className="w-16 text-center border border-gray-200 rounded-lg py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-50"
+                            className="w-16 text-center border border-border-default rounded-lg py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-surface-alt"
                           />
                           <button
                             type="button"
                             onClick={() => handleQuantityChange(quantity + 1)}
                             disabled={quantity >= maxQuantity || availableStock <= 0}
-                            className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="w-9 h-9 rounded-full border border-border-default flex items-center justify-center text-text-secondary hover:bg-surface-alt disabled:opacity-40 disabled:cursor-not-allowed"
                             aria-label="Increase quantity"
                           >
                             <Plus className="h-4 w-4" />
@@ -234,7 +235,7 @@ export const ProductDetail: React.FC = () => {
                          type="button"
                          disabled={availableStock <= 0}
                          onClick={() => addItem(product, quantity, selectedVariant ?? undefined)}
-                         className="btn-primary w-full py-4 text-lg font-bold shadow-lg shadow-indigo-200 hover:-translate-y-0.5 active:translate-y-0"
+                         className="btn-primary w-full py-4 text-lg font-bold shadow-lg shadow-primary-200 hover:-translate-y-0.5 active:translate-y-0"
                          aria-label={`Add ${product.name} to cart`}
                      >
                         <span className="inline-flex items-center justify-center gap-2">
@@ -244,18 +245,18 @@ export const ProductDetail: React.FC = () => {
                       </button>
 
 
-                   <p className="text-center text-xs text-gray-500 mt-3">
+                   <p className="text-center text-xs text-text-secondary mt-3">
                        Free shipping on orders over $50 • 30-day return policy
                    </p>
                 </div>
 
-                 <div className="prose prose-indigo text-gray-600">
-                     <h3 className="text-lg font-bold text-gray-900 mb-3">About this product</h3>
+                 <div className="prose prose-indigo text-text-secondary">
+                     <h3 className="text-lg font-bold text-text-primary mb-3">About this product</h3>
                      <p className="leading-relaxed">{product.description}</p>
                  </div>
 
                  {(product.safetyDisclaimers || product.ingredients || product.usageInstructions || product.benefits) && (
-                   <div className="mt-8 border-t border-b border-gray-100 py-6 space-y-4">
+                   <div className="mt-8 border-t border-b border-border-default py-6 space-y-4">
                      
                      {product.safetyDisclaimers && (
                        <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
@@ -274,20 +275,20 @@ export const ProductDetail: React.FC = () => {
                      )}
 
                      {product.ingredients && (
-                       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border rounded-lg overflow-hidden">
+                       <div className="bg-gradient-to-r from-blue-50 to-primary-50 border rounded-lg overflow-hidden">
                          <button
                            onClick={() => setExpandedSection('ingredients')}
-                           className="w-full px-5 py-4 flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 hover:bg-blue-100 transition-colors"
+                           className="w-full px-5 py-4 flex items-center justify-between bg-gradient-to-r from-blue-50 to-primary-50 hover:bg-blue-100 transition-colors"
                          >
-                           <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center">
+                           <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider flex items-center">
                              <FlaskConical className="w-5 h-5 text-blue-500 mr-2" />
                              Ingredients
-                             {expandedSection === 'ingredients' ? <ChevronUp className="w-5 h-5 text-gray-500" /> : <ChevronDown className="w-5 h-5 text-gray-500" />}
+                             {expandedSection === 'ingredients' ? <ChevronUp className="w-5 h-5 text-text-secondary" /> : <ChevronDown className="w-5 h-5 text-text-secondary" />}
                            </h4>
                          </button>
                          {expandedSection === 'ingredients' && (
                            <div className="px-5 pb-4">
-                             <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                             <p className="text-sm text-text-primary leading-relaxed whitespace-pre-line">
                                {product.ingredients}
                              </p>
                            </div>
@@ -296,20 +297,20 @@ export const ProductDetail: React.FC = () => {
                      )}
 
                      {product.usageInstructions && (
-                       <div className="bg-gradient-to-r from-green-50 to-emerald-50 border rounded-lg overflow-hidden">
+                       <div className="bg-gradient-to-r from-success-50 to-emerald-50 border rounded-lg overflow-hidden">
                          <button
                            onClick={() => setExpandedSection('usageInstructions')}
-                           className="w-full px-5 py-4 flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50 hover:bg-green-100 transition-colors"
+                           className="w-full px-5 py-4 flex items-center justify-between bg-gradient-to-r from-success-50 to-emerald-50 hover:bg-success-100 transition-colors"
                          >
-                           <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center">
-                             <BookOpen className="w-5 h-5 text-green-500 mr-2" />
+                           <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider flex items-center">
+                             <BookOpen className="w-5 h-5 text-success-500 mr-2" />
                              How to Use
-                             {expandedSection === 'usageInstructions' ? <ChevronUp className="w-5 h-5 text-gray-500" /> : <ChevronDown className="w-5 h-5 text-gray-500" />}
+                             {expandedSection === 'usageInstructions' ? <ChevronUp className="w-5 h-5 text-text-secondary" /> : <ChevronDown className="w-5 h-5 text-text-secondary" />}
                            </h4>
                          </button>
                          {expandedSection === 'usageInstructions' && (
                            <div className="px-5 pb-4">
-                             <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                             <p className="text-sm text-text-primary leading-relaxed whitespace-pre-line">
                                {product.usageInstructions}
                              </p>
                            </div>
@@ -323,15 +324,15 @@ export const ProductDetail: React.FC = () => {
                            onClick={() => setExpandedSection('benefits')}
                            className="w-full px-5 py-4 flex items-center justify-between bg-gradient-to-r from-purple-50 to-pink-50 hover:bg-purple-100 transition-colors"
                          >
-                           <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center">
+                           <h4 className="text-sm font-bold text-text-primary uppercase tracking-wider flex items-center">
                              <Sparkles className="w-5 h-5 text-purple-500 mr-2" />
                              Benefits
-                             {expandedSection === 'benefits' ? <ChevronUp className="w-5 h-5 text-gray-500" /> : <ChevronDown className="w-5 h-5 text-gray-500" />}
+                             {expandedSection === 'benefits' ? <ChevronUp className="w-5 h-5 text-text-secondary" /> : <ChevronDown className="w-5 h-5 text-text-secondary" />}
                            </h4>
                          </button>
                          {expandedSection === 'benefits' && (
                            <div className="px-5 pb-4">
-                             <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                             <p className="text-sm text-text-primary leading-relaxed whitespace-pre-line">
                                {product.benefits}
                              </p>
                            </div>
@@ -342,19 +343,21 @@ export const ProductDetail: React.FC = () => {
                  )}
 
                   <div className="mt-10">
-                      <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Ideally Suited For</h3>
+                      <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider mb-4">Ideally Suited For</h3>
                      <div className="flex flex-wrap gap-2">
                          {product.tags.map(tag => (
-                             <span key={tag.id} className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-800 border border-transparent">
+                             <span key={tag.id} className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-surface-alt text-text-primary border border-transparent">
                                  {tag.name}
                              </span>
                          ))}
                      </div>
                  </div>
 
+                 <ProductReviews productId={product.id} />
+
                  {relatedProducts.length > 0 && (
                    <div className="mt-16">
-                     <h3 className="text-lg font-bold text-gray-900 mb-6">Related Products</h3>
+                     <h3 className="text-lg font-bold text-text-primary mb-6">Related Products</h3>
                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                        {relatedProducts.map((item) => (
                          <ProductCard key={item.id} product={item} />

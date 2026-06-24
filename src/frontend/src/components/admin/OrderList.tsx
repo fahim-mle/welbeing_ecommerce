@@ -54,26 +54,26 @@ export const OrderList: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PAID':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success-100 text-success-700';
       case 'SHIPPED':
         return 'bg-blue-100 text-blue-800';
       case 'DELIVERED':
-        return 'bg-indigo-100 text-indigo-800';
+        return 'bg-primary-100 text-primary-800';
       case 'CANCELLED':
-        return 'bg-red-100 text-red-800';
+        return 'bg-danger-100 text-danger-700';
       default:
         return 'bg-yellow-100 text-yellow-800';
     }
   };
 
   if (loading) return <div className="flex justify-center py-12"><Spinner /></div>;
-  if (error) return <div className="text-red-500">{error}</div>;
+  if (error) return <div className="text-danger-500">{error}</div>;
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
-          <label className="text-sm text-gray-500">Status</label>
+          <label className="text-sm text-text-secondary">Status</label>
           <select
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
@@ -91,47 +91,47 @@ export const OrderList: React.FC = () => {
             type="button"
             onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             disabled={page === 1}
-            className="px-3 py-1 text-sm border border-gray-200 rounded-lg text-gray-600 disabled:opacity-50"
+            className="px-3 py-1 text-sm border border-border-default rounded-lg text-text-secondary disabled:opacity-50"
           >
             Prev
           </button>
-          <span className="text-sm text-gray-500">Page {page}</span>
+          <span className="text-sm text-text-secondary">Page {page}</span>
           <button
             type="button"
             onClick={() => setPage((prev) => prev + 1)}
             disabled={!hasNextPage}
-            className="px-3 py-1 text-sm border border-gray-200 rounded-lg text-gray-600 disabled:opacity-50"
+            className="px-3 py-1 text-sm border border-border-default rounded-lg text-text-secondary disabled:opacity-50"
           >
             Next
           </button>
         </div>
       </div>
 
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-        <ul className="divide-y divide-gray-200">
+      <div className="bg-surface shadow overflow-hidden sm:rounded-lg">
+        <ul className="divide-y divide-border-default">
           {filteredOrders.map((order) => (
-            <li key={order.id} className="p-4 hover:bg-gray-50">
+            <li key={order.id} className="p-4 hover:bg-surface-alt">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-medium text-indigo-600">Order #{order.id}</h3>
-                  <p className="text-sm text-gray-500">{order.guestEmail || 'Registered User'}</p>
-                  <p className="text-xs text-gray-400">{new Date(order.createdAt).toLocaleString()}</p>
+                  <h3 className="text-lg font-medium text-primary-600">Order #{order.id}</h3>
+                  <p className="text-sm text-text-secondary">{order.guestEmail || 'Registered User'}</p>
+                  <p className="text-xs text-text-muted">{new Date(order.createdAt).toLocaleString()}</p>
                 </div>
                 <div className="text-right">
                   <div className="text-lg font-bold">${Number(order.totalPrice).toFixed(2)}</div>
-                  <div className="text-sm text-gray-600">{order.items.length} items</div>
+                  <div className="text-sm text-text-secondary">{order.items.length} items</div>
                 </div>
               </div>
 
               <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="text-sm text-gray-700 max-w-md truncate">
+                <div className="text-sm text-text-primary max-w-md truncate">
                   {order.shippingAddress || order.address?.streetLine1 || 'No address on file'}
                 </div>
                 <div className="flex items-center gap-3">
                   <select
                     value={order.status}
                     onChange={(event) => handleStatusChange(order.id, event.target.value)}
-                    className={`text-xs font-semibold rounded-full px-2 py-1 border-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 cursor-pointer ${getStatusColor(order.status)}`}
+                    className={`text-xs font-semibold rounded-full px-2 py-1 border-none focus:ring-2 focus:ring-offset-1 focus:ring-primary-500 cursor-pointer ${getStatusColor(order.status)}`}
                   >
                     <option value="PENDING">PENDING</option>
                     <option value="PAID">PAID</option>
@@ -141,7 +141,7 @@ export const OrderList: React.FC = () => {
                   </select>
                   <Link
                     to={`/admin/orders/${order.id}`}
-                    className="text-sm font-medium text-indigo-600 hover:text-indigo-900"
+                    className="text-sm font-medium text-primary-600 hover:text-primary-900"
                   >
                     View Details
                   </Link>

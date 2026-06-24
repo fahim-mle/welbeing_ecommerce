@@ -113,7 +113,20 @@ type SeedData = {
   orders: SeedOrder[];
 };
 
+type SeedReview = {
+  userEmail: string;
+  productSku: string;
+  rating: number;
+  comment?: string | null;
+  createdAt?: string;
+};
+
+type SeedReviewData = {
+  reviews: SeedReview[];
+};
+
 const seedPath = path.join(__dirname, 'seed-data.json');
+const reviewSeedPath = path.join(__dirname, 'seed-reviews.json');
 
 /**
  * Populates the database from the seed file and replaces existing seed-related data.
@@ -125,32 +138,34 @@ const seedPath = path.join(__dirname, 'seed-data.json');
  * @throws Error If a referenced category, product, product variant, or address required by the seed
  * data is missing.
  */
-async function main() {
+export async function seedDatabase(db: PrismaClient = prisma) {
   console.log('Seeding database...');
 
   const seedData = JSON.parse(fs.readFileSync(seedPath, 'utf-8')) as SeedData;
+  const reviewSeedData = JSON.parse(fs.readFileSync(reviewSeedPath, 'utf-8')) as SeedReviewData;
 
-  await prisma.$transaction([
-    prisma.orderStatusHistory.deleteMany(),
-    prisma.payment.deleteMany(),
-    prisma.orderItem.deleteMany(),
-    prisma.order.deleteMany(),
-    prisma.inventoryLog.deleteMany(),
-    prisma.address.deleteMany(),
-    prisma.productVariant.deleteMany(),
-    prisma.productImage.deleteMany(),
-    prisma.product.deleteMany(),
-    prisma.wellbeingTag.deleteMany(),
-    prisma.category.deleteMany(),
-    prisma.userIdentity.deleteMany(),
-    prisma.user.deleteMany(),
+  await db.$transaction([
+    db.orderStatusHistory.deleteMany(),
+    db.payment.deleteMany(),
+    db.orderItem.deleteMany(),
+    db.order.deleteMany(),
+    db.inventoryLog.deleteMany(),
+    db.review.deleteMany(),
+    db.address.deleteMany(),
+    db.productVariant.deleteMany(),
+    db.productImage.deleteMany(),
+    db.product.deleteMany(),
+    db.wellbeingTag.deleteMany(),
+    db.category.deleteMany(),
+    db.userIdentity.deleteMany(),
+    db.user.deleteMany(),
   ]);
 
   const usersByEmail = new Map<string, { id: number }>();
 
   for (const user of seedData.users) {
     const passwordHash = await bcrypt.hash(user.identity.password, 10);
-    const createdUser = await prisma.user.create({
+    const createdUser = await db.user.create({
       data: {
         email: user.email,
         firstName: user.firstName,
@@ -174,19 +189,19 @@ async function main() {
     usersByEmail.set(user.email, { id: createdUser.id });
   }
 
-  await prisma.category.createMany({
+  await db.category.createMany({
     data: seedData.categories,
   });
 
-  await prisma.wellbeingTag.createMany({
+  await db.wellbeingTag.createMany({
     data: seedData.tags.map((tag) => ({
       name: tag.name,
       type: tag.type as WellbeingTagType,
     })),
   });
 
-  const categories = await prisma.category.findMany();
-  const tags = await prisma.wellbeingTag.findMany();
+  const categories = await db.category.findMany();
+  const tags = await db.wellbeingTag.findMany();
   const categoryByName = new Map(categories.map((category) => [category.name, category]));
   const tagByName = new Map(tags.map((tag) => [tag.name, tag]));
 
@@ -230,10 +245,10 @@ async function main() {
       };
     }
 
-    await prisma.product.create({ data: productData });
+    await db.product.create({ data: productData });
   }
 
-  const products = await prisma.product.findMany({ include: { variants: true } });
+  const products = await db.product.findMany({ include: { variants: true } });
   const productBySku = new Map(
     products
       .filter((product) => product.sku)
@@ -249,7 +264,7 @@ async function main() {
 
   for (const address of seedData.addresses) {
     const userId = address.userEmail ? usersByEmail.get(address.userEmail)?.id : null;
-    const createdAddress = await prisma.address.create({
+    const createdAddress = await db.address.create({
       data: {
         userId: userId ?? null,
         label: address.label,
@@ -272,13 +287,35 @@ async function main() {
     const productId = log.productSku ? productBySku.get(log.productSku)?.id : undefined;
     const productVariantId = log.variantSku ? variantBySku.get(log.variantSku)?.id : undefined;
 
-    await prisma.inventoryLog.create({
+    await db.inventoryLog.create({
       data: {
         productId: productId ?? null,
         productVariantId: productVariantId ?? null,
         changeType: log.changeType as InventoryChangeType,
         quantityDelta: log.quantityDelta,
         referenceId: log.referenceId ?? null,
+      },
+    });
+  }
+
+  for (const review of reviewSeedData.reviews) {
+    const userId = usersByEmail.get(review.userEmail)?.id;
+    const productId = productBySku.get(review.productSku)?.id;
+
+    if (!userId) {
+      throw new Error(`Missing user for review ${review.userEmail}`);
+    }
+    if (!productId) {
+      throw new Error(`Missing product for review ${review.productSku}`);
+    }
+
+    await db.review.create({
+      data: {
+        userId,
+        productId,
+        rating: review.rating,
+        comment: review.comment ?? null,
+        createdAt: review.createdAt ? new Date(review.createdAt) : undefined,
       },
     });
   }
@@ -307,7 +344,7 @@ async function main() {
       };
     });
 
-    await prisma.order.create({
+    await db.order.create({
       data: {
         userId: userId ?? null,
         addressId,
@@ -351,12 +388,14 @@ async function main() {
   console.log('Seeding completed.');
 }
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (error) => {
-    console.error(error);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+if (require.main === module) {
+  seedDatabase()
+    .then(async () => {
+      await prisma.$disconnect();
+    })
+    .catch(async (error) => {
+      console.error(error);
+      await prisma.$disconnect();
+      process.exit(1);
+    });
+}

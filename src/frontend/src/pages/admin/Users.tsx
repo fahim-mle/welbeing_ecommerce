@@ -142,8 +142,8 @@ export const AdminUsers: React.FC = () => {
     <div className="p-8 space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
-        <p className="text-sm text-gray-500 mt-1">Manage customer accounts, roles, and activation status.</p>
+        <h2 className="text-2xl font-bold text-text-primary">User Management</h2>
+        <p className="text-sm text-text-secondary mt-1">Manage customer accounts, roles, and activation status.</p>
       </div>
 
       {!currentUser && (
@@ -153,29 +153,29 @@ export const AdminUsers: React.FC = () => {
       )}
 
       {success && (
-        <div className="rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800">{success}</div>
+        <div className="rounded-xl border border-success-100 bg-success-50 p-4 text-sm text-success-700">{success}</div>
       )}
 
       {/* Search and Filters */}
-      <div className="bg-white p-4 rounded-lg shadow space-y-4">
+      <div className="bg-surface p-4 rounded-lg shadow space-y-4">
         {/* Search Bar */}
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
+            <Search className="h-5 w-5 text-text-muted" />
           </div>
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by email, first name, or last name..."
-            className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="block w-full pl-10 pr-10 py-2 border border-border-default rounded-md leading-5 bg-surface placeholder-text-secondary focus:outline-none focus:placeholder-text-muted focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
           />
           {searchTerm && (
             <button
               onClick={clearSearch}
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
-              <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              <X className="h-5 w-5 text-text-muted hover:text-text-secondary" />
             </button>
           )}
         </div>
@@ -221,7 +221,7 @@ export const AdminUsers: React.FC = () => {
           <div className="flex justify-end">
             <button
               onClick={clearFilters}
-              className="text-sm text-indigo-600 hover:text-indigo-800"
+              className="text-sm text-primary-600 hover:text-primary-800"
             >
               Clear all filters
             </button>
@@ -238,11 +238,11 @@ export const AdminUsers: React.FC = () => {
 
       {/* Error State */}
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <p className="text-sm text-red-800">{error}</p>
+        <div className="bg-danger-50 border border-danger-100 rounded-md p-4">
+          <p className="text-sm text-danger-700">{error}</p>
           <button
             onClick={fetchUsers}
-            className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+            className="mt-2 text-sm text-danger-600 hover:text-danger-700 underline"
           >
             Try again
           </button>
@@ -251,10 +251,10 @@ export const AdminUsers: React.FC = () => {
 
       {/* Empty State */}
       {!loading && !error && users.length === 0 && (
-        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-          <Search className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No users found</h3>
-          <p className="mt-1 text-sm text-gray-500">
+        <div className="text-center py-12 bg-surface rounded-lg border border-border-default">
+          <Search className="mx-auto h-12 w-12 text-text-muted" />
+          <h3 className="mt-2 text-sm font-medium text-text-primary">No users found</h3>
+          <p className="mt-1 text-sm text-text-secondary">
             {hasActiveFilters
               ? 'No users match your search criteria'
               : 'No users in the system yet.'}
@@ -262,7 +262,7 @@ export const AdminUsers: React.FC = () => {
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              className="mt-4 inline-flex items-center px-4 py-2 border border-border-default rounded-md shadow-sm text-sm font-medium text-text-primary bg-surface hover:bg-surface-alt"
             >
               Clear filters
             </button>
@@ -273,10 +273,10 @@ export const AdminUsers: React.FC = () => {
       {/* Users Table */}
       {!loading && !error && users.length > 0 && (
         <>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-surface rounded-2xl border border-border-default shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
-                <thead className="bg-gray-50 text-gray-600">
+                <thead className="bg-surface-alt text-text-secondary">
                   <tr>
                     <th className="text-left font-semibold px-6 py-3">User</th>
                     <th className="text-left font-semibold px-6 py-3">Role</th>
@@ -285,20 +285,20 @@ export const AdminUsers: React.FC = () => {
                     <th className="text-right font-semibold px-6 py-3">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-border-default">
                   {users.map((user) => {
                     const isUpdating = updatingId === user.id;
                     return (
-                      <tr key={user.id} className="hover:bg-gray-50">
+                      <tr key={user.id} className="hover:bg-surface-alt">
                         <td className="px-6 py-4">
-                          <div className="font-semibold text-gray-900">
+                          <div className="font-semibold text-text-primary">
                             {user.firstName} {user.lastName}
                           </div>
-                          <div className="text-gray-600">{user.email}</div>
+                          <div className="text-text-secondary">{user.email}</div>
                         </td>
                         <td className="px-6 py-4">
                           <select
-                            className="border border-gray-200 rounded-lg px-3 py-2 bg-white"
+                            className="border border-border-default rounded-lg px-3 py-2 bg-surface"
                             value={user.role}
                             disabled={isUpdating}
                             onChange={(e) => onChangeRole(user, e.target.value as AdminUser['role'])}
@@ -310,7 +310,7 @@ export const AdminUsers: React.FC = () => {
                         <td className="px-6 py-4">
                           <span
                             className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
-                              user.isActive ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'
+                              user.isActive ? 'bg-success-50 text-success-700' : 'bg-surface-alt text-text-secondary'
                             }`}
                           >
                             {user.isActive ? 'Active' : 'Inactive'}
@@ -319,10 +319,10 @@ export const AdminUsers: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           {user.mfaEnabled ? (
                             <div className="flex items-center gap-2">
-                              <Shield className="w-4 h-4 text-green-600" />
+                              <Shield className="w-4 h-4 text-success-600" />
                               <button
                                 onClick={() => setResetConfirm(user.id)}
-                                className="text-red-600 hover:text-red-900"
+                                className="text-danger-600 hover:text-danger-700"
                                 title="Reset MFA"
                               >
                                 Reset
@@ -330,8 +330,8 @@ export const AdminUsers: React.FC = () => {
                             </div>
                           ) : (
                             <div className="flex items-center gap-2">
-                              <ShieldOff className="w-4 h-4 text-gray-400" />
-                              <span className="text-gray-400">Not enabled</span>
+                              <ShieldOff className="w-4 h-4 text-text-muted" />
+                              <span className="text-text-muted">Not enabled</span>
                             </div>
                           )}
                         </td>
@@ -340,8 +340,8 @@ export const AdminUsers: React.FC = () => {
                             type="button"
                             className={`px-3 py-2 text-sm font-semibold rounded-lg ${
                               user.isActive
-                                ? 'bg-red-50 text-red-700 hover:bg-red-100'
-                                : 'bg-green-50 text-green-700 hover:bg-green-100'
+                                ? 'bg-danger-50 text-danger-700 hover:bg-danger-100'
+                                : 'bg-success-50 text-success-700 hover:bg-success-100'
                             } disabled:opacity-50`}
                             onClick={() => onToggleActive(user)}
                             disabled={isUpdating}
@@ -371,23 +371,23 @@ export const AdminUsers: React.FC = () => {
       {/* MFA Reset Confirmation Dialog */}
       {resetConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="bg-surface rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-bold mb-4">Reset MFA?</h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-text-secondary mb-6">
               Are you sure you want to reset MFA for this user? They will need to re-enroll in MFA.
             </p>
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setResetConfirm(null)}
                 disabled={resetting}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-border-default rounded-md text-text-primary hover:bg-surface-alt"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleResetMfa(resetConfirm)}
                 disabled={resetting}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
+                className="px-4 py-2 bg-danger-600 text-white rounded-md hover:bg-danger-700 disabled:opacity-50"
               >
                 {resetting ? 'Resetting...' : 'Reset MFA'}
               </button>

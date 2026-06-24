@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { createProduct, updateProduct } from '../../api/admin';
+import { createProduct, updateProduct, type UploadedImage } from '../../api/admin';
 import { fetchCategories, fetchTags, type Category, type Product, type WellbeingTag } from '../../api/catalog';
 import { useAuth } from '../../hooks/useAuth';
+import { ImageUploader } from './ImageUploader';
 
 interface ProductFormProps {
   initialData?: Product | null;
@@ -95,26 +96,33 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
       });
   };
 
+  const handleImageUploaded = (image: UploadedImage) => {
+      setFormData(prev => ({
+          ...prev,
+          imageUrls: [...prev.imageUrls.split('\n').map(u => u.trim()).filter(Boolean), image.url].join('\n'),
+      }));
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-surface p-6 rounded-xl shadow-sm border border-border-default">
        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
            {/* Left Col */}
            <div className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Product Name</label>
-                    <input type="text" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                    <label className="block text-sm font-medium text-text-primary">Product Name</label>
+                    <input type="text" required className="mt-1 block w-full rounded-md border-border-default shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2"
                         value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Price</label>
-                    <input type="number" step="0.01" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                    <label className="block text-sm font-medium text-text-primary">Price</label>
+                    <input type="number" step="0.01" required className="mt-1 block w-full rounded-md border-border-default shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2"
                         value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})}
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Category</label>
-                    <select required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                    <label className="block text-sm font-medium text-text-primary">Category</label>
+                    <select required className="mt-1 block w-full rounded-md border-border-default shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2"
                         value={formData.categoryId} onChange={e => setFormData({...formData, categoryId: e.target.value})}
                     >
                         <option value="">Select Category</option>
@@ -124,22 +132,22 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
                 <div>
                     <div className="flex gap-4">
                         <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700">Quantity</label>
-                            <input type="number" min="0" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                            <label className="block text-sm font-medium text-text-primary">Quantity</label>
+                            <input type="number" min="0" required className="mt-1 block w-full rounded-md border-border-default shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2"
                                 value={formData.stockQuantity} onChange={e => setFormData({...formData, stockQuantity: parseInt(e.target.value)})}
                             />
                         </div>
                         <div className="flex items-center gap-2 mt-4">
-                            <input type="checkbox" id="isVisible" className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            <input type="checkbox" id="isVisible" className="rounded border-border-default text-primary-600 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                                 checked={formData.isVisible} onChange={e => setFormData({...formData, isVisible: e.target.checked})}
                             />
-                            <label htmlFor="isVisible" className="text-sm font-medium text-gray-700">Visible in Shop</label>
+                            <label htmlFor="isVisible" className="text-sm font-medium text-text-primary">Visible in Shop</label>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea rows={3} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                    <label className="block text-sm font-medium text-text-primary">Description</label>
+                    <textarea rows={3} required className="mt-1 block w-full rounded-md border-border-default shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2"
                         value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}
                     />
                 </div>
@@ -148,20 +156,25 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
             {/* Right Col */}
             <div className="space-y-4">
                  <div>
-                     <label className="block text-sm font-medium text-gray-700">Image URLs (one per line)</label>
-                     <textarea rows={4} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2 font-mono text-xs"
+                     <label className="block text-sm font-medium text-text-primary">Image URLs (one per line)</label>
+                     <textarea rows={4} className="mt-1 block w-full rounded-md border-border-default shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2 font-mono text-xs"
                          placeholder="https://example.com/image1.jpg"
                          value={formData.imageUrls} onChange={e => setFormData({...formData, imageUrls: e.target.value})}
                      />
                  </div>
+
+                 <div>
+                     <label className="block text-sm font-medium text-text-primary mb-2">Upload Product Image</label>
+                     <ImageUploader onUploaded={handleImageUploaded} />
+                 </div>
                  
                  <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-2">Wellbeing Goals (Tags)</label>
+                     <label className="block text-sm font-medium text-text-primary mb-2">Wellbeing Goals (Tags)</label>
                      <div className="flex flex-wrap gap-2">
                          {tags.map(t => (
                              <button key={t.id} type="button"
                                  onClick={() => toggleTag(t.id)}
-                                 className={`px-3 py-1 rounded-full text-xs font-medium border ${formData.tagIds.includes(t.id) ? 'bg-indigo-100 text-indigo-800 border-indigo-200' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
+                                 className={`px-3 py-1 rounded-full text-xs font-medium border ${formData.tagIds.includes(t.id) ? 'bg-primary-100 text-primary-800 border-primary-200' : 'bg-surface text-text-secondary border-border-default hover:bg-surface-alt'}`}
                              >
                                  {t.name}
                              </button>
@@ -170,15 +183,15 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, o
                  </div>
 
                  <div>
-                     <label className="block text-sm font-medium text-gray-700">Benefits</label>
-                      <textarea rows={2} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                     <label className="block text-sm font-medium text-text-primary">Benefits</label>
+                      <textarea rows={2} className="mt-1 block w-full rounded-md border-border-default shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm border p-2"
                          value={formData.benefits} onChange={e => setFormData({...formData, benefits: e.target.value})}
                      />
                 </div>
            </div>
         </div>
 
-         <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+         <div className="flex justify-end gap-3 pt-4 border-t border-border-default">
              <button type="button" onClick={onCancel} className="btn-secondary">
                  Cancel
              </button>

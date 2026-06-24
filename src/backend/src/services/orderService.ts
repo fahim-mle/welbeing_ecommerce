@@ -11,6 +11,7 @@ import { BusinessRuleError, ValidationError } from '../types/shared';
 import { paymentService } from './paymentService';
 import { emailService } from '../lib/email';
 import { invalidateProductCaches } from './catalogService';
+import { calculateOrderTax } from './taxService';
 
 export interface OrderItemInput {
   productId: number;
@@ -227,7 +228,7 @@ export const createOrder = async ({
       }
     }
 
-    const totalPrice = normalizedItems.reduce((total, item) => {
+    const subtotal = normalizedItems.reduce((total, item) => {
       const product = productMap.get(item.productId);
       if (!product) {
         return total;
@@ -236,6 +237,7 @@ export const createOrder = async ({
     }, new Prisma.Decimal(0));
 
     let resolvedAddressId = addressId;
+    let shippingCountry = shippingAddress?.country;
 
     if (resolvedAddressId) {
       const existingAddress = await tx.address.findUnique({
@@ -244,6 +246,7 @@ export const createOrder = async ({
       if (!existingAddress) {
         throw new ValidationError('Shipping address was not found');
       }
+      shippingCountry = existingAddress.country;
     }
 
     if (!resolvedAddressId && shippingAddress) {
@@ -263,7 +266,13 @@ export const createOrder = async ({
         },
       });
       resolvedAddressId = createdAddress.id;
+      shippingCountry = createdAddress.country;
     }
+
+    const taxSummary = calculateOrderTax({
+      subtotal,
+      shippingCountry,
+    });
 
     const order = await tx.order.create({
       data: {
@@ -272,7 +281,9 @@ export const createOrder = async ({
         addressId: resolvedAddressId,
         status: OrderStatus.PENDING,
         paymentStatus: OrderPaymentStatus.PENDING,
-        totalPrice,
+        totalPrice: taxSummary.totalPrice,
+        taxAmount: taxSummary.taxAmount,
+        shippingFee: taxSummary.shippingFee,
         items: {
           create: normalizedItems.map((item) => ({
             productId: item.productId,
@@ -332,7 +343,7 @@ export const createOrder = async ({
       });
     }
 
-    const paymentResult = await paymentService.processPayment(totalPrice.toNumber(), paymentToken);
+    const paymentResult = await paymentService.processPayment(taxSummary.totalPrice.toNumber(), paymentToken);
     const paymentVerified = await paymentService.verifyPayment(paymentResult.transactionId);
     const paymentStatus = paymentVerified ? PaymentStatus.SUCCESS : PaymentStatus.FAILED;
     const orderPaymentStatus = paymentVerified ? OrderPaymentStatus.PAID : OrderPaymentStatus.FAILED;
@@ -343,7 +354,7 @@ export const createOrder = async ({
         orderId: order.id,
         provider: paymentResult.provider ?? PaymentProvider.MOCK,
         transactionId: paymentResult.transactionId,
-        amount: totalPrice,
+        amount: taxSummary.totalPrice,
         currency: order.currency,
         status: paymentStatus,
       },

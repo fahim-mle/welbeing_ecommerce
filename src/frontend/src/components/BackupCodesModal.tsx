@@ -87,14 +87,14 @@ export const BackupCodesModal = ({ isOpen, backupCodes, onClose }: BackupCodesMo
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full mx-4 overflow-hidden">
+      <div className="bg-surface rounded-2xl shadow-xl max-w-2xl w-full mx-4 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-primary-600 to-purple-600 px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-white">Backup Codes</h2>
           <button
             onClick={handleClose}
             disabled={!saved}
-            className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-white hover:bg-surface hover:bg-opacity-20 rounded-full p-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
@@ -121,14 +121,14 @@ export const BackupCodesModal = ({ isOpen, backupCodes, onClose }: BackupCodesMo
 
           {/* Backup Codes Grid */}
           <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Your Backup Codes:</h3>
+            <h3 className="text-sm font-semibold text-text-primary mb-3">Your Backup Codes:</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {backupCodes.map((code, index) => (
                 <div
                   key={index}
-                  className="bg-gray-50 border border-gray-300 rounded-lg px-4 py-3 text-center"
+                  className="bg-surface-alt border border-border-default rounded-lg px-4 py-3 text-center"
                 >
-                  <code className="text-lg font-mono font-semibold text-gray-900 tracking-wider">
+                  <code className="text-lg font-mono font-semibold text-text-primary tracking-wider">
                     {code}
                   </code>
                 </div>
@@ -140,14 +140,14 @@ export const BackupCodesModal = ({ isOpen, backupCodes, onClose }: BackupCodesMo
           <div className="flex flex-wrap gap-3 mb-6">
             <button
               onClick={downloadCodes}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors"
             >
               <Download className="w-4 h-4" />
               Download
             </button>
             <button
               onClick={copyToClipboard}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-surface-dark text-white font-medium rounded-lg hover:bg-surface-dark transition-colors"
             >
               {copied ? (
                 <>
@@ -163,7 +163,7 @@ export const BackupCodesModal = ({ isOpen, backupCodes, onClose }: BackupCodesMo
             </button>
             <button
               onClick={printCodes}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-surface-dark text-white font-medium rounded-lg hover:bg-surface-dark transition-colors"
             >
               <Printer className="w-4 h-4" />
               Print
@@ -177,10 +177,10 @@ export const BackupCodesModal = ({ isOpen, backupCodes, onClose }: BackupCodesMo
                 type="checkbox"
                 checked={saved}
                 onChange={(e) => setSaved(e.target.checked)}
-                className="mt-1 mr-3 w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                className="mt-1 mr-3 w-4 h-4 text-primary-600 border-border-default rounded focus:ring-primary-500"
               />
-              <span className="text-sm text-gray-700">
-                <strong className="font-semibold text-gray-900">
+              <span className="text-sm text-text-primary">
+                <strong className="font-semibold text-text-primary">
                   I have saved my backup codes
                 </strong>
                 {' '}in a secure location and understand they will not be shown again.
@@ -192,7 +192,7 @@ export const BackupCodesModal = ({ isOpen, backupCodes, onClose }: BackupCodesMo
           <button
             onClick={handleClose}
             disabled={!saved}
-            className="w-full px-4 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="w-full px-4 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 disabled:bg-border-default disabled:cursor-not-allowed transition-colors"
           >
             {saved ? 'Close' : 'Please confirm you have saved your codes'}
           </button>

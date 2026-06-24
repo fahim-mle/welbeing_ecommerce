@@ -107,21 +107,21 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
       {/* Search Bar */}
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-gray-400" />
+          <Search className="h-5 w-5 text-text-muted" />
         </div>
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search products by name, SKU, or description..."
-          className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="block w-full pl-10 pr-10 py-2 border border-border-default rounded-md leading-5 bg-surface placeholder-text-secondary focus:outline-none focus:placeholder-text-muted focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
         />
         {searchTerm && (
           <button
             onClick={clearSearch}
             className="absolute inset-y-0 right-0 pr-3 flex items-center"
           >
-            <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+            <X className="h-5 w-5 text-text-muted hover:text-text-secondary" />
           </button>
         )}
       </div>
@@ -135,11 +135,11 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
 
       {/* Error State */}
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <p className="text-sm text-red-800">{error}</p>
+        <div className="bg-danger-50 border border-danger-100 rounded-md p-4">
+          <p className="text-sm text-danger-700">{error}</p>
           <button
             onClick={() => loadProducts()}
-            className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+            className="mt-2 text-sm text-danger-600 hover:text-danger-700 underline"
           >
             Try again
           </button>
@@ -148,10 +148,10 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
 
       {/* Empty State */}
       {!loading && !error && total === 0 && (
-        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-          <Search className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No products found</h3>
-          <p className="mt-1 text-sm text-gray-500">
+        <div className="text-center py-12 bg-surface rounded-lg border border-border-default">
+          <Search className="mx-auto h-12 w-12 text-text-muted" />
+          <h3 className="mt-2 text-sm font-medium text-text-primary">No products found</h3>
+          <p className="mt-1 text-sm text-text-secondary">
             {searchTerm
               ? `No products match "${searchTerm}"`
               : 'Get started by adding a new product.'}
@@ -159,7 +159,7 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
           {searchTerm && (
             <button
               onClick={clearSearch}
-              className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              className="mt-4 inline-flex items-center px-4 py-2 border border-border-default rounded-md shadow-sm text-sm font-medium text-text-primary bg-surface hover:bg-surface-alt"
             >
               Clear search
             </button>
@@ -170,8 +170,8 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
       {/* Products List */}
       {!loading && !error && total > 0 && (
         <>
-          <div className="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul className="divide-y divide-gray-200">
+          <div className="bg-surface shadow overflow-hidden sm:rounded-md">
+            <ul className="divide-y divide-border-default">
               {products.map((product) => (
                 <li key={product.id}>
                   <div className="px-4 py-4 sm:px-6 flex items-center justify-between">
@@ -180,31 +180,31 @@ export const ProductList: React.FC<ProductListProps> = ({ onEdit }) => {
                             {product.images && product.images[0] ? (
                                 <img className="h-10 w-10 rounded-full object-cover" src={product.images[0].url} alt="" />
                             ) : (
-                                <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">No Img</div>
+                                <div className="h-10 w-10 rounded-full bg-border-default flex items-center justify-center text-xs text-text-secondary">No Img</div>
                             )}
                         </div>
                         <div className="ml-4">
-                            <div className="text-sm font-medium text-indigo-600">{product.name}</div>
-                            <div className="text-sm text-gray-500">${Number(product.price).toFixed(2)}</div>
+                            <div className="text-sm font-medium text-primary-600">{product.name}</div>
+                            <div className="text-sm text-text-secondary">${Number(product.price).toFixed(2)}</div>
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button onClick={() => toggleVisibility(product)} className="text-gray-400 hover:text-gray-600" title="Toggle Visibility">
-                            {product.isVisible ? <Eye className="h-5 w-5 text-green-600" /> : <EyeOff className="h-5 w-5 text-gray-400" />}
+                        <button onClick={() => toggleVisibility(product)} className="text-text-muted hover:text-text-secondary" title="Toggle Visibility">
+                            {product.isVisible ? <Eye className="h-5 w-5 text-success-600" /> : <EyeOff className="h-5 w-5 text-text-muted" />}
                         </button>
-                        <div className="text-sm text-gray-500 font-medium w-16 text-center">
+                        <div className="text-sm text-text-secondary font-medium w-16 text-center">
                             Qty: {product.stockQuantity}
                         </div>
                         <button
                           onClick={() => toggleStock(product)}
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer ${product.stockQuantity > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer ${product.stockQuantity > 0 ? 'bg-success-100 text-success-700' : 'bg-danger-100 text-danger-700'}`}
                         >
                             {product.stockQuantity > 0 ? 'In Stock' : 'Out of Stock'}
                         </button>
-                        <button onClick={() => onEdit(product)} className="text-gray-400 hover:text-gray-600">
+                        <button onClick={() => onEdit(product)} className="text-text-muted hover:text-text-secondary">
                             <Edit className="h-5 w-5" />
                         </button>
-                        <button onClick={() => handleDelete(product.id)} className="text-red-400 hover:text-red-600">
+                        <button onClick={() => handleDelete(product.id)} className="text-danger-500 hover:text-danger-600">
                             <Trash2 className="h-5 w-5" />
                         </button>
                     </div>

@@ -4,14 +4,13 @@ import { prisma } from '../../src/lib/prisma';
 
 describe('Orders API', () => {
   let productId: number;
-  let orderId: number | null = null;
-  let addressId: number | null = null;
+  const categoryName = `Test Orders Category ${Date.now()}`;
+  const orderIds: number[] = [];
+  const addressIds: number[] = [];
 
   beforeAll(async () => {
-    const category = await prisma.category.upsert({
-      where: { name: 'Test Orders Category' },
-      update: {},
-      create: { name: 'Test Orders Category', description: 'Orders test category' },
+    const category = await prisma.category.create({
+      data: { name: categoryName, description: 'Orders test category' },
     });
 
     const product = await prisma.product.create({
@@ -33,21 +32,21 @@ describe('Orders API', () => {
   });
 
   afterAll(async () => {
-    if (orderId) {
-      await prisma.orderStatusHistory.deleteMany({ where: { orderId } });
-      await prisma.payment.deleteMany({ where: { orderId } });
-      await prisma.inventoryLog.deleteMany({ where: { referenceId: String(orderId) } });
-      await prisma.orderItem.deleteMany({ where: { orderId } });
-      await prisma.order.deleteMany({ where: { id: orderId } });
+    if (orderIds.length > 0) {
+      await prisma.orderStatusHistory.deleteMany({ where: { orderId: { in: orderIds } } });
+      await prisma.payment.deleteMany({ where: { orderId: { in: orderIds } } });
+      await prisma.inventoryLog.deleteMany({ where: { referenceId: { in: orderIds.map(String) } } });
+      await prisma.orderItem.deleteMany({ where: { orderId: { in: orderIds } } });
+      await prisma.order.deleteMany({ where: { id: { in: orderIds } } });
     }
 
-    if (addressId) {
-      await prisma.address.deleteMany({ where: { id: addressId } });
+    if (addressIds.length > 0) {
+      await prisma.address.deleteMany({ where: { id: { in: addressIds } } });
     }
 
     await prisma.productImage.deleteMany({ where: { productId } });
     await prisma.product.deleteMany({ where: { id: productId } });
-    await prisma.category.deleteMany({ where: { name: 'Test Orders Category' } });
+    await prisma.category.deleteMany({ where: { name: categoryName } });
   });
 
   it('POST /api/orders should create a guest order', async () => {
@@ -80,7 +79,39 @@ describe('Orders API', () => {
     expect(response.body.data.guestEmail).toBe(orderPayload.guest_email);
     expect(response.body.data.items.length).toBeGreaterThan(0);
 
-    orderId = response.body.data.id ?? null;
-    addressId = response.body.data.addressId ?? null;
+    if (response.body.data.id) orderIds.push(response.body.data.id);
+    if (response.body.data.addressId) addressIds.push(response.body.data.addressId);
+  });
+
+  it('POST /api/orders applies GST for Australian shipping addresses', async () => {
+    const response = await request(app).post('/api/orders').send({
+      guest_email: 'australia-guest@example.com',
+      items: [
+        {
+          product_id: productId,
+          quantity: 2,
+        },
+      ],
+      shipping_address: {
+        label: 'Home',
+        full_name: 'Australian Guest',
+        phone: '1234567890',
+        street_line_1: '10 Wellness Street',
+        city: 'Brisbane',
+        state: 'QLD',
+        postal_code: '4000',
+        country: 'Australia',
+      },
+      payment_placeholder: 'test-card',
+      disclaimer_accepted: true,
+    });
+
+    if (response.body.data.id) orderIds.push(response.body.data.id);
+    if (response.body.data.addressId) addressIds.push(response.body.data.addressId);
+
+    expect(response.status).toBe(201);
+    expect(response.body.success).toBe(true);
+    expect(Number(response.body.data.taxAmount).toFixed(2)).toBe('2.50');
+    expect(Number(response.body.data.totalPrice).toFixed(2)).toBe('27.50');
   });
 });

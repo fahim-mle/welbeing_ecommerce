@@ -93,23 +93,23 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface-alt">
       {/* Navbar - Modern & Glassy */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-surface/80 backdrop-blur-md border-b border-border-default sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">W</div>
-             <h1 className="text-xl font-bold text-gray-900 tracking-tight">Welbeing</h1>
+             <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">W</div>
+             <h1 className="text-xl font-bold text-text-primary tracking-tight">Welbeing</h1>
           </div>
 
             <div className="flex-1 max-w-md mx-8 relative hidden md:block">
                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                   <Search className="h-4 w-4 text-gray-400" aria-hidden="true" />
+                   <Search className="h-4 w-4 text-text-muted" aria-hidden="true" />
                  </div>
                  <input
                    type="text"
                    placeholder="Search for comfort & recovery..."
-                   className="block w-full pl-10 pr-4 py-2 bg-gray-100 border-none rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-gray-500"
+                   className="block w-full pl-10 pr-4 py-2 bg-surface-alt border-none rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder-text-secondary"
                    value={searchQuery}
                    onChange={(e) => updateFilter('search', e.target.value || undefined)}
                    aria-label="Search products"
@@ -119,7 +119,7 @@ export const Home: React.FC = () => {
 
            <div className="flex items-center gap-4">
                <button
-                 className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full"
+                 className="md:hidden p-2 text-text-secondary hover:bg-surface-alt rounded-full"
                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                  aria-label="Open filter sidebar"
                >
@@ -129,7 +129,7 @@ export const Home: React.FC = () => {
                    <div className="relative" ref={profileRef}>
                         <button
                             onClick={() => setIsProfileOpen(!isProfileOpen)}
-                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-full focus:outline-none"
+                            className="p-2 text-text-secondary hover:bg-surface-alt rounded-full focus:outline-none"
                             aria-label="User menu"
                             aria-expanded={isProfileOpen}
                         >
@@ -138,10 +138,10 @@ export const Home: React.FC = () => {
                        
                        {/* Dropdown Menu */}
                        {isProfileOpen && (
-                           <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50">
+                           <div className="absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-50">
                                <Link 
                                    to="/profile" 
-                                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                                   className="block px-4 py-2 text-sm text-text-primary hover:bg-surface-alt flex items-center gap-2"
                                    onClick={() => setIsProfileOpen(false)}
                                >
                                    <Settings className="h-4 w-4" />
@@ -150,7 +150,7 @@ export const Home: React.FC = () => {
                                {user.role === 'ADMIN' && (
                                    <Link 
                                        to="/admin" 
-                                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                                       className="block px-4 py-2 text-sm text-text-primary hover:bg-surface-alt flex items-center gap-2"
                                        onClick={() => setIsProfileOpen(false)}
                                    >
                                        <LayoutDashboard className="h-4 w-4" />
@@ -162,7 +162,7 @@ export const Home: React.FC = () => {
                                        logout();
                                        setIsProfileOpen(false);
                                    }}
-                                   className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                                   className="block w-full text-left px-4 py-2 text-sm text-danger-600 hover:bg-surface-alt flex items-center gap-2"
                                >
                                    <LogOut className="h-4 w-4" />
                                    Logout
@@ -171,19 +171,19 @@ export const Home: React.FC = () => {
                        )}
                    </div>
                ) : (
-                   <Link to="/login" className="text-sm font-medium text-gray-700 hover:text-indigo-600 hidden md:block">
+                   <Link to="/login" className="text-sm font-medium text-text-primary hover:text-primary-600 hidden md:block">
                        Login
                    </Link>
                )}
                  <button
                    type="button"
                    onClick={openCart}
-                   className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full"
+                   className="relative p-2 text-text-secondary hover:bg-surface-alt rounded-full"
                    aria-label={`Open cart with ${totalItems} items`}
                  >
                    <ShoppingBag className="h-5 w-5" aria-hidden="true" />
                    {totalItems > 0 && (
-                     <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs font-semibold rounded-full px-1.5" aria-hidden="true">
+                     <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-xs font-semibold rounded-full px-1.5" aria-hidden="true">
                        {totalItems}
                      </span>
                    )}
@@ -197,20 +197,20 @@ export const Home: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
           {/* Sidebar - Clean & Minimal */}
-          <aside className={`w-64 flex-shrink-0 ${isSidebarOpen ? 'fixed inset-0 z-40 bg-white p-6 shadow-2xl duration-300 ease-in-out' : 'hidden md:block'}`}>
+          <aside className={`w-64 flex-shrink-0 ${isSidebarOpen ? 'fixed inset-0 z-40 bg-surface p-6 shadow-2xl duration-300 ease-in-out' : 'hidden md:block'}`}>
              <div className="md:hidden flex justify-between items-center mb-6">
-                 <h2 className="text-lg font-bold text-gray-900">Filters</h2>
-                 <button onClick={() => setIsSidebarOpen(false)}><X className="h-6 w-6 text-gray-500" /></button>
+                 <h2 className="text-lg font-bold text-text-primary">Filters</h2>
+                 <button onClick={() => setIsSidebarOpen(false)}><X className="h-6 w-6 text-text-secondary" /></button>
              </div>
 
              <div className="space-y-8">
                 <div>
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
+                  <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4">
                     Categories
                   </h3>
                   <div className="space-y-1">
                     <button
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${!selectedCategory ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${!selectedCategory ? 'bg-primary-50 text-primary-700 font-semibold' : 'text-text-secondary hover:bg-surface-alt'}`}
                         onClick={() => updateFilter('category', undefined)}
                     >
                         All Categories
@@ -218,7 +218,7 @@ export const Home: React.FC = () => {
                     {categories.map((cat) => (
                       <button
                         key={cat.id}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${selectedCategory === cat.id ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${selectedCategory === cat.id ? 'bg-primary-50 text-primary-700 font-semibold' : 'text-text-secondary hover:bg-surface-alt'}`}
                         onClick={() => updateFilter('category', String(cat.id))}
                       >
                         {cat.name}
@@ -228,12 +228,12 @@ export const Home: React.FC = () => {
                 </div>
 
                 <div>
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
+                  <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4">
                     Wellbeing Goals
                   </h3>
                    <div className="space-y-1">
                     <button
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${!selectedTag ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${!selectedTag ? 'bg-primary-50 text-primary-700 font-semibold' : 'text-text-secondary hover:bg-surface-alt'}`}
                         onClick={() => updateFilter('tag', undefined)}
                     >
                         Any Goal
@@ -241,7 +241,7 @@ export const Home: React.FC = () => {
                     {tags.map((tag) => (
                       <button
                         key={tag.id}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${selectedTag === tag.id ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${selectedTag === tag.id ? 'bg-primary-50 text-primary-700 font-semibold' : 'text-text-secondary hover:bg-surface-alt'}`}
                         onClick={() => updateFilter('tag', String(tag.id))}
                       >
                          {tag.name}
@@ -255,9 +255,9 @@ export const Home: React.FC = () => {
           {/* Main Content */}
           <div className="flex-1">
              <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold text-text-primary">
                     {selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : 'All Products'}
-                    <span className="text-gray-400 text-lg font-normal ml-2">
+                    <span className="text-text-muted text-lg font-normal ml-2">
                       ({products.length}{totalProducts ? ` of ${totalProducts}` : ''})
                     </span>
                 </h2>
@@ -267,25 +267,25 @@ export const Home: React.FC = () => {
              {loading ? (
                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                      {[1,2,3,4,5,6].map(i => (
-                         <div key={i} className="bg-white h-96 rounded-2xl animate-pulse shadow-sm border border-gray-100">
-                            <div className="h-2/3 bg-gray-200 rounded-t-2xl"></div>
+                         <div key={i} className="bg-surface h-96 rounded-2xl animate-pulse shadow-sm border border-border-default">
+                            <div className="h-2/3 bg-border-default rounded-t-2xl"></div>
                             <div className="p-4 space-y-3">
-                                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                                <div className="h-4 bg-border-default rounded w-3/4"></div>
+                                <div className="h-4 bg-border-default rounded w-1/2"></div>
                             </div>
                          </div>
                      ))}
                  </div>
              ) : products.length === 0 ? (
-                 <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-300">
-                     <div className="mx-auto h-12 w-12 text-gray-400 mb-4">
+                 <div className="text-center py-20 bg-surface rounded-2xl border border-dashed border-border-default">
+                     <div className="mx-auto h-12 w-12 text-text-muted mb-4">
                         <Search className="h-full w-full" />
                      </div>
-                     <h3 className="text-lg font-medium text-gray-900">No products found</h3>
-                     <p className="mt-1 text-gray-500">Try adjusting your search or filters.</p>
+                     <h3 className="text-lg font-medium text-text-primary">No products found</h3>
+                     <p className="mt-1 text-text-secondary">Try adjusting your search or filters.</p>
                       <button
                          onClick={() => setSearchParams(new URLSearchParams())}
-                         className="btn-ghost mt-6 text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
+                         className="btn-ghost mt-6 text-primary-700 bg-primary-100 hover:bg-primary-200"
                          aria-label="Clear all filters"
                      >
                          Clear all filters
@@ -305,17 +305,17 @@ export const Home: React.FC = () => {
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 border border-border-default rounded-md text-sm font-medium text-text-primary bg-surface hover:bg-surface-alt disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Previous
                   </button>
-                  <span className="px-4 py-2 text-sm text-gray-700 flex items-center">
+                  <span className="px-4 py-2 text-sm text-text-primary flex items-center">
                     Page {page} of {totalPages}
                   </span>
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 border border-border-default rounded-md text-sm font-medium text-text-primary bg-surface hover:bg-surface-alt disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Next
                   </button>

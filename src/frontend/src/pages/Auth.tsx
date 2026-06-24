@@ -48,15 +48,15 @@ export const Login = () => {
   // MFA Verification Form
   if (mfaRequired) {
     return (
-      <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+      <div className="max-w-md mx-auto mt-10 p-6 bg-surface rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Two-Factor Authentication</h2>
-        <p className="text-gray-600 mb-4 text-center">
+        <p className="text-text-secondary mb-4 text-center">
           {useBackupCode 
             ? 'Enter one of your backup codes' 
             : 'Enter the 6-digit code from your authenticator app'}
         </p>
         
-        {error && <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{error}</div>}
+        {error && <div className="bg-danger-100 text-danger-700 p-3 mb-4 rounded">{error}</div>}
         
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -101,9 +101,9 @@ export const Login = () => {
 
   // Normal Login Form
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-surface rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-      {error && <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{error}</div>}
+      {error && <div className="bg-danger-100 text-danger-700 p-3 mb-4 rounded">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="form-label" htmlFor="email">Email</label>
@@ -143,7 +143,7 @@ export const Login = () => {
         </button>
       </form>
       <div className="mt-4 text-center">
-        <p className="text-gray-600">Don't have an account? <Link to="/register" className="text-blue-600">Register</Link></p>
+        <p className="text-text-secondary">Don't have an account? <Link to="/register" className="text-blue-600">Register</Link></p>
       </div>
     </div>
   );
@@ -166,9 +166,9 @@ export const Register = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-surface rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
-      {error && <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{error}</div>}
+      {error && <div className="bg-danger-100 text-danger-700 p-3 mb-4 rounded">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="form-label" htmlFor="register-email">Email</label>
@@ -203,7 +203,7 @@ export const Register = () => {
         </button>
       </form>
       <div className="mt-4 text-center">
-        <p className="text-gray-600">Already have an account? <Link to="/login" className="text-blue-600">Login</Link></p>
+        <p className="text-text-secondary">Already have an account? <Link to="/login" className="text-blue-600">Login</Link></p>
       </div>
     </div>
   );

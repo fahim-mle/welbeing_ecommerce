@@ -24,8 +24,8 @@ export const AdminProducts: React.FC = () => {
         <>
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Products</h2>
-              <p className="text-sm text-gray-500">Create, edit, and organize products.</p>
+              <h2 className="text-2xl font-bold text-text-primary">Products</h2>
+              <p className="text-sm text-text-secondary">Create, edit, and organize products.</p>
             </div>
             <button
               type="button"
@@ -45,11 +45,11 @@ export const AdminProducts: React.FC = () => {
           <button
             type="button"
             onClick={() => setView('list')}
-            className="text-sm text-indigo-600 hover:underline"
+            className="text-sm text-primary-600 hover:underline"
           >
             ← Back to products
           </button>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-text-primary">
             {view === 'create' ? 'Create Product' : 'Edit Product'}
           </h2>
           <ProductForm
