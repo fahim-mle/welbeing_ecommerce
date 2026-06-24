@@ -1,0 +1,1194 @@
+{
+  "reviews": [
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "SUPP-007",
+      "rating": 2,
+      "comment": "Didn't feel much from one scoop so tried two and got super jittery and anxious. Might just be my sensitivity to caffeine but wasn't a good experience.",
+      "createdAt": "2026-01-19T08:42:13.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "SUPP-006",
+      "rating": 3,
+      "comment": "Not sure if BCAAs actually do anything for me but this one mixes well and doesn't taste bad. Probably won't repurchase — the science on BCAAs is questionable.",
+      "createdAt": "2026-01-21T14:23:07.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "SUPP-010",
+      "rating": 3,
+      "comment": "Upsets my stomach a bit even with food. Might be the form of iron. Going to try a different brand.",
+      "createdAt": "2026-01-24T19:15:42.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "SUPP-001",
+      "rating": 3,
+      "comment": "It's fine. Does the job. Nothing special about the taste honestly, kind of chalky if you don't mix it enough. Probably wouldn't repurchase at this price point.",
+      "createdAt": "2026-01-27T11:05:33.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "GEAR-007",
+      "rating": 2,
+      "comment": "The cable kinked badly after a week and won't straighten out. Makes it impossible to jump smoothly. Maybe I got a bad one.",
+      "createdAt": "2026-01-29T07:18:22.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "GEAR-001",
+      "rating": 2,
+      "comment": "Mat started peeling after a month of use. The grip was good at first but the quality didn't hold up. Disappointed for the price.",
+      "createdAt": "2026-02-01T16:30:11.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "RECO-001",
+      "rating": 2,
+      "comment": "Worked great for two months then the battery stopped holding a charge. Waiting on warranty replacement. When it worked it was excellent though.",
+      "createdAt": "2026-02-03T13:45:28.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "MIND-009",
+      "rating": 2,
+      "comment": "Way too heavy for me even though I'm within the recommended weight range. Felt claustrophobic rather than comforting. Might work for others but not for me.",
+      "createdAt": "2026-02-05T22:10:55.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "SUPP-001",
+      "rating": 5,
+      "comment": "Mixes incredibly well, no clumps at all. The chocolate flavour is rich without being overly sweet. Been using it for 3 months post-workout and honestly can't go back to the cheaper stuff.",
+      "createdAt": "2026-02-07T09:20:14.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "SUPP-001",
+      "rating": 5,
+      "comment": "Great protein powder. 25g per scoop is solid and it digests well — no bloating like I got with other brands. Vanilla is nice in smoothies.",
+      "createdAt": "2026-02-09T15:33:47.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "SUPP-001",
+      "rating": 4,
+      "comment": "Good quality whey but the tub was only about 2/3 full when I opened it. Taste is decent, mixes fine in a shaker. Would buy again but feels a bit overpriced.",
+      "createdAt": "2026-02-12T18:45:01.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "SUPP-001",
+      "rating": 5,
+      "comment": "Best whey I've tried in years. Mixes clean, tastes great with water or milk. Chocolate is the way to go.",
+      "createdAt": "2026-02-14T07:12:33.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "SUPP-001",
+      "rating": 5,
+      "comment": "Finally a protein that doesn't make me gag. The vanilla is smooth and not artificial tasting. Been hitting my protein targets way easier now.",
+      "createdAt": "2026-02-16T12:55:09.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "SUPP-002",
+      "rating": 5,
+      "comment": "Pure creatine, no filler or flavouring. Mixes clear in water. Noticed strength gains within 3 weeks. Exactly what you want from creatine — unflavored, clean, effective.",
+      "createdAt": "2026-02-18T10:25:41.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "SUPP-002",
+      "rating": 4,
+      "comment": "Does what it says. No digestive issues. I would've liked a scoop included though, had to use my own measuring spoon.",
+      "createdAt": "2026-02-20T14:38:52.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "SUPP-002",
+      "rating": 5,
+      "comment": "Solid product. Been taking 5g daily and my lifts have gone up noticeably. No water retention issues either.",
+      "createdAt": "2026-02-22T16:10:27.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "SUPP-003",
+      "rating": 5,
+      "comment": "Switched to this from a big brand and honestly feel the same if not better. One a day, easy to swallow, no weird aftertaste. Good value.",
+      "createdAt": "2026-02-24T08:50:13.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "SUPP-003",
+      "rating": 4,
+      "comment": "Good basic multi. I like that it's organic. Only complaint is the bottle is quite large for 30 tablets — lots of cotton stuffing.",
+      "createdAt": "2026-02-26T11:22:46.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "SUPP-003",
+      "rating": 5,
+      "comment": "My energy levels have been more consistent since I started taking these daily. No nausea when taken with food, which was an issue with other brands.",
+      "createdAt": "2026-02-28T13:05:31.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "SUPP-004",
+      "rating": 5,
+      "comment": "My doctor told me my D levels were low. Started taking these daily and my last bloodwork showed normal levels. Small softgels, easy to take.",
+      "createdAt": "2026-03-02T09:15:48.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "SUPP-004",
+      "rating": 4,
+      "comment": "Good potency for the price. Living in a cloudy city, I need D3 supplement and these do the job well.",
+      "createdAt": "2026-03-04T17:40:22.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "SUPP-004",
+      "rating": 5,
+      "comment": "Affordable and effective. I take one with breakfast and my winter mood has definitely improved. Will keep ordering.",
+      "createdAt": "2026-03-06T07:30:55.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "SUPP-005",
+      "rating": 5,
+      "comment": "No fishy burps! That was my biggest concern and these pass the test. Good EPA/DHA ratio. Capsules are a reasonable size.",
+      "createdAt": "2026-03-08T12:18:39.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "SUPP-005",
+      "rating": 4,
+      "comment": "Quality fish oil. I just wish the EPA content was a bit higher per capsule. Otherwise no complaints — no aftertaste, easy to swallow.",
+      "createdAt": "2026-03-10T15:52:14.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "SUPP-005",
+      "rating": 5,
+      "comment": "Been taking for joint health and my knees feel better during squats. The fact that there's no fishy repeat is a huge plus.",
+      "createdAt": "2026-03-12T18:25:07.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "SUPP-005",
+      "rating": 3,
+      "comment": "It's okay. Definitely getting fish burps occasionally despite the claims. Might need to take with a bigger meal.",
+      "createdAt": "2026-03-14T10:40:33.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "SUPP-006",
+      "rating": 5,
+      "comment": "Mixes great, tastes refreshing during workouts. I sip this throughout my training sessions and feel less fatigued on long gym days.",
+      "createdAt": "2026-03-16T14:05:51.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "SUPP-006",
+      "rating": 4,
+      "comment": "Decent BCAA. Helps with recovery I think. The flavour could be stronger though — it's quite subtle even with two scoops.",
+      "createdAt": "2026-03-18T08:15:26.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "SUPP-007",
+      "rating": 5,
+      "comment": "This gives me a proper kick without the jitters. Clean energy, good pump, no crash afterwards. One scoop is all I need.",
+      "createdAt": "2026-03-20T16:50:43.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "SUPP-007",
+      "rating": 4,
+      "comment": "Solid pre-workout. Energy hit is clean and lasts the whole session. Wish it mixed a bit better — always some grit at the bottom of the shaker.",
+      "createdAt": "2026-03-22T06:30:17.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "SUPP-007",
+      "rating": 5,
+      "comment": "Tried so many pre-workouts and this one hits the sweet spot. Not too stimulating but enough to get me going for early morning sessions.",
+      "createdAt": "2026-03-24T11:45:29.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "SUPP-008",
+      "rating": 5,
+      "comment": "Started taking this during cold season and haven't gotten sick once. Small tablets, easy to swallow. Good form of zinc too.",
+      "createdAt": "2026-03-26T13:20:08.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "SUPP-008",
+      "rating": 4,
+      "comment": "Seems to help my immune system. Take it with food to avoid nausea. Can't complain for the price.",
+      "createdAt": "2026-03-28T09:35:41.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "SUPP-008",
+      "rating": 5,
+      "comment": "My skin has cleared up since I started taking zinc regularly. Didn't expect that bonus but happy about it.",
+      "createdAt": "2026-03-30T15:12:55.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "SUPP-009",
+      "rating": 5,
+      "comment": "This has been a game-changer for my sleep. Take two before bed and I fall asleep faster and wake up less during the night. The glycinate form doesn't upset my stomach either.",
+      "createdAt": "2026-04-01T19:45:23.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "SUPP-009",
+      "rating": 5,
+      "comment": "Was skeptical but this genuinely helps me wind down at night. No more restless legs, sleep is deeper. Wish I'd found this years ago.",
+      "createdAt": "2026-04-03T07:50:16.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "SUPP-009",
+      "rating": 4,
+      "comment": "Helps with sleep quality for sure. Only giving 4 stars because the bottle says take 2-3 tablets and at that rate one bottle doesn't last long.",
+      "createdAt": "2026-04-05T14:25:38.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "SUPP-009",
+      "rating": 3,
+      "comment": "Maybe helps a bit with relaxation but I didn't notice a huge difference in sleep quality. Might need to take it longer.",
+      "createdAt": "2026-04-07T10:15:49.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "SUPP-010",
+      "rating": 5,
+      "comment": "My iron levels were low and my doctor recommended a supplement. These don't cause constipation like other iron pills I've tried. Energy is back up.",
+      "createdAt": "2026-04-09T16:40:12.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "SUPP-010",
+      "rating": 4,
+      "comment": "Good iron supplement, vegan-friendly which is important for me. Take with vitamin C for better absorption.",
+      "createdAt": "2026-04-11T08:55:34.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "SUPP-010",
+      "rating": 3,
+      "comment": "Upsets my stomach a bit even with food. Might be the form of iron. Going to try a different brand.",
+      "createdAt": "2026-04-13T12:30:07.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "SUPP-002",
+      "rating": 3,
+      "comment": "Can't really 'feel' creatine working but my numbers are going up so I'll trust the process. Powder is very fine, makes a bit of a mess.",
+      "createdAt": "2026-04-15T17:18:45.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "SUPP-003",
+      "rating": 3,
+      "comment": "It's a multivitamin. Hard to tell if it's doing anything different than what I was taking before. Tablets are a bit large.",
+      "createdAt": "2026-04-17T09:42:28.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "GEAR-001",
+      "rating": 5,
+      "comment": "The grip on this mat is incredible. No slipping during downward dog even when my hands get sweaty. Cushioning is perfect — not too thick, not too thin.",
+      "createdAt": "2026-04-19T14:05:51.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "GEAR-001",
+      "rating": 4,
+      "comment": "Nice mat, good cushioning and the blue colour looks great. It did have a bit of a rubber smell for the first week but that's gone now.",
+      "createdAt": "2026-04-21T07:25:33.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "GEAR-001",
+      "rating": 5,
+      "comment": "Finally a mat that doesn't bunch up or slide around. The non-slip surface is legit. My hot yoga sessions are so much better now.",
+      "createdAt": "2026-04-23T16:50:18.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "GEAR-001",
+      "rating": 5,
+      "comment": "Thick enough to protect my knees but not so thick that I lose balance. Quality material. The pink is a lovely shade too.",
+      "createdAt": "2026-04-25T10:15:42.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "GEAR-002",
+      "rating": 5,
+      "comment": "Perfect for my home workout routine and physio exercises. The vinyl coating is comfortable to hold and they don't scratch the floor if I put them down.",
+      "createdAt": "2026-04-27T13:40:07.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "GEAR-002",
+      "rating": 4,
+      "comment": "Good dumbbells for the price. Colour-coded is handy. Just wish there was a storage rack included.",
+      "createdAt": "2026-04-29T15:20:39.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "GEAR-002",
+      "rating": 5,
+      "comment": "Exactly what I needed for light toning exercises. Comfortable grip, good weight distribution. No complaints.",
+      "createdAt": "2026-05-01T08:35:14.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "GEAR-003",
+      "rating": 5,
+      "comment": "Solid build quality. Comfortable grip and the vinyl doesn't get sticky like some cheap ones I've had. Good for my home gym.",
+      "createdAt": "2026-05-03T11:55:28.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "GEAR-003",
+      "rating": 4,
+      "comment": "Good dumbbells, well balanced. They do feel slightly heavier than 10lb compared to the ones at my gym but that could just be the grip.",
+      "createdAt": "2026-05-05T17:30:46.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "GEAR-003",
+      "rating": 3,
+      "comment": "Decent but one of the dumbbells has a slight wobble — the weight isn't perfectly centered. Works fine for casual use but noticeable.",
+      "createdAt": "2026-05-07T09:12:33.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "GEAR-004",
+      "rating": 5,
+      "comment": "Love these! 5 different levels means I can progress as I get stronger. The door anchor attachment is a nice bonus. Great for travel too — takes zero space.",
+      "createdAt": "2026-05-09T14:45:17.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "GEAR-004",
+      "rating": 5,
+      "comment": "These replaced my gym membership during lockdown and I still use them daily. Versatile, durable, and the included guide is actually helpful.",
+      "createdAt": "2026-05-11T07:20:51.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "GEAR-004",
+      "rating": 4,
+      "comment": "Good variety of resistance levels. The lightest band snapped after about 6 months of regular use but the others are holding up fine.",
+      "createdAt": "2026-05-13T16:10:28.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "GEAR-004",
+      "rating": 3,
+      "comment": "The bands are fine but the handles are uncomfortable after extended use. The foam is too thin. Works okay for short workouts.",
+      "createdAt": "2026-05-15T12:38:44.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "GEAR-005",
+      "rating": 5,
+      "comment": "This thing hurts so good. My back and IT bands have never felt better. Dense foam that holds its shape. A must-have for anyone who trains hard.",
+      "createdAt": "2026-05-17T18:25:13.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "GEAR-005",
+      "rating": 5,
+      "comment": "Physio recommended I get one of these for my tight calves. Works wonders. Firm enough to actually get into the muscle but not unbearable.",
+      "createdAt": "2026-05-19T08:50:39.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "GEAR-005",
+      "rating": 4,
+      "comment": "Good density, decent length. The surface texture could be a bit more aggressive for deep tissue work but it's great for general rolling.",
+      "createdAt": "2026-05-21T13:15:07.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "GEAR-005",
+      "rating": 5,
+      "comment": "Changed my recovery routine completely. Use it every morning on my legs and back. The firmness is perfect — not too soft like cheap ones.",
+      "createdAt": "2026-05-23T15:40:22.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "GEAR-006",
+      "rating": 5,
+      "comment": "Solid cast iron, smooth handle with no rough edges. The flat bottom is stable for renegade rows. Exactly what a kettlebell should be.",
+      "createdAt": "2026-05-25T10:05:48.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "GEAR-006",
+      "rating": 4,
+      "comment": "Good kettlebell. The handle is comfortable enough for swings and cleans. A bit of a chip on the paint but doesn't affect functionality.",
+      "createdAt": "2026-05-27T14:30:16.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "GEAR-006",
+      "rating": 5,
+      "comment": "Perfect weight for my home workouts. Handle is wide enough for two-handed swings. Well balanced and feels durable.",
+      "createdAt": "2026-05-29T09:18:35.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "GEAR-007",
+      "rating": 5,
+      "comment": "Fast, smooth, and the bearings are quality. Can finally do double-unders consistently. Cable length adjustment is easy and stays put.",
+      "createdAt": "2026-05-31T16:42:51.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "GEAR-007",
+      "rating": 4,
+      "comment": "Good rope for the price. Very fast. The handles are a bit thin for my liking but manageable. Great for cardio circuits.",
+      "createdAt": "2026-06-02T08:25:07.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "GEAR-008",
+      "rating": 5,
+      "comment": "Finally gloves that fit well and don't fall apart after a month. Padding in the right places, good grip. The medium fits my hands perfectly.",
+      "createdAt": "2026-06-04T12:50:33.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "GEAR-008",
+      "rating": 4,
+      "comment": "Comfortable and breathable. Good for preventing calluses. Only complaint is the wrist support wrap could be a bit longer.",
+      "createdAt": "2026-06-06T15:35:19.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "GEAR-008",
+      "rating": 3,
+      "comment": "Gloves are okay but the sizing runs small. Ordered large and they're tight. Quality is decent otherwise.",
+      "createdAt": "2026-06-08T07:20:44.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "GEAR-009",
+      "rating": 5,
+      "comment": "Holds air well, good quality material. I use it as a desk chair and for core exercises. The anti-burst rating gives me confidence.",
+      "createdAt": "2026-06-10T11:15:28.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "GEAR-009",
+      "rating": 4,
+      "comment": "Good ball, sturdy. Comes with a pump which is appreciated. Lost a bit of air after the first week but topped it up and it's been fine since.",
+      "createdAt": "2026-06-12T14:40:52.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "GEAR-009",
+      "rating": 5,
+      "comment": "Great for my home office setup. Replaced my desk chair with this and my posture has improved. Quality is solid.",
+      "createdAt": "2026-06-14T09:05:17.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "GEAR-010",
+      "rating": 5,
+      "comment": "Installs easily in a standard doorway and feels rock solid. I'm 85kg and it doesn't budge. Foam grips are comfortable. Great for home workouts.",
+      "createdAt": "2026-06-16T13:28:41.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "GEAR-010",
+      "rating": 4,
+      "comment": "Good bar, holds my weight fine. The screwless installation works but I was nervous at first. Added the safety screws for peace of mind.",
+      "createdAt": "2026-06-18T16:55:06.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "GEAR-010",
+      "rating": 3,
+      "comment": "Works but the door frame brackets left marks on my trim. The bar itself is fine but check your door frame width before ordering.",
+      "createdAt": "2026-06-20T08:40:23.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "RECO-001",
+      "rating": 5,
+      "comment": "Absolute lifesaver for my sore muscles after heavy training days. Multiple heads for different muscle groups. Battery lasts ages. Worth every cent.",
+      "createdAt": "2026-01-26T10:30:14.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "RECO-001",
+      "rating": 5,
+      "comment": "This is the best purchase I've made for recovery. Quieter than my friend's Theragun and just as powerful. The deep muscle head is brutal in the best way.",
+      "createdAt": "2026-01-30T15:20:47.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "RECO-001",
+      "rating": 4,
+      "comment": "Powerful and effective but it's heavier than I expected. My wife struggles to hold it for long. Otherwise excellent device.",
+      "createdAt": "2026-02-04T08:15:22.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "RECO-001",
+      "rating": 5,
+      "comment": "My physio uses one of these and recommended I get one for home. This model is just as good. My DOMS recovery time has halved.",
+      "createdAt": "2026-02-08T14:45:38.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "RECO-002",
+      "rating": 5,
+      "comment": "I'm a nurse on my feet 12 hours a day and these are lifesavers. Graduated compression is just right — my legs aren't achy at the end of a shift.",
+      "createdAt": "2026-02-12T11:10:55.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "RECO-002",
+      "rating": 4,
+      "comment": "Good compression level, comfortable to wear all day. They're a bit tricky to get on at first but that's compression socks for you.",
+      "createdAt": "2026-02-16T07:35:13.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "RECO-002",
+      "rating": 5,
+      "comment": "Bought these for long-haul flights and they work great. No more swollen ankles. Also use them for post-run recovery.",
+      "createdAt": "2026-02-20T16:50:28.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "RECO-002",
+      "rating": 3,
+      "comment": "Compression is decent but the sizing chart was confusing. Ordered medium based on shoe size and they're too tight at the toe. Quality is okay though.",
+      "createdAt": "2026-02-24T09:25:41.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "RECO-003",
+      "rating": 5,
+      "comment": "Stays flexible even when frozen so it actually conforms to your body. I use it for my knee after runs. Holds the cold for a good 20-25 minutes.",
+      "createdAt": "2026-02-28T13:40:07.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "RECO-003",
+      "rating": 4,
+      "comment": "Does the job. Gel stays pliable when frozen. Just wish the cover was included instead of sold separately.",
+      "createdAt": "2026-03-04T18:15:33.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "RECO-003",
+      "rating": 5,
+      "comment": "Simple, effective, cheap. I have three of these in my freezer at all times. The gel material doesn't leak even after hundreds of freeze-thaw cycles.",
+      "createdAt": "2026-03-08T10:20:18.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "RECO-004",
+      "rating": 5,
+      "comment": "Heats up fast, covers a good area, and the auto-shutoff is a nice safety feature. Perfect for my lower back pain after long sitting sessions.",
+      "createdAt": "2026-03-12T14:55:44.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "RECO-004",
+      "rating": 4,
+      "comment": "Good heat output and the fabric is soft against skin. The controller could be more intuitive — buttons are small and hard to read.",
+      "createdAt": "2026-03-16T08:30:09.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "RECO-004",
+      "rating": 5,
+      "comment": "My partner stole this from me because she loves it so much for her period cramps. Going to have to order another one.",
+      "createdAt": "2026-03-20T12:45:27.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "RECO-005",
+      "rating": 5,
+      "comment": "Really helps with my chronic lower back pain. Multiple modes and intensity levels. The pads stick well and last a decent amount of time before needing replacement.",
+      "createdAt": "2026-03-24T17:10:53.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "RECO-005",
+      "rating": 4,
+      "comment": "Works well for pain relief. Takes some experimentation to find the right pad placement and settings. Instructions could be clearer.",
+      "createdAt": "2026-03-28T09:25:16.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "RECO-005",
+      "rating": 3,
+      "comment": "Provides some relief but the pads lose their stickiness quickly. Had to order replacements after 2 weeks. The unit itself works fine.",
+      "createdAt": "2026-04-01T15:40:38.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "RECO-005",
+      "rating": 5,
+      "comment": "My chiropractor uses TENS on me and recommended a home unit. This one has good power and the different programs actually feel distinct.",
+      "createdAt": "2026-04-05T11:15:02.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "RECO-006",
+      "rating": 5,
+      "comment": "Tore my meniscus last year and this brace gives me confidence to exercise again. The adjustable straps let me dial in the support I need.",
+      "createdAt": "2026-04-09T14:30:25.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "RECO-006",
+      "rating": 4,
+      "comment": "Good support for my arthritic knee. Stays in place during walking and light exercise. Gets a bit warm after extended wear.",
+      "createdAt": "2026-04-13T07:50:48.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "RECO-006",
+      "rating": 5,
+      "comment": "Fit is customizable and it doesn't slip like other braces I've tried. The hinge provides lateral stability without being bulky.",
+      "createdAt": "2026-04-17T13:20:13.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "RECO-007",
+      "rating": 5,
+      "comment": "Rolled my ankle playing basketball and this sleeve provided great compression during recovery. Comfortable enough to wear with shoes.",
+      "createdAt": "2026-04-21T16:45:37.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "RECO-007",
+      "rating": 4,
+      "comment": "Good compression and breathable material. Helps with my chronic ankle instability. Would prefer a slightly tighter fit but it does the job.",
+      "createdAt": "2026-04-25T10:10:05.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "RECO-007",
+      "rating": 3,
+      "comment": "Compression is okay but the seam at the toe rubs after a while. Might work better for some people but not the most comfortable for all-day wear.",
+      "createdAt": "2026-04-29T15:35:29.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "RECO-008",
+      "rating": 5,
+      "comment": "I work in a warehouse and this belt has saved my back. Proper support when lifting and it doesn't dig in like cheaper ones.",
+      "createdAt": "2026-05-03T08:20:44.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "RECO-008",
+      "rating": 4,
+      "comment": "Provides solid lower back support. The sizing runs a bit large so check measurements carefully. Build quality is good.",
+      "createdAt": "2026-05-07T12:50:11.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "RECO-008",
+      "rating": 5,
+      "comment": "My back pain from sitting at a desk all day has decreased significantly since I started wearing this. Unobtrusive under a shirt.",
+      "createdAt": "2026-05-11T14:15:38.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "RECO-009",
+      "rating": 5,
+      "comment": "Post-workout soak with these and I feel brand new. Good quality, dissolves well, no scent which I prefer. 5lb bag lasts ages.",
+      "createdAt": "2026-05-15T09:40:03.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "RECO-009",
+      "rating": 4,
+      "comment": "Does what Epsom salts do — muscle relaxation. The bag is a bit annoying to reseal. Product itself is fine.",
+      "createdAt": "2026-05-19T17:05:27.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "RECO-009",
+      "rating": 5,
+      "comment": "I soak in these after every long run. My legs feel significantly better the next day. You can feel the difference vs a regular bath.",
+      "createdAt": "2026-05-23T11:30:52.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "RECO-010",
+      "rating": 5,
+      "comment": "The menthol kick is strong and immediate. Feels cold then warm and really helps with sore muscles after the gym. Non-greasy which I appreciate.",
+      "createdAt": "2026-05-27T13:45:16.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "RECO-010",
+      "rating": 4,
+      "comment": "Good cream, works well for minor aches. Smell is quite strong though — my wife complains about the menthol scent lingering.",
+      "createdAt": "2026-05-31T08:10:41.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "RECO-010",
+      "rating": 3,
+      "comment": "Decent temporary relief but the effect doesn't last long. Might as well use a cheaper cream. Texture is nice and absorbs quickly.",
+      "createdAt": "2026-06-04T16:25:07.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "NUTR-001",
+      "rating": 5,
+      "comment": "Actually tastes good! Most protein bars are chalky but these have a great texture. 20g protein per bar is solid for a snack. Chocolate is the best flavour.",
+      "createdAt": "2026-01-28T09:50:23.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "NUTR-001",
+      "rating": 4,
+      "comment": "Good bars, not too sweet, decent protein. The peanut butter flavour is a bit dry but the chocolate ones are great. Good for on-the-go.",
+      "createdAt": "2026-02-02T14:15:48.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "NUTR-001",
+      "rating": 5,
+      "comment": "These have replaced my afternoon coffee and biscuit habit. Keeps me full till dinner. Chewy, tasty, and the macros are decent.",
+      "createdAt": "2026-02-06T11:40:12.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "NUTR-001",
+      "rating": 3,
+      "comment": "Protein content is good but these are quite calorie-dense for the size. Taste is okay — definitely more 'functional' than 'treat'.",
+      "createdAt": "2026-02-10T17:05:37.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "NUTR-002",
+      "rating": 5,
+      "comment": "These got me through my marathon training. Easy to digest on the run, not too thick, and the energy kick is noticeable within minutes.",
+      "createdAt": "2026-02-14T08:20:03.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "NUTR-002",
+      "rating": 4,
+      "comment": "Good gels for endurance work. Consistency is better than most — not too thick or sticky. Only complaint is they're quite sweet.",
+      "createdAt": "2026-02-18T13:45:28.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "NUTR-002",
+      "rating": 5,
+      "comment": "Tried multiple brands and these sit best in my stomach during long rides. Quick energy without the GI issues.",
+      "createdAt": "2026-02-22T15:10:44.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "NUTR-003",
+      "rating": 5,
+      "comment": "I sweat a lot during hot yoga and this keeps me from getting headaches afterwards. Mixes easily, tastes refreshing without being too sweet.",
+      "createdAt": "2026-02-26T10:35:09.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "NUTR-003",
+      "rating": 4,
+      "comment": "Good hydration multiplier. Flavour is pleasant. I use half a scoop sometimes because the full serving is quite intense.",
+      "createdAt": "2026-03-02T12:50:35.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "NUTR-003",
+      "rating": 5,
+      "comment": "Been using this instead of sports drinks. Way less sugar and actually works better for recovery after intense sessions.",
+      "createdAt": "2026-03-06T16:15:51.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "NUTR-004",
+      "rating": 4,
+      "comment": "Convenient for busy mornings when I don't have time for breakfast. Fills me up for about 3-4 hours. Taste is okay — drinkable but not delicious.",
+      "createdAt": "2026-03-10T07:40:17.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "NUTR-004",
+      "rating": 5,
+      "comment": "Best meal replacement I've tried. Mixes smooth, no grit. Keeps me full and the nutritional profile is balanced. Vanilla is the way to go.",
+      "createdAt": "2026-03-14T14:05:33.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "NUTR-004",
+      "rating": 3,
+      "comment": "Does the job nutritionally but the taste is pretty bland. Works as a last resort meal but I wouldn't drink it for pleasure.",
+      "createdAt": "2026-03-18T09:30:58.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "NUTR-005",
+      "rating": 5,
+      "comment": "Perfect crunch without being too sweet. Great with yogurt and berries. Love that it's organic and not loaded with sugar like mainstream brands.",
+      "createdAt": "2026-03-22T11:55:23.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "NUTR-005",
+      "rating": 5,
+      "comment": "This is my go-to breakfast now. Toasted, crunchy clusters, and you can actually taste the oats and honey. Not a sugar bomb like other granolas.",
+      "createdAt": "2026-03-26T15:20:49.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "NUTR-005",
+      "rating": 4,
+      "comment": "Really good granola. Just a bit pricey for the bag size. Quality is there though — clusters stay crunchy in milk.",
+      "createdAt": "2026-03-30T08:45:14.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "NUTR-006",
+      "rating": 5,
+      "comment": "Smooth, creamy, and just almonds — no added oils or sugar. The natural oil separation is expected, just stir it. Tastes fresh and clean.",
+      "createdAt": "2026-04-03T13:10:38.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "NUTR-006",
+      "rating": 4,
+      "comment": "Good quality almond butter. A bit runny compared to others I've had. Needs a good stir when you first open it.",
+      "createdAt": "2026-04-07T10:35:04.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "NUTR-006",
+      "rating": 5,
+      "comment": "Way better than the big brand stuff. You can taste the difference. Goes perfectly on toast with banana.",
+      "createdAt": "2026-04-11T16:00:29.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "NUTR-007",
+      "rating": 5,
+      "comment": "Cooks up fluffy with no bitterness. I rinse it once and it's perfect. Great as a base for grain bowls. Organic certification is a plus.",
+      "createdAt": "2026-04-15T09:25:55.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "NUTR-007",
+      "rating": 4,
+      "comment": "Good quality quinoa. Consistently clean — rarely find any grit or stones like with cheaper brands. Price is fair for organic.",
+      "createdAt": "2026-04-19T14:50:21.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "NUTR-007",
+      "rating": 5,
+      "comment": "My staple grain. This batch cooks evenly and has a nice nutty flavor. Bulk value is decent.",
+      "createdAt": "2026-04-23T12:15:47.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "NUTR-008",
+      "rating": 5,
+      "comment": "Fresh, clean seeds. I add them to smoothies, oatmeal, and make chia pudding. They gel up nicely and have no off-flavors.",
+      "createdAt": "2026-04-27T08:40:13.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "NUTR-008",
+      "rating": 4,
+      "comment": "Good quality chia seeds at a fair price. The bag seal could be better — I transferred to a jar. Product itself is great.",
+      "createdAt": "2026-05-01T15:05:39.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "NUTR-008",
+      "rating": 5,
+      "comment": "Excellent for adding fiber and omega-3s to my diet. No twigs or debris like I've found in cheaper brands. Will repurchase.",
+      "createdAt": "2026-05-05T11:30:04.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "NUTR-009",
+      "rating": 5,
+      "comment": "I'm not a fan of the taste of green tea but want the antioxidant benefits. These capsules are easy to take and I feel more energetic since starting.",
+      "createdAt": "2026-05-09T14:55:30.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "NUTR-009",
+      "rating": 4,
+      "comment": "Seems like a good quality extract. No jittery feeling. I take it with breakfast and it's a nice gentle energy boost.",
+      "createdAt": "2026-05-13T07:20:56.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "NUTR-009",
+      "rating": 3,
+      "comment": "Haven't noticed much of a difference honestly. Might be doing something internally but no perceivable effect. Capsules are easy to swallow though.",
+      "createdAt": "2026-05-17T13:45:22.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "NUTR-010",
+      "rating": 5,
+      "comment": "Refreshing and not too sweet. Perfect after a workout or on a hot day. The 12-pack is good value. Tastes like real coconut, not flavored sugar water.",
+      "createdAt": "2026-05-21T10:10:48.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "NUTR-010",
+      "rating": 4,
+      "comment": "Good coconut water. Slightly sweeter than fresh but very drinkable. Packaging holds up well in shipping.",
+      "createdAt": "2026-05-25T16:35:14.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "NUTR-010",
+      "rating": 5,
+      "comment": "My go-to post-run hydration. Natural electrolytes without the junk in sports drinks. Will keep ordering the 12-pack.",
+      "createdAt": "2026-05-29T09:00:40.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "MIND-001",
+      "rating": 5,
+      "comment": "Runs quietly, covers my whole living room, and the auto-shutoff is a nice safety feature. Looks sleek on my nightstand. Changed my evening routine completely.",
+      "createdAt": "2026-01-22T15:30:17.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "MIND-001",
+      "rating": 4,
+      "comment": "Good diffuser, puts out a nice mist. The light is a bit bright even on the lowest setting. Otherwise works great.",
+      "createdAt": "2026-01-26T08:55:43.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "MIND-001",
+      "rating": 5,
+      "comment": "I run this every night with lavender oil and my sleep has improved. Very quiet operation. Easy to clean and refill.",
+      "createdAt": "2026-01-30T13:20:08.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "MIND-001",
+      "rating": 3,
+      "comment": "Works but the mist output is weaker than my previous one. Fine for a small room but doesn't do much in my open-plan living area.",
+      "createdAt": "2026-02-03T10:45:34.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "MIND-002",
+      "rating": 5,
+      "comment": "Pure, strong, and authentic lavender scent. A few drops in the diffuser and the whole room smells like a spa. Calming effect is real.",
+      "createdAt": "2026-02-07T12:10:59.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "MIND-002",
+      "rating": 5,
+      "comment": "This is genuine lavender oil, not the synthetic stuff. The scent is herbaceous and true, not overpowering. Great for sleep blends.",
+      "createdAt": "2026-02-11T14:35:25.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "MIND-002",
+      "rating": 4,
+      "comment": "Nice oil. The scent is good but seems to dissipate quicker than some premium brands I've used. Good value though.",
+      "createdAt": "2026-02-15T09:00:51.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "MIND-003",
+      "rating": 5,
+      "comment": "Finally I can sit for longer than 10 minutes without my legs going numb. Firm support, good angle for the hips. The cover is washable too.",
+      "createdAt": "2026-02-19T11:25:16.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "MIND-003",
+      "rating": 4,
+      "comment": "Comfortable and well-made. Filled with buckwheat which I prefer over foam. My only complaint is I wish there were more colour options.",
+      "createdAt": "2026-02-23T16:50:42.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "MIND-003",
+      "rating": 5,
+      "comment": "Transformed my meditation practice. No more back pain from sitting on the floor. Quality construction and the buckwheat fill holds its shape.",
+      "createdAt": "2026-02-27T08:15:07.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "MIND-004",
+      "rating": 5,
+      "comment": "Actually blocks all light. The silk is gentle on my skin and the adjustable strap doesn't snag my hair. Best sleep mask I've owned.",
+      "createdAt": "2026-03-03T13:40:33.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "MIND-004",
+      "rating": 4,
+      "comment": "Comfortable and effective at blocking light. The silk feels nice. Only complaint is it can shift around if you're a side sleeper who tosses.",
+      "createdAt": "2026-03-07T10:05:58.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "MIND-004",
+      "rating": 5,
+      "comment": "Game changer for daytime sleeping (shift worker here). Soft, comfortable, and truly blackout. My sleep quality improved noticeably.",
+      "createdAt": "2026-03-11T15:30:24.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "MIND-005",
+      "rating": 5,
+      "comment": "The variety of sounds is great — I use the rain setting every night. Helps mask my neighbour's TV noise. Speaker quality is better than expected.",
+      "createdAt": "2026-03-15T09:55:50.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "MIND-005",
+      "rating": 4,
+      "comment": "Good selection of sounds. The white noise option is effective. Some of the nature sounds loop noticeably but it doesn't bother me once I'm asleep.",
+      "createdAt": "2026-03-19T14:20:15.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "MIND-005",
+      "rating": 5,
+      "comment": "I'm a light sleeper and this has been a lifesaver. Blocks out background noise without being intrusive. Compact enough for travel.",
+      "createdAt": "2026-03-23T12:45:41.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "MIND-006",
+      "rating": 5,
+      "comment": "Love the prompts in this journal. They make me think differently about my day. Quality paper, nice binding. Has genuinely improved my mindset.",
+      "createdAt": "2026-03-27T08:10:07.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "MIND-006",
+      "rating": 4,
+      "comment": "Good guided journal. The daily structure keeps me consistent. Some prompts repeat which is fine — reinforces the habit.",
+      "createdAt": "2026-03-31T13:35:32.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "MIND-006",
+      "rating": 5,
+      "comment": "Started this 2 months ago and it's become my favorite part of the morning. The prompts are thoughtful, not cheesy. Nice quality paper too.",
+      "createdAt": "2026-04-04T11:00:58.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "MIND-007",
+      "rating": 5,
+      "comment": "Surprisingly effective. I keep one at my desk and squeeze it during stressful calls. Different densities are nice for variety.",
+      "createdAt": "2026-04-08T15:25:23.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "MIND-007",
+      "rating": 3,
+      "comment": "They're fine but the material picks up dust and lint easily. Squeeze feel is decent. Works as a basic stress relief tool.",
+      "createdAt": "2026-04-12T09:50:49.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "MIND-007",
+      "rating": 4,
+      "comment": "Good set for the price. The firmness variety is useful. My kids keep stealing them though.",
+      "createdAt": "2026-04-16T14:15:14.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "MIND-008",
+      "rating": 5,
+      "comment": "Lovely selection of calming teas. The chamomile is my favorite — smooth and fragrant. Nice packaging too. Made a great gift.",
+      "createdAt": "2026-04-20T12:40:40.000Z"
+    },
+    {
+      "userEmail": "user8@welbeing.com",
+      "productSku": "MIND-008",
+      "rating": 4,
+      "comment": "Good variety of caffeine-free teas. Some blends are better than others — the lavender chamomile is excellent. Decent value for the sampler.",
+      "createdAt": "2026-04-24T08:05:05.000Z"
+    },
+    {
+      "userEmail": "user1@welbeing.com",
+      "productSku": "MIND-008",
+      "rating": 5,
+      "comment": "My evening wind-down ritual. Each tea bag is individually wrapped and fresh. The stress relief blend genuinely helps me relax before bed.",
+      "createdAt": "2026-04-28T16:30:31.000Z"
+    },
+    {
+      "userEmail": "user2@welbeing.com",
+      "productSku": "MIND-009",
+      "rating": 5,
+      "comment": "I was skeptical about weighted blankets but this genuinely helps my anxiety at night. The 15lb feels perfect for my body weight. Sleep deeper now.",
+      "createdAt": "2026-05-02T10:55:57.000Z"
+    },
+    {
+      "userEmail": "user3@welbeing.com",
+      "productSku": "MIND-009",
+      "rating": 5,
+      "comment": "Game-changer for my insomnia. Feels like a firm hug. Takes some getting used to but once I did, I can't sleep without it.",
+      "createdAt": "2026-05-06T13:20:22.000Z"
+    },
+    {
+      "userEmail": "user4@welbeing.com",
+      "productSku": "MIND-009",
+      "rating": 4,
+      "comment": "Good weight, effective. Only issue is it traps heat — might not work well in summer. The cover is removable for washing which is essential.",
+      "createdAt": "2026-05-10T09:45:48.000Z"
+    },
+    {
+      "userEmail": "user5@welbeing.com",
+      "productSku": "MIND-010",
+      "rating": 5,
+      "comment": "I get seasonal affective disorder every winter and this lamp makes a noticeable difference. 30 minutes every morning and my mood is noticeably brighter.",
+      "createdAt": "2026-05-14T14:10:13.000Z"
+    },
+    {
+      "userEmail": "user6@welbeing.com",
+      "productSku": "MIND-010",
+      "rating": 4,
+      "comment": "Bright, effective lamp. Compact enough to sit on my desk while I work. Wish the timer had more options but it does the job.",
+      "createdAt": "2026-05-18T08:35:39.000Z"
+    },
+    {
+      "userEmail": "user7@welbeing.com",
+      "productSku": "MIND-010",
+      "rating": 5,
+      "comment": "Living somewhere with very short winter days, this has been essential. The light is bright and natural-feeling. Energy and mood improved within a week.",
+      "createdAt": "2026-05-22T12:00:04.000Z"
+    }
+  ]
+}
